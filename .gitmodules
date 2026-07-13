@@ -1,0 +1,3 @@
+[submodule "ChildRepo"]
+	path = ChildRepo
+	url = https://github.com/lakshya-blitzy/600K_ChildRepo.git
