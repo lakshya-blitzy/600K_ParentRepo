@@ -40,17 +40,28 @@ def calculate_total(numbers):
 
 
 def calculate_average(numbers):
-    """Return the arithmetic mean of an iterable of numbers.
+    """Return the arithmetic mean of a sized collection of numbers.
 
     Args:
-        numbers: Iterable of numeric values to average.
+        numbers: A sized collection of numeric values to average, such
+            as a list or tuple. When ``numbers`` is non-falsy it must
+            support ``len()``, because the mean divides the sum by
+            ``len(numbers)``. Unsized iterables (for example, a
+            generator) are not supported and raise ``TypeError`` at the
+            ``len(numbers)`` call.
 
     Returns:
         The arithmetic mean, computed as
-        ``calculate_total(numbers) / len(numbers)``. Returns ``0`` when
-        ``numbers`` is empty or otherwise falsy; the guard short-circuits
-        before the division, so an empty input never triggers a
-        ZeroDivisionError.
+        ``calculate_total(numbers) / len(numbers)``. Returns the literal
+        ``0`` only when ``numbers`` is falsy (for example, an empty list
+        ``[]``, empty tuple ``()``, or empty string ``""``); the
+        ``if not numbers`` guard short-circuits before the division, so
+        a falsy input never triggers a ``ZeroDivisionError``.
+
+    Raises:
+        TypeError: If ``numbers`` is non-falsy but does not support
+            ``len()`` (for example, a generator), because the final
+            division evaluates ``len(numbers)``.
 
     Source: service.py:L10-L14
     """
