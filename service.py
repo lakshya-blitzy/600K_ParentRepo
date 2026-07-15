@@ -1,10 +1,13 @@
 """Computation library for numeric aggregation.
 
-Provides the numeric helper functions used by the application entry
-point (``app.py``). Two public functions are exported:
+Provides the numeric helper functions for the application. The entry
+point (``app.py``) currently uses ``calculate_total``;
+``calculate_average`` is an additional exported helper that is not used
+by the CLI path. Two public functions are exported:
 
     * ``calculate_total(numbers)`` -- sum an iterable of numbers.
-    * ``calculate_average(numbers)`` -- arithmetic mean of an iterable.
+    * ``calculate_average(numbers)`` -- arithmetic mean of a sized
+      collection of numbers.
 
 The module is self-contained, synchronous, and has no third-party
 dependencies.
@@ -59,9 +62,15 @@ def calculate_average(numbers):
         a falsy input never triggers a ``ZeroDivisionError``.
 
     Raises:
-        TypeError: If ``numbers`` is non-falsy but does not support
-            ``len()`` (for example, a generator), because the final
-            division evaluates ``len(numbers)``.
+        TypeError: For a non-falsy argument, in either of two distinct
+            ways depending on the input. An unsized iterable (for
+            example, a generator) is summed successfully by
+            ``calculate_total`` but then fails at the final
+            ``len(numbers)`` call, which unsized iterables do not
+            support. A non-iterable argument (for example, an ``int``)
+            instead fails earlier, during aggregation inside
+            ``calculate_total`` ("'int' object is not iterable"),
+            before ``len()`` is reached.
 
     Source: service.py:L10-L14
     """
