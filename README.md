@@ -250,7 +250,7 @@ sequenceDiagram
 The following characteristics are **documented, not defects to be fixed** in this task:
 
 - **Hard-coded input.** The list `[10, 20, 30, 40]` is fixed in source; the program accepts no arguments, configuration, or environment variables (`Source: app.py:L4`).
-- **No error handling.** The functions assume well-formed numeric iterables; passing a non-iterable or a non-numeric argument raises the corresponding built-in exception at runtime.
+- **No error handling.** Neither function performs explicit type checking or uses `try`/`except`; both assume well-formed numeric input. `calculate_total` raises the corresponding built-in exception when given a non-iterable or non-numeric argument (`Source: service.py:L1-L7`). `calculate_average` returns `0` for any falsy argument (for example, `None`, `False`, `0`, `''`, or `[]`) because of its `if not numbers` guard; for a non-falsy argument it requires a sized numeric collection and otherwise raises the corresponding built-in exception (`Source: service.py:L10-L14`).
 - **Unused capability.** `calculate_average` is defined in the computation library but is never called by `app.py` (`Source: service.py:L10`).
 - **Non-runnable deepest tier.** `ChildRepo/NestedChild` cannot run because its `service.py` duplicates the entry-point code and therefore cannot resolve `calculate_total` (`Source: ChildRepo/NestedChild/service.py:L1`).
 - **Ignored data files.** `*.csv` files are ignored via `.blitzyignore` and are not part of the program (`Source: .blitzyignore:L1`).
