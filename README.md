@@ -50,7 +50,7 @@ The root repository contains two Python modules, this README, and Git/compositio
 | `service.py` | Computation library; exports `calculate_total` and `calculate_average` (`Source: service.py:L1-L14`). |
 | `README.md` | This project document. |
 | `.gitmodules` | Declares the `ChildRepo` submodule (`Source: .gitmodules`). |
-| `.blitzyignore` | Ignores `*.csv` files (for example, the ~16 MB `large.csv`). |
+| `.blitzyignore` | Ignores `*.csv` files (`Source: .blitzyignore:L1`). |
 | `ChildRepo/` | Git submodule `600K_ChildRepo`; itself contains a `NestedChild` submodule (`Source: ChildRepo/.gitmodules`). |
 
 The full three-tier chain is `600K_ParentRepo` → `600K_ChildRepo` → `600K_Nested_ChildRepo`; the deepest tier declares no submodules of its own, so the chain terminates there. See [Architecture Diagrams](#architecture-diagrams) for a visual of this composition.
@@ -141,6 +141,17 @@ Orchestrates the aggregation workflow (`Source: app.py:L3-L13`).
 
 **Side effects:** prints `Total: 100`, then each number on its own line, then `Application completed`. `main()` is invoked under the `if __name__ == "__main__":` guard, so it runs when the file is executed directly but not when it is imported (`Source: app.py:L15-L16`).
 
+```python
+>>> from app import main
+>>> main()
+Total: 100
+10
+20
+30
+40
+Application completed
+```
+
 ## Usage & Deployment Guide
 
 Run the entry point from the repository root:
@@ -170,10 +181,11 @@ The `ChildRepo` and `NestedChild` tiers replicate the same demonstration, but th
 
 ### Optional: view docstrings with `pydoc`
 
-The standard-library `pydoc` tool (bundled with Python, no installation required) can render the modules' docstrings to HTML:
+The standard-library `pydoc` tool (bundled with Python, no installation required) can render the modules' docstrings to the console. These commands are read-only — they print to standard output and write no files:
 
 ```bash
-python -m pydoc -w app service
+python -m pydoc app
+python -m pydoc service
 ```
 
 ## Code Walkthrough
@@ -241,4 +253,4 @@ The following characteristics are **documented, not defects to be fixed** in thi
 - **No error handling.** The functions assume well-formed numeric iterables; passing a non-iterable or a non-numeric argument raises the corresponding built-in exception at runtime.
 - **Unused capability.** `calculate_average` is defined in the computation library but is never called by `app.py` (`Source: service.py:L10`).
 - **Non-runnable deepest tier.** `ChildRepo/NestedChild` cannot run because its `service.py` duplicates the entry-point code and therefore cannot resolve `calculate_total` (`Source: ChildRepo/NestedChild/service.py:L1`).
-- **Ignored data files.** `*.csv` files (for example, the ~16 MB `large.csv`) are ignored via `.blitzyignore` and are not part of the program.
+- **Ignored data files.** `*.csv` files are ignored via `.blitzyignore` and are not part of the program (`Source: .blitzyignore:L1`).
