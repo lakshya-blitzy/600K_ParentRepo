@@ -112,6 +112,12 @@ Notes on the response:
   `Total: 100\n10\n20\n30\n40\nApplication completed\n`.
 - The input list is fixed at `[10, 20, 30, 40]`, so the output is deterministic.
 - The numbers are listed in input order.
+- Every response includes the security headers `X-Content-Type-Options: nosniff`
+  and `X-Frame-Options: DENY`. They harden the endpoint without changing the
+  status code, `Content-Type`, or body bytes shown above.
+- The built-in development server reports a generic, versionless `Server` header
+  (it discloses neither the Werkzeug nor the Python version) on both run modes.
+  Production WSGI servers set their own `Server` header.
 
 ## Testing
 

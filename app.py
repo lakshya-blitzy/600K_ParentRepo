@@ -23,11 +23,60 @@ The application is built with the *application-factory* pattern
 created without any side effects at import time (importing this module neither
 starts a server nor binds a socket). Configuration is loaded from
 :class:`config.Config` via ``app.config.from_object``.
+
+Every HTTP response additionally carries two contract-safe security headers --
+``X-Content-Type-Options: nosniff`` and ``X-Frame-Options: DENY`` -- and the
+built-in development server is configured to emit a generic, versionless
+``Server`` header so that neither the Werkzeug nor the Python version is
+disclosed on either development entry point (``python3 app.py`` and
+``flask --app app run``). None of this hardening alters the response body,
+status code, or content type, so the byte-for-byte output contract is preserved.
 """
 
 from flask import Flask, Response
 
 from service import calculate_total
+
+
+def _versionless_server_header(self):
+    """Return a generic, versionless HTTP ``Server`` header value.
+
+    Installed as :meth:`werkzeug.serving.WSGIRequestHandler.version_string` by
+    :func:`_harden_dev_server_version_disclosure`. Werkzeug's development server
+    derives the ``Server`` response header solely from ``version_string()``,
+    which by default returns ``"Werkzeug/<ver> Python/<ver>"`` and thereby
+    discloses the exact framework and interpreter versions. Returning a fixed,
+    versionless identifier removes that disclosure while leaving every other
+    behavior -- including the response body, status code, and content type --
+    unchanged.
+
+    The ``self`` parameter is required because this function is bound as an
+    instance method on the request-handler class.
+    """
+    return "WSGIServer"
+
+
+def _harden_dev_server_version_disclosure():
+    """Suppress dev-server ``Server``-header version disclosure on all entry points.
+
+    Both development entry points -- ``python3 app.py`` (via ``app.run()``) and
+    ``flask --app app run`` -- serve requests through Werkzeug's default
+    :class:`~werkzeug.serving.WSGIRequestHandler`. Because ``flask run`` offers
+    no hook to inject a custom request handler, the only way to harden *both*
+    paths from a single place is to replace the handler's ``version_string``
+    method, which is the sole source of the ``Server`` header value. The override
+    is idempotent (safe to apply on every :func:`create_app` call) and inert for
+    production WSGI servers (gunicorn, waitress, etc.), which supply their own
+    ``Server`` header and never use this development handler.
+
+    The ``werkzeug.serving`` import is performed here rather than at module top
+    level so that merely importing :mod:`app` remains free of any side effect on
+    the ``werkzeug`` package; the override is applied only when an application is
+    actually constructed via :func:`create_app`.
+    """
+    from werkzeug.serving import WSGIRequestHandler
+
+    WSGIRequestHandler.version_string = _versionless_server_header
 
 
 def create_app():
@@ -55,6 +104,37 @@ def create_app():
     # values. Config is loaded via the string reference so app.py does not need
     # to import the Config class directly.
     app.config.from_object("config.Config")
+
+    # --- Runtime security hardening (contract-safe) ----------------------------
+    # The controls below harden the HTTP surface WITHOUT changing the response
+    # body, status code, or Content-Type, so the byte-for-byte output contract
+    # with the original console program is preserved intact.
+
+    # SEC-F3: suppress dev-server framework/Python version disclosure in the
+    # ``Server`` header for BOTH development entry points (``python3 app.py`` and
+    # ``flask --app app run``); see _harden_dev_server_version_disclosure. Applied
+    # here so the Flask CLI path -- which auto-invokes this factory but never runs
+    # the ``__main__`` block -- is hardened identically to the direct-script path.
+    _harden_dev_server_version_disclosure()
+
+    @app.after_request
+    def _set_security_headers(response):
+        """Attach contract-safe security headers to every response.
+
+        Registered on the application so it runs for all responses the app
+        produces -- including 404 (not found) and 405 (method not allowed) error
+        responses -- ensuring the headers are present across the whole surface.
+        Only headers are added; the body, status code, and Content-Type are left
+        untouched, so the exact output contract is preserved.
+        """
+        # SEC-F1: instruct clients not to MIME-sniff the response away from its
+        # declared ``text/plain`` content type.
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        # SEC-F2: forbid embedding any response in a frame/iframe (clickjacking
+        # protection). This is an API-only ``text/plain`` endpoint never intended
+        # to be framed, so denying all framing is the correct, strictest choice.
+        response.headers["X-Frame-Options"] = "DENY"
+        return response
 
     @app.route("/", methods=["GET"])
     def index():
@@ -102,34 +182,11 @@ if __name__ == "__main__":
     # governed by configuration (config.Config.DEBUG); no host/port is hardcoded,
     # so Flask's defaults (http://127.0.0.1:5000/) apply.
     #
-    # By default Werkzeug's development server emits a ``Server`` response header
-    # of the form ``Werkzeug/<ver> Python/<ver>``, which discloses the exact
-    # framework and interpreter versions and enables precise fingerprinting
-    # should the local listener ever be forwarded or exposed. To avoid that
-    # disclosure -- without altering any other startup semantic -- the server is
-    # run with a request handler whose version string is a generic, versionless
-    # identifier. Only the ``Server`` header value changes; the host, port, debug
-    # behavior, routing, and response bytes all remain exactly as before. The
-    # handler class and its ``werkzeug.serving`` import are scoped to this
-    # development-only entry point, so the module's top-level import surface and
-    # its side-effect-free import contract are preserved.
-    from werkzeug.serving import WSGIRequestHandler
-
-    class VersionlessRequestHandler(WSGIRequestHandler):
-        """Development request handler that discloses no software versions.
-
-        Werkzeug's built-in development server derives the HTTP ``Server``
-        response header from :meth:`version_string`, which by default returns
-        ``server_version`` (``"Werkzeug/<ver>"``) joined with ``sys_version``
-        (``"Python/<ver>"``). Overriding that single method -- the sole source
-        of the header -- makes the header carry neither the Werkzeug version nor
-        the Python version, preventing development-server fingerprinting while
-        leaving every other behavior, including the response body, unchanged.
-        """
-
-        def version_string(self):
-            # Generic, versionless server identifier that replaces the default
-            # "Werkzeug/<ver> Python/<ver>" so no version information is exposed.
-            return "WSGIServer"
-
-    create_app().run(request_handler=VersionlessRequestHandler)
+    # create_app() installs the versionless ``Server``-header hardening (see
+    # _harden_dev_server_version_disclosure), so this direct ``python3 app.py``
+    # entry point emits a generic ``Server: WSGIServer`` header with no framework
+    # or interpreter version disclosure -- identical to the ``flask --app app
+    # run`` path. Only the ``Server`` header value changes; the host, port, debug
+    # behavior, routing, and response bytes all remain exactly as before, and no
+    # per-call request handler needs to be wired here.
+    create_app().run()
