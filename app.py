@@ -41,7 +41,13 @@ def create_app():
         flask.Flask: A fully configured application instance with the single
         ``GET /`` route registered.
     """
-    app = Flask(__name__)
+    # ``static_folder=None`` disables Flask's default static handling so that no
+    # ``/static/<path:filename>`` rule is registered. The migration contract
+    # requires exactly one route -- the single ``GET /`` behavior surface -- with
+    # no extra endpoints (AAP 0.8.1 "no feature creep"; single-root-route/no-static
+    # requirement). The original console program served no files, so the automatic
+    # static route would be an unauthorized surface with nothing to serve.
+    app = Flask(__name__, static_folder=None)
 
     # Load configuration (DEBUG, SECRET_KEY) from the dedicated config object.
     # Flask copies only the UPPERCASE attributes of ``config.Config`` into

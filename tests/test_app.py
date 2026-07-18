@@ -50,3 +50,39 @@ def test_create_app_returns_flask_instance():
 
     application = create_app()
     assert isinstance(application, Flask)
+
+
+def test_url_map_registers_only_the_root_route():
+    """Exactly one route -- ``GET /`` -- is registered; no static route exists.
+
+    The migration contract mandates a single behavior surface with no feature
+    creep (AAP: single-root-route / no-static). Flask registers a
+    ``/static/<path:filename>`` rule automatically unless static handling is
+    disabled, so this test guards against that regression by asserting that the
+    only registered rule is ``/`` and that no ``static`` endpoint is present.
+    """
+    app = create_app()
+
+    # Collect the registered rules and endpoints from the URL map.
+    rules = {rule.rule for rule in app.url_map.iter_rules()}
+    endpoints = {rule.endpoint for rule in app.url_map.iter_rules()}
+
+    # Only the root behavior surface must exist -- nothing else (no static route).
+    assert rules == {"/"}
+    assert "static" not in endpoints
+    # No rule may target the static file-serving path pattern.
+    assert not any(rule.startswith("/static") for rule in rules)
+
+
+def test_root_rule_allows_only_get_and_implicit_methods():
+    """The ``/`` rule exposes GET plus Flask's implicit HEAD/OPTIONS only.
+
+    A ``methods=["GET"]`` rule automatically gains HEAD and OPTIONS from Flask;
+    no other verbs (POST/PUT/DELETE/PATCH) may be registered on the route.
+    """
+    app = create_app()
+
+    root_rule = next(
+        rule for rule in app.url_map.iter_rules() if rule.rule == "/"
+    )
+    assert root_rule.methods == {"GET", "HEAD", "OPTIONS"}
