@@ -101,4 +101,35 @@ if __name__ == "__main__":
     # Launch the Flask development server through the factory. Debug behavior is
     # governed by configuration (config.Config.DEBUG); no host/port is hardcoded,
     # so Flask's defaults (http://127.0.0.1:5000/) apply.
-    create_app().run()
+    #
+    # By default Werkzeug's development server emits a ``Server`` response header
+    # of the form ``Werkzeug/<ver> Python/<ver>``, which discloses the exact
+    # framework and interpreter versions and enables precise fingerprinting
+    # should the local listener ever be forwarded or exposed. To avoid that
+    # disclosure -- without altering any other startup semantic -- the server is
+    # run with a request handler whose version string is a generic, versionless
+    # identifier. Only the ``Server`` header value changes; the host, port, debug
+    # behavior, routing, and response bytes all remain exactly as before. The
+    # handler class and its ``werkzeug.serving`` import are scoped to this
+    # development-only entry point, so the module's top-level import surface and
+    # its side-effect-free import contract are preserved.
+    from werkzeug.serving import WSGIRequestHandler
+
+    class VersionlessRequestHandler(WSGIRequestHandler):
+        """Development request handler that discloses no software versions.
+
+        Werkzeug's built-in development server derives the HTTP ``Server``
+        response header from :meth:`version_string`, which by default returns
+        ``server_version`` (``"Werkzeug/<ver>"``) joined with ``sys_version``
+        (``"Python/<ver>"``). Overriding that single method -- the sole source
+        of the header -- makes the header carry neither the Werkzeug version nor
+        the Python version, preventing development-server fingerprinting while
+        leaving every other behavior, including the response body, unchanged.
+        """
+
+        def version_string(self):
+            # Generic, versionless server identifier that replaces the default
+            # "Werkzeug/<ver> Python/<ver>" so no version information is exposed.
+            return "WSGIServer"
+
+    create_app().run(request_handler=VersionlessRequestHandler)
