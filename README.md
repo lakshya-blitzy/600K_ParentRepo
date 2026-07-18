@@ -77,8 +77,15 @@ app.config.from_object("config.Config")
 
 `Config` reads its values from the environment:
 
-- `DEBUG` — enables Flask's debug mode when set.
-- `SECRET_KEY` — the application secret key, read from the environment.
+- `FLASK_DEBUG` — enables Flask's debug mode. Set it to one of `1`, `true`,
+  `yes`, or `on` (case-insensitive; surrounding whitespace is ignored) to turn
+  debug mode on. When the variable is unset, empty, or set to any other value,
+  debug mode stays **off** (the default).
+- `SECRET_KEY` — the secret key Flask uses to sign the session cookie and other
+  security-sensitive tokens. When it is unset, the configuration falls back to
+  the non-secret placeholder `"dev"`, which is intended for **local development
+  only**. In production you **must** set `SECRET_KEY` to a strong, unpredictable
+  (randomly generated) value.
 
 ## Endpoint
 
