@@ -24,6 +24,20 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+> **Note — creating the virtual environment.** `python3 -m venv .venv` relies on
+> the standard-library `ensurepip` module to seed `pip` into the new environment.
+> This works out of the box on most Python installations, but some minimal or
+> distribution-packaged builds ship `ensurepip` **without** bundled `pip` wheels.
+> On those systems the command above exits non-zero and leaves a `.venv/` that
+> has no `pip` and no `activate` script. If that happens, create the environment
+> without pip and bootstrap pip explicitly, then continue with the
+> `source .venv/bin/activate` and `pip install -r requirements.txt` steps above:
+>
+> ```bash
+> python3 -m venv --without-pip .venv
+> python3 -m pip --python "$PWD/.venv/bin/python" install --upgrade pip
+> ```
+
 ## Running (development)
 
 The application exposes an application factory, `create_app()`, in
@@ -65,6 +79,15 @@ Other WSGI servers such as [waitress](https://docs.pylonsproject.org/projects/wa
 work equally well (e.g. `waitress-serve --call wsgi:create_app`). These servers are
 mentioned only as examples and are **not** included in `requirements.txt`; install
 your chosen server separately.
+
+> **Note — startup-log version banners.** Some WSGI servers print their own
+> version in their **startup logs** (for example, gunicorn emits a
+> `Starting gunicorn <version>` banner). That is server output written to your
+> operational logs — it is **not** part of any HTTP response; the application's
+> responses always carry a generic, versionless `Server` header (see
+> [Endpoint](#endpoint)). Treat operational logs as access-controlled, and use
+> your chosen server's logging configuration if you need to suppress these
+> informational startup banners in production.
 
 ## Configuration
 

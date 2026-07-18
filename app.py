@@ -69,6 +69,19 @@ def _harden_dev_server_version_disclosure():
     production WSGI servers (gunicorn, waitress, etc.), which supply their own
     ``Server`` header and never use this development handler.
 
+    Scope note (deliberate, process-global): the override replaces
+    ``version_string`` on the ``WSGIRequestHandler`` *class* rather than on a
+    per-application instance, so it takes effect for the whole Python process.
+    Any other Werkzeug development server running in the same process -- for
+    example a co-hosted WSGI application -- would therefore also report the
+    generic ``Server: WSGIServer`` value. This is an accepted trade-off for this
+    single-application project: patching the shared handler class is the only way
+    to cover the hookless ``flask run`` path, the effect is confined to the
+    development server's ``Server`` header (never the response body, status code,
+    or content type), and it is inert under production WSGI servers. If several
+    independent WSGI applications are ever co-hosted in one process, prefer a
+    bounded custom-server mechanism over this process-global patch.
+
     The ``werkzeug.serving`` import is performed here rather than at module top
     level so that merely importing :mod:`app` remains free of any side effect on
     the ``werkzeug`` package; the override is applied only when an application is
