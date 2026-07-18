@@ -1,33 +1,28 @@
 """Production WSGI entry point for the Flask application.
 
-This module exposes a ready-to-serve WSGI application object named ``app`` that
-production WSGI servers import and serve. It builds the application once via the
-application factory defined in :mod:`app`.
+This module exposes a ready-to-serve WSGI application object named ``app`` for
+production WSGI servers (gunicorn, uWSGI, waitress, etc.). The application is
+built exactly once, at import time, by delegating to the application factory
+:func:`app.create_app`; this entry point adds no routing, configuration, or
+behavior of its own -- routing lives in the factory in :mod:`app` and
+configuration in :mod:`config`.
 
-Examples:
-    Serve with gunicorn (the ``wsgi:app`` object)::
+Typical production usage::
 
-        gunicorn wsgi:app
+    gunicorn wsgi:app
+    waitress-serve --call wsgi:create_app
 
-    Serve with waitress (calling the factory ``wsgi:create_app``)::
-
-        waitress-serve --call wsgi:create_app
-
-    Run the development server directly::
-
-        python3 wsgi.py
+Importing this module has no side effects beyond constructing the application
+instance: it neither starts a server nor binds a socket. The development server
+is deliberately not launched here -- that convenience lives behind the
+``__main__`` guard in :mod:`app` (``python3 app.py``).
 """
 
 from app import create_app
 
-# The WSGI application object. WSGI servers look up this module-level ``app``
-# (e.g. ``gunicorn wsgi:app``). ``create_app`` is also re-exported by virtue of
-# the import above, so ``waitress-serve --call wsgi:create_app`` works too.
+# Module-level WSGI application callable. Production servers reference it as
+# ``wsgi:app`` (e.g. ``gunicorn wsgi:app``). Because ``create_app`` is imported
+# into this module's namespace above, it is also reachable as
+# ``wsgi:create_app`` for servers that prefer to call the factory directly
+# (e.g. ``waitress-serve --call wsgi:create_app``).
 app = create_app()
-
-
-if __name__ == "__main__":
-    # Convenience for local development: ``python3 wsgi.py`` starts Flask's
-    # built-in development server. Host/port default to Flask's values
-    # (http://127.0.0.1:5000/); debug behavior is governed by config.Config.
-    app.run()
