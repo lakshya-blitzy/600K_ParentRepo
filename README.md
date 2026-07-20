@@ -11,11 +11,24 @@ This is the parent repository of the project. It runs standalone: the computatio
 
 ## Installation
 
-Install the dependencies with pip (a virtual environment is recommended):
+Create and activate a virtual environment, then install the pinned dependency:
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+> **Clean-environment note.** On some hosts `python -m venv .venv` fails while
+> bootstrapping pip (an `ensurepip`/pip error). If that happens, create the
+> environment without pip, bootstrap the tooling explicitly, and then install
+> the dependency:
+>
+> ```bash
+> python -m venv .venv --without-pip
+> python -m pip --python .venv/bin/python install pip setuptools wheel
+> .venv/bin/python -m pip install -r requirements.txt
+> ```
 
 ## Running
 

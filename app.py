@@ -18,7 +18,11 @@ def create_app():
     Using a factory avoids import-time global side effects and keeps the
     application testable (for example, via ``app.test_client()``).
     """
-    app = Flask(__name__)
+    # ``static_folder=None`` disables Flask's default ``/static/<path:filename>``
+    # route. This application exposes exactly one endpoint (``GET /``) and serves
+    # no static files, so the extra route surface is removed to keep the URL map
+    # limited to the single intended route (AAP 0.2.2/0.3.3 - no scope creep).
+    app = Flask(__name__, static_folder=None)
 
     @app.route("/")
     def index():
