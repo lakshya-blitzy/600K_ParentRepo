@@ -30,7 +30,7 @@ def calculate_total(numbers):
         int | float: The accumulated total of all elements. Returns ``0`` for
         an empty iterable (the natural result of summing zero elements).
 
-    Source: service.py:L1
+    Source: service.py:L18
     """
     total = 0
 
@@ -59,7 +59,7 @@ def calculate_average(numbers):
         int | float: The average (total divided by count). Returns ``0`` for
         empty/falsey input to avoid division by zero.
 
-    Source: service.py:L10
+    Source: service.py:L44
     """
     if not numbers:
         return 0
