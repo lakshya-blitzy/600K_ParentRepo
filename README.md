@@ -9,7 +9,11 @@ composition**: the parent repository embeds a child submodule (`ChildRepo`),
 which in turn embeds a nested submodule (`ChildRepo/NestedChild`). The program
 computes and prints the sum of a fixed list of numbers, making it an easy
 reference for how a runnable entry point, a reusable helper module, and a
-multi-level submodule layout fit together.
+multi-level submodule layout fit together. The arithmetic helpers and the
+console behavior are defined in the source modules
+(`Source: service.py:L1-L14`, `Source: app.py:L1-L16`), and the three-level
+parent → child → nested submodule composition is declared by the submodule
+wiring (`Source: .gitmodules`, `Source: ChildRepo/.gitmodules`).
 
 This document is the **canonical documentation exemplar** for the project; the
 submodule READMEs mirror its structure and section ordering.
@@ -37,16 +41,18 @@ graph TD
 ├── README.md          # This file — parent repository documentation
 ├── app.py             # Console entry point; defines main()
 ├── service.py         # Arithmetic helpers: calculate_total, calculate_average
-├── large.csv          # Intentionally git-ignored data artifact (.blitzyignore: *.csv)
+├── large.csv          # Excluded from Blitzy viewing/documentation by .blitzyignore (*.csv); still tracked by Git
 └── ChildRepo/         # Git submodule → 600K_ChildRepo
     └── NestedChild/   # Nested Git submodule → 600K_Nested_ChildRepo
 ```
 
 > **Note:** `ChildRepo/` is a Git submodule, and `ChildRepo/NestedChild/` is a
-> nested Git submodule; neither is populated by a plain `git clone` (see
-> [Setup / Installation](#setup--installation)). `large.csv` is intentionally
-> excluded from tooling and documentation by the `*.csv` ignore rule.
-> `Source: .blitzyignore:1`.
+> nested Git submodule; Git does not populate either on a plain `git clone`
+> (see [Setup / Installation](#setup--installation)).
+> `Source: Git SCM documentation, "Git Tools - Submodules" (https://git-scm.com/book/en/v2/Git-Tools-Submodules)`.
+> The `*.csv` rule in `.blitzyignore` excludes `large.csv` from Blitzy viewing
+> and documentation only; it does **not** ignore the file in Git or remove it
+> from version control (the file remains Git-tracked). `Source: .blitzyignore:1`.
 
 ### Submodules
 
@@ -67,10 +73,9 @@ The submodule wiring is declared in the `.gitmodules` files at each level.
 
 | Requirement           | Details                                                                                  |
 |-----------------------|------------------------------------------------------------------------------------------|
-| Python **>= 3.6**     | Required for f-string formatting used by the entry point. `Source: app.py:L8`            |
-| CPython 3.12.3        | The interpreter this project's behavior and documented output were verified against.     |
-| Git (submodule-aware) | Needed to clone and initialize the nested submodule repositories.                        |
-| Third-party packages  | **None.** The project uses only the Python standard library — there is no `requirements.txt` or `pyproject.toml`. |
+| Python **>= 3.6**     | Required for the f-string formatting used by the entry point. `Source: app.py:L8`        |
+| Git (submodule-aware) | Needed to clone and initialize the nested submodule repositories. `Source: Git SCM documentation, "Git Tools - Submodules" (https://git-scm.com/book/en/v2/Git-Tools-Submodules)` |
+| Third-party packages  | **None.** The project uses only the Python standard library; the repository tree contains no dependency manifest (no `requirements.txt`, `pyproject.toml`, or `setup.py`). `Source: repository file tree (see [Repository Structure](#repository-structure))` |
 
 ---
 
@@ -79,7 +84,12 @@ The submodule wiring is declared in the `.gitmodules` files at each level.
 **Git does not download submodule contents by default.** If you clone without
 initializing submodules, the `ChildRepo/` and `ChildRepo/NestedChild/`
 directories will be **empty**. Use the recursive workflow below so that all
-submodules — including the nested one — are populated.
+submodules — including the nested one — are populated. The `--recurse-submodules`
+flag initializes and clones every submodule recursively, which also covers the
+nested submodule.
+`Source: Git SCM documentation, "Git Tools - Submodules" (https://git-scm.com/book/en/v2/Git-Tools-Submodules)`.
+The submodule paths and URLs referenced here are declared in the `.gitmodules`
+files at each level. `Source: .gitmodules`, `Source: ChildRepo/.gitmodules`.
 
 ```bash
 # Clone with all submodules (including nested) initialized
@@ -90,9 +100,10 @@ git submodule update --init --recursive
 ```
 
 > **Keeping submodules in sync:** Submodules do **not** auto-update when you pull
-> parent-repository changes. After pulling the parent, re-run
-> `git submodule update --init --recursive` to move each submodule to the commit
-> the parent references.
+> parent-repository changes; you must update them manually to match the commit
+> the parent references. After pulling the parent, re-run
+> `git submodule update --init --recursive`.
+> `Source: Git SCM documentation, "Git Tools - Submodules" (https://git-scm.com/book/en/v2/Git-Tools-Submodules)`.
 
 ---
 
@@ -135,7 +146,7 @@ performs true division, a non-empty input produces a `float`.
 
 | Parameter | Description                                          |
 |-----------|------------------------------------------------------|
-| `numbers` | An iterable/list of numeric (`int`/`float`) values to average. |
+| `numbers` | A list (or other **sized** iterable) of numeric (`int`/`float`) values to average. Because the implementation calls `len(numbers)`, unsized iterables such as generators are not supported. `Source: service.py:L10-L14` |
 
 **Returns:** `0` for a falsey/empty input; otherwise the mean as a `float`.
 
@@ -182,7 +193,7 @@ Run the entry point from the repository root:
 python app.py
 ```
 
-Expected output (verified on CPython 3.12.3):
+Expected output (deterministic — it follows directly from the source logic in `main()`, `Source: app.py:L3-L16`):
 
 ```text
 Total: 100
@@ -250,19 +261,29 @@ flowchart LR
 ## Deployment Guide
 
 There is **no build or packaging system** for this project — no compilation
-step, no bundler, and no package manifest. Deployment reduces to:
+step, no bundler, and no package manifest; the repository tree contains only the
+two Python modules and this README.
+`Source: repository file tree (see [Repository Structure](#repository-structure))`.
+Deployment reduces to:
 
-1. Place the repository directory (which must contain a valid `service.py`
-   providing `calculate_total`) on a host that has a Python **>= 3.6** runtime.
-2. Run the entry point:
+1. Place the repository directory on a host that has a Python **>= 3.6** runtime
+   (required for the f-string in `main()`). The directory must contain a valid
+   `service.py` providing `calculate_total`, because `app.py` imports it.
+   `Source: app.py:L1`, `Source: app.py:L8`.
+2. Run the entry point (the `__main__` guard invokes `main()` on direct
+   execution):
 
    ```bash
    python app.py
    ```
 
+   `Source: app.py:L15-L16`.
+
 There are **no environment variables, no configuration files, and no
-command-line arguments**. The only runtime input is the hard-coded list inside
-`main()`. `Source: app.py:L4`.
+command-line arguments**: neither module imports `os`, `sys`, `argparse`, or any
+configuration reader, and `main()` takes no parameters. The only runtime input
+is the hard-coded list inside `main()`.
+`Source: app.py:L1-L16`, `Source: service.py:L1-L14`, `Source: app.py:L4`.
 
 ---
 
@@ -275,11 +296,17 @@ currently exists.
   `calculate_total`, so `calculate_average` is defined but unused by the
   application. `Source: app.py:L1`.
 - **Code duplication across levels.** The parent and `ChildRepo` copies of
-  `app.py`/`service.py` are byte-identical. `Source: ChildRepo/app.py:L1-L16`.
+  `app.py`/`service.py` share **identical executable logic** — their
+  non-docstring code is the same — while their repository-specific docstrings
+  and `Source:` citations differ, so the full files are not byte-identical.
+  `Source: app.py:L1-L16`, `Source: ChildRepo/app.py:L1-L16`.
 - **Hard-coded input; no engineering safeguards.** The input is hard-coded as
-  `[10, 20, 30, 40]`; there is no input validation, error handling, logging,
-  type annotations, test suite, or CI configuration anywhere in the project.
-  `Source: app.py:L3-L16`.
+  `[10, 20, 30, 40]`, and neither module adds input validation, error handling,
+  logging, or type annotations.
+  `Source: app.py:L1-L16`, `Source: service.py:L1-L14`. There is likewise no
+  test suite or CI configuration anywhere in the project — the repository tree
+  contains no test files or CI configuration.
+  `Source: repository file tree (see [Repository Structure](#repository-structure))`.
 - **Nested submodule caveat (broken).** The `ChildRepo/NestedChild` submodule is
   broken: its `service.py` is a copy of `app.py` and performs a self-import
   `from service import calculate_total`, which raises `ImportError` at runtime.
