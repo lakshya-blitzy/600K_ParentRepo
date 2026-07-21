@@ -9,7 +9,7 @@ beyond the ``main`` function and the standard ``__main__`` guard.
 Note:
     Only :func:`service.calculate_total` is imported here;
     :func:`service.calculate_average` is defined in ``service.py`` but is not
-    used by this application.
+    used by this application. `Source: service.py:L10-L14`.
 
 Usage:
     python app.py

@@ -4,6 +4,7 @@ This module defines two dependency-free, standard-library-only helpers:
 ``calculate_total`` (summation) and ``calculate_average`` (averaging) of a list
 of numbers. The companion ``app.py`` imports and calls only ``calculate_total``;
 ``calculate_average`` is a provided-but-currently-unused part of the public API.
+`Source: app.py:L1-L16`.
 The module performs no I/O, defines no classes or module-level state, and
 imports nothing.
 
