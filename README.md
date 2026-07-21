@@ -13,7 +13,7 @@ multi-level submodule layout fit together. The arithmetic helpers and the
 console behavior are defined in the source modules
 (`Source: service.py:L1-L14`, `Source: app.py:L1-L16`), and the three-level
 parent → child → nested submodule composition is declared by the submodule
-wiring (`Source: .gitmodules`, `Source: ChildRepo/.gitmodules`).
+wiring (`Source: .gitmodules:L1-L3`, `Source: ChildRepo/.gitmodules:L1-L3`).
 
 This document is the **canonical documentation exemplar** for the project; the
 submodule READMEs mirror its structure and section ordering.
@@ -26,7 +26,7 @@ The project is a three-level submodule chain. The diagram below shows the
 parent → child → nested relationship and highlights the nested module's
 self-import defect (documented, not fixed — see
 [Known Limitations / Troubleshooting](#known-limitations--troubleshooting)).
-`Source: .gitmodules`, `Source: ChildRepo/.gitmodules`,
+`Source: .gitmodules:L1-L3`, `Source: ChildRepo/.gitmodules:L1-L3`,
 `Source: ChildRepo/NestedChild/service.py:L1-L16`.
 
 ```mermaid
@@ -43,7 +43,6 @@ graph TD
 ├── README.md          # This file — parent repository documentation
 ├── app.py             # Console entry point; defines main()
 ├── service.py         # Arithmetic helpers: calculate_total, calculate_average
-├── large.csv          # Excluded from Blitzy viewing/documentation by .blitzyignore (*.csv); still tracked by Git
 └── ChildRepo/         # Git submodule → 600K_ChildRepo
     └── NestedChild/   # Nested Git submodule → 600K_Nested_ChildRepo
 ```
@@ -52,22 +51,19 @@ graph TD
 > nested Git submodule; Git does not populate either on a plain `git clone`
 > (see [Setup / Installation](#setup--installation)).
 > `Source: Git SCM documentation, "Git Tools - Submodules" (https://git-scm.com/book/en/v2/Git-Tools-Submodules)`.
-> The `*.csv` rule in `.blitzyignore` excludes `large.csv` from Blitzy viewing
-> and documentation only; it does **not** ignore the file in Git or remove it
-> from version control (the file remains Git-tracked). `Source: .blitzyignore:1`.
 
 ### Submodules
 
 The submodule wiring is declared in the `.gitmodules` files at each level.
-`Source: .gitmodules`, `ChildRepo/.gitmodules`.
+`Source: .gitmodules:L1-L3`, `Source: ChildRepo/.gitmodules:L1-L3`.
 
 | Submodule path          | Repository URL                                             |
 |-------------------------|------------------------------------------------------------|
 | `ChildRepo`             | `https://github.com/lakshya-blitzy/600K_ChildRepo.git`         |
 | `ChildRepo/NestedChild` | `https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`  |
 
-**Navigation:** For the child submodule's documentation, see
-[`./ChildRepo/README.md`](./ChildRepo/README.md).
+**Navigation:** For the child submodule's documentation, see the
+[`600K_ChildRepo` repository on GitHub](https://github.com/lakshya-blitzy/600K_ChildRepo).
 
 ---
 
@@ -77,14 +73,16 @@ The submodule wiring is declared in the `.gitmodules` files at each level.
 |-----------------------|------------------------------------------------------------------------------------------|
 | Python **>= 3.6**     | Required for the f-string formatting used by the entry point. `Source: app.py:L8`        |
 | Git (submodule-aware) | Needed to clone and initialize the nested submodule repositories. `Source: Git SCM documentation, "Git Tools - Submodules" (https://git-scm.com/book/en/v2/Git-Tools-Submodules)` |
-| Third-party packages  | **None.** The project uses only the Python standard library; the repository tree contains no dependency manifest (no `requirements.txt`, `pyproject.toml`, or `setup.py`). `Source: repository file tree (see [Repository Structure](#repository-structure))` |
+| Third-party packages  | **None.** Both modules import only the local `service` module and the Python standard library, so there is nothing to install. `Source: app.py:L1`, `Source: service.py:L1-L14` |
 
-> **Verified interpreter:** The example output shown in
-> [Usage / Running](#usage--running) was **verified on CPython 3.12.3**, the
-> reference runtime pinned by the project's dependency inventory. Any Python
-> **>= 3.6** satisfies the only language feature used — the f-string in
-> `main()`. `Source: app.py:L8`;
-> `Source: verified runtime — CPython 3.12.3 (running "python app.py" prints "Total: 100", exit code 0)`.
+> **Interpreter:** The example output shown in
+> [Usage / Running](#usage--running) was produced with **CPython 3.12.3** during
+> authoring and re-verified on **CPython 3.13.7**. This repository contains **no
+> pinned interpreter and no dependency manifest**; the only language feature used
+> is the f-string in `main()`, so **Python >= 3.6** is the syntax floor. For
+> production, prefer a currently supported, fully patched CPython release
+> (Python 3.6 has reached end-of-life).
+> `Source: app.py:L8`.
 
 ---
 
@@ -98,7 +96,7 @@ flag initializes and clones every submodule recursively, which also covers the
 nested submodule.
 `Source: Git SCM documentation, "Git Tools - Submodules" (https://git-scm.com/book/en/v2/Git-Tools-Submodules)`.
 The submodule paths and URLs referenced here are declared in the `.gitmodules`
-files at each level. `Source: .gitmodules`, `Source: ChildRepo/.gitmodules`.
+files at each level. `Source: .gitmodules:L1-L3`, `Source: ChildRepo/.gitmodules:L1-L3`.
 
 ```bash
 # Clone with all submodules (including nested) initialized
@@ -273,15 +271,16 @@ flowchart LR
 There is **no build or packaging system** for this project — no compilation
 step, no bundler, and no package manifest. The **executable application**
 consists of the two Python modules (`app.py` and `service.py`) and has no build
-or package manifest; the wider repository tree additionally holds this README,
-the `ChildRepo/` submodule, and version-control/ignored files that are not part
-of the runnable program.
-`Source: repository file tree (see [Repository Structure](#repository-structure))`.
+or package manifest; the wider repository tree additionally holds this README
+and the `ChildRepo/` submodule, which are not part of the runnable program.
+`Source: app.py:L1-L16`, `Source: service.py:L1-L14`.
 Deployment reduces to:
 
-1. Place the repository directory on a host that has a Python **>= 3.6** runtime
-   (required for the f-string in `main()`). The directory must contain a valid
-   `service.py` providing `calculate_total`, because `app.py` imports it.
+1. Place the repository directory on a host with a CPython runtime. The f-string
+   in `main()` sets the **>= 3.6** syntax floor, but a currently supported, fully
+   patched CPython release is recommended for production (Python 3.6 is
+   end-of-life). The directory must contain a valid `service.py` providing
+   `calculate_total`, because `app.py` imports it.
    `Source: app.py:L1`, `Source: app.py:L8`.
 2. Run the entry point (the `__main__` guard invokes `main()` on direct
    execution):
@@ -317,13 +316,11 @@ currently exists.
   `[10, 20, 30, 40]`, and neither module adds input validation, error handling,
   logging, or type annotations.
   `Source: app.py:L1-L16`, `Source: service.py:L1-L14`. There is likewise no
-  test suite or CI configuration anywhere in the project — the repository tree
-  contains no test files or CI configuration.
-  `Source: repository file tree (see [Repository Structure](#repository-structure))`.
+  test suite or CI configuration anywhere in the project.
 - **Nested submodule caveat (broken).** The `ChildRepo/NestedChild` submodule is
   broken: its `service.py` is a copy of `app.py` and performs a self-import
   `from service import calculate_total`, which raises `ImportError` at runtime.
-  See [`./ChildRepo/NestedChild/README.md`](./ChildRepo/NestedChild/README.md)
+  See the [`600K_Nested_ChildRepo` repository on GitHub](https://github.com/lakshya-blitzy/600K_Nested_ChildRepo)
   for details. `Source: ChildRepo/NestedChild/service.py:L1-L16`.
 
 ### Troubleshooting — empty submodule folders
