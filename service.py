@@ -1,9 +1,11 @@
 """Arithmetic helper functions for the sample application.
 
-This module provides two dependency-free, standard-library-only helpers used by
-``app.py`` to demonstrate a simple modular computation: summation and averaging
-of a list of numbers. It performs no I/O, defines no classes or module-level
-state, and imports nothing.
+This module defines two dependency-free, standard-library-only helpers:
+``calculate_total`` (summation) and ``calculate_average`` (averaging) of a list
+of numbers. The companion ``app.py`` imports and calls only ``calculate_total``;
+``calculate_average`` is a provided-but-currently-unused part of the public API.
+The module performs no I/O, defines no classes or module-level state, and
+imports nothing.
 
 Public API:
     * ``calculate_total(numbers)`` — return the arithmetic sum of a list.
