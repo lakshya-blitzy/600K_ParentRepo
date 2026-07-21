@@ -27,7 +27,7 @@ def main():
     Returns:
         None: results are written to standard output.
 
-    Source: app.py:L3
+    Source: app.py:L17
     """
     numbers = [10, 20, 30, 40]
 
