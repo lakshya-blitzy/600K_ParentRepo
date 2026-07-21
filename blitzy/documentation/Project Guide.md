@@ -1,8 +1,6 @@
-# Blitzy Project Guide — Flask Migration of the 600K Submodule Chain
+# Blitzy Project Guide — Console-to-Flask Migration Across a 3-Level Submodule Chain
 
-> **Project:** Console-to-Flask migration across a three-level Git submodule chain (`600K_ParentRepo` → `ChildRepo` → `ChildRepo/NestedChild`)
-> **Branch:** `blitzy-fb6658eb-2ff3-4c3d-b046-26a8d0345027`
-> **Brand legend:** <span style="color:#5B39F3">**■ Completed / AI Work — Dark Blue `#5B39F3`**</span> · <span style="background:#FFFFFF;border:1px solid #B23AF2">**□ Remaining — White `#FFFFFF`**</span> · Accents Violet-Black `#B23AF2` · Highlight Mint `#A8FDD9`
+> **Brand legend:** Completed / AI Work = **Dark Blue `#5B39F3`** · Remaining / Not Completed = **White `#FFFFFF`** · Headings / Accents = **Violet-Black `#B23AF2`** · Highlight = **Mint `#A8FDD9`**
 
 ---
 
@@ -10,61 +8,63 @@
 
 ### 1.1 Project Overview
 
-This project migrates an entire three-level Git submodule chain — the parent `600K_ParentRepo`, its child `ChildRepo`, and the nested `ChildRepo/NestedChild` — from a standard-library-only console program into three standalone **Flask 3.1.3** WSGI web applications, while keeping every feature and functionality exactly the same. Each repository previously ran as `python app.py` writing six lines to stdout; each now serves that identical content over HTTP `GET /` as `text/plain`. The target users are developers and downstream systems that consume the computed output (`Total: 100`, the four fixed numbers, and `Application completed`). The technical scope is deliberately minimal and deterministic: same hard-coded input `[10, 20, 30, 40]`, same computation, same output ordering — only the I/O channel changes from stdout to an HTTP response body.
+This project migrates a standard-library Python **console program** into a **Python 3 Flask (WSGI) web application**, applied identically across a three-level Git submodule chain: the parent repository `600K_ParentRepo`, its child submodule `600K_ChildRepo`, and the nested leaf submodule `600K_Nested_ChildRepo`. The mandate was strict behavior parity — the HTTP response must reproduce the original stdout output line-for-line. The target users are developers consuming the deterministic `GET /` endpoint. Business impact: modernizes the execution model from a one-shot script into a network-addressable service without altering any computation. Technical scope covers 12 file transformations (9 updates, 3 new manifests) plus resolution of a critical circular-import defect in the nested submodule.
 
 ### 1.2 Completion Status
 
+The completion percentage is computed using AAP-scoped, hours-based methodology (PA1): all 12 explicit transformation targets plus supporting and path-to-production work.
+
 ```mermaid
-%%{init: {'theme':'base','themeVariables':{'pie1':'#5B39F3','pie2':'#FFFFFF','pieStrokeColor':'#B23AF2','pieStrokeWidth':'2px','pieOuterStrokeColor':'#B23AF2','pieOuterStrokeWidth':'2px','pieTitleTextSize':'16px','pieSectionTextColor':'#B23AF2'}}}%%
-pie showData title Project Completion — 63.3% Complete
-    "Completed Work (Dark Blue #5B39F3)" : 19
-    "Remaining Work (White #FFFFFF)" : 11
+%%{init: {'theme':'base', 'themeVariables': {'pie1':'#5B39F3','pie2':'#FFFFFF','pieStrokeColor':'#B23AF2','pieOuterStrokeWidth':'2px','pieSectionTextColor':'#B23AF2','pieTitleTextSize':'18px','fontFamily':'sans-serif'}}}%%
+pie showData
+    title Completion — 85.2%
+    "Completed Work (AI)" : 23
+    "Remaining Work" : 4
 ```
 
 | Metric | Hours |
-|---|---|
-| **Total Hours** | **30.0** |
-| Completed Hours (AI + Manual) | 19.0 |
-| &nbsp;&nbsp;• AI (autonomous Blitzy agents) | 19.0 |
-| &nbsp;&nbsp;• Manual (human) | 0.0 |
-| Remaining Hours | 11.0 |
-| **Percent Complete** | **63.3%** |
+|--------|-------|
+| **Total Hours** | **27.0** |
+| Completed Hours (AI + Manual) | 23.0 |
+| Remaining Hours | 4.0 |
+| **Percent Complete** | **85.2%** |
 
-> **Calculation (PA1, AAP-scoped):** Completion % = Completed ÷ (Completed + Remaining) × 100 = 19.0 ÷ 30.0 × 100 = **63.3%**. All AAP-scoped deliverables are 100% complete and validated; the remaining 11.0 h is net-new path-to-production hardening (not rework).
+> Formula: `23.0 / (23.0 + 4.0) = 23.0 / 27.0 = 85.2%`. All 12 AAP source-transformation targets are 100% complete and functionally validated; the remaining 4.0 hours are entirely path-to-production (human review, submodule publishing, branch merge, optional hardening).
 
 ### 1.3 Key Accomplishments
 
-- ✅ Introduced Flask 3.1.3 at all three repository levels using the **application-factory pattern** (`create_app()`) with a single `GET /` route.
-- ✅ Preserved the direct-run affordance — `python app.py` still launches the app (guard now calls `app.run()`); `flask run` also works.
-- ✅ Kept the business logic **verbatim** — `calculate_total` / `calculate_average` byte-identical across all three `service.py` (md5 `29f41cb0…`).
-- ✅ Achieved **exact output parity** over HTTP: `Total: 100`, `10`, `20`, `30`, `40`, `Application completed` (HTTP 200, `text/plain; charset=utf-8`, Content-Length 44) — verified on all three apps.
-- ✅ **Resolved the NestedChild circular-import defect (AAP §0.6.2)** by reconstructing `ChildRepo/NestedChild/service.py` as the canonical computation module.
-- ✅ Created three `requirements.txt` manifests pinning the real release `Flask==3.1.3` (md5 `7dbe00a3…`).
-- ✅ Preserved submodule linkage & pointers (`.gitmodules` unchanged; `git submodule status --recursive` shows no drift) and honored `.blitzyignore` (`*.csv` never touched).
-- ✅ Passed all five autonomous validation gates (dependencies, compilation, logic, runtime, commit/sync) with zero source defects.
+- ✅ All three console applications migrated to Flask using the **application-factory** pattern (`create_app()`) with a single `GET /` route each.
+- ✅ **Behavior parity achieved and verified** — every app returns HTTP 200, `Content-Type: text/plain; charset=utf-8`, and the exact body `Total: 100\n10\n20\n30\n40\nApplication completed` (44 bytes).
+- ✅ **Business logic preserved verbatim** — `calculate_total` and `calculate_average` unchanged, including the return-type nuance (`calculate_average([])` returns integer `0`, not `0.0`).
+- ✅ **Critical NestedChild defect resolved** — `service.py` (formerly a byte-for-byte duplicate of `app.py` causing an `ImportError` circular-import crash) reconstructed as the canonical computation module.
+- ✅ Three `requirements.txt` manifests created, each pinning the verified real release **`Flask==3.1.3`**.
+- ✅ **Submodule gitlink integrity verified** across all three levels (Parent→ChildRepo `a92e381`, ChildRepo→NestedChild `dc04a108`); metadata (`.gitmodules` ×2, `.blitzyignore` ×3) retained unchanged; CSV/pycache/venv correctly excluded.
+- ✅ Comprehensive per-repository documentation, including a full API/deployment guide in `ChildRepo/README.md`.
 
 ### 1.4 Critical Unresolved Issues
 
 | Issue | Impact | Owner | ETA |
-|---|---|---|---|
-| NestedChild interpretation confirmation (AAP §0.6.2): the fix repairs a pre-existing circular-import crash ("intended" interpretation) vs. a literal "preserve the crash" reading | Low — code works correctly; only a semantic sign-off on user intent | Product/Requirements owner | 1.0 h |
-| No production WSGI server yet (apps run on the Werkzeug dev server) | Medium — blocks real production deployment, not functionality | Backend/DevOps | 1.5 h |
+|-------|--------|-------|-----|
+| NestedChild `blitzy` branch exists locally only (not on its remote) | A fresh `git clone --recursive` cannot resolve the ChildRepo→NestedChild gitlink `dc04a108`; the submodule chain will not fully reproduce until the branch is published | Human (Git admin) | 1.0h |
 
-> No issue blocks compilation, tests, or runtime. All AAP-scoped code is complete and validated.
+> No code-level defects remain. All in-scope Python compiles, all applications run, and all 42 autonomous validation checks pass. The single item above is an integration/publishing gap, not a functional bug.
 
 ### 1.5 Access Issues
 
 | System/Resource | Type of Access | Issue Description | Resolution Status | Owner |
-|---|---|---|---|---|
-| — | — | **No access issues identified.** Repository, submodules, dependency registry (PyPI), and toolchain were all reachable during autonomous validation. | N/A | — |
+|-----------------|----------------|-------------------|-------------------|-------|
+| `600K_Nested_ChildRepo` remote (GitHub) | Push/write | The `blitzy-fb6658eb-…` branch was created locally during migration but the remote currently exposes only `main`; the branch must be pushed for the gitlink to resolve on clone | Open | Human (Git admin) |
+| PyPI (Flask install) | Network egress | The validation host has no internet; a `--without-pip` venv bootstrap workaround was required (documented in §9) | Mitigated (workaround verified) | Human (deployment env) |
+
+> No repository read-permission, credential, or third-party API access issues were identified. The two items above are environment/publishing constraints, both with known resolutions.
 
 ### 1.6 Recommended Next Steps
 
-1. **[High]** Confirm the NestedChild interpretation (AAP §0.6.2) and obtain stakeholder sign-off on the three-repo migration. *(1.0 h)*
-2. **[High]** Introduce a production WSGI server (gunicorn/waitress) with startup config across all three repos; ensure debug is disabled. *(1.5 h)*
-3. **[Medium]** Add automated regression/smoke tests asserting the exact `GET /` output contract per repo. *(2.0 h)*
-4. **[Medium]** Containerize each app (Dockerfile / shared base) and stand up a CI/CD pipeline including a `git submodule status --recursive` check and dependency scanning. *(4.0 h)*
-5. **[Medium]** Add a `/health` liveness endpoint, production config, and structured logging ahead of deployment. *(1.5 h)*
+1. **[High]** Review and approve the migration pull request across all three repositories (behavior parity is verified; focus review on submodule linkage). — *1.0h*
+2. **[High]** Push the NestedChild `blitzy` branch to its remote and verify a fresh `git clone --recursive` resolves the gitlink `dc04a108`. — *1.0h*
+3. **[Medium]** Consolidate/merge the three `blitzy` branches into the canonical branch(es) and re-verify 3-level gitlink integrity post-merge. — *0.5h*
+4. **[Low]** Formalize the 42 ad-hoc validation checks into a committed `pytest` suite per repository. — *1.0h*
+5. **[Low]** Add a minimal CI workflow and uniform production-WSGI (gunicorn/waitress) guidance across all three repos. — *0.5h*
 
 ---
 
@@ -72,144 +72,125 @@ pie showData title Project Completion — 63.3% Complete
 
 ### 2.1 Completed Work Detail
 
+Every component below traces to explicit AAP requirements (Sections 0.2.1 / 0.4.1) or supporting/path-to-production activities performed autonomously.
+
 | Component | Hours | Description |
-|---|---|---|
-| Parent: console → Flask migration | 2.5 | `app.py` → `create_app()` factory + `GET /` route + `__main__` guard; `service.py` preserved verbatim |
-| Parent: README + requirements.txt | 1.5 | Flask install/run/usage docs (70 lines); new manifest `Flask==3.1.3` |
-| ChildRepo: console → Flask migration | 1.5 | Identical transformation; `app.py` compact variant, `service.py` preserved |
-| ChildRepo: README + requirements.txt | 1.0 | Flask usage docs (65 lines); new manifest |
-| NestedChild: console → Flask migration (`app.py`) | 1.0 | Same factory + route transformation |
-| **NestedChild: `service.py` RECONSTRUCTION + circular-import fix (AAP §0.6.2)** | 2.0 | Replaced the erroneous `app.py`-duplicate with the canonical computation module, eliminating the `ImportError` crash |
-| NestedChild: README + requirements.txt | 1.0 | Flask usage docs (65 lines); new manifest |
-| Submodule chain analysis, linkage preservation & pointer synchronization | 2.0 | Verified topology, preserved `.gitmodules`, synchronized submodule pointers up the chain |
-| Flask dependency research & pin verification | 1.0 | Confirmed real release `3.1.3` + transitive tree (Werkzeug/Jinja2/MarkupSafe/ItsDangerous/Click/Blinker) |
-| Autonomous validation & QA (5 gates × 3 repos) | 4.0 | Dependencies, compilation, logic, runtime (3 independent methods), commit/sync |
-| QA finding fixes (API-STATIC-1 `static_folder=None`, DOC-F1 docs, docstring byte-parity) | 1.5 | Fixes applied during autonomous validation |
-| **Total Completed** | **19.0** | |
+|-----------|-------|-------------|
+| Parent Repository Flask Migration | 4.5 | `app.py` console→Flask factory + `GET /` route (2.0); `service.py` verbatim + docstring (0.5); `README.md` Flask docs (1.5); `requirements.txt` create (0.5) |
+| ChildRepo Flask Migration | 6.0 | `app.py` migration with comprehensive docstrings (2.5); `service.py` verbatim (0.5); `README.md` 294-line API/deployment doc (2.5); `requirements.txt` create (0.5) |
+| NestedChild Flask Migration + `service.py` Reconstruction | 5.5 | `app.py` migration (2.0); **`service.py` reconstruction to break circular import** (1.5); `README.md` Flask docs (1.5); `requirements.txt` create (0.5) |
+| Flask Dependency Research & Version Pinning | 1.0 | Verified latest stable `Flask==3.1.3`, Python ≥3.9 compatibility, transitive dependency set |
+| Virtual Environment & Dependency Setup | 1.0 | Shared `.venv`, Flask + transitives installed, `pip check` clean, host `--without-pip` bootstrap resolved |
+| Submodule Gitlink Orchestration & Commit Sequencing | 2.0 | Deepest-first commits, gitlink propagation across 3 levels, NestedChild branch creation, integrity verification |
+| Metadata Preservation & Scope Enforcement | 0.5 | `.gitmodules` ×2 and `.blitzyignore` ×3 retained unchanged; CSV/pycache/venv excluded |
+| Autonomous Validation & Testing | 2.5 | 42 checks (service parity, HTTP behavior, live-server runtime in 2 modes, static compilation) |
+| **Total Completed** | **23.0** | Matches Completed Hours in §1.2 |
 
 ### 2.2 Remaining Work Detail
 
+Every category is path-to-production; none is an AAP source-transformation gap.
+
 | Category | Hours | Priority |
-|---|---|---|
-| NestedChild interpretation confirmation & stakeholder sign-off (AAP §0.6.2) | 1.0 | High |
-| Production WSGI server (gunicorn/waitress) + config across 3 repos | 1.5 | High |
-| Containerization (Dockerfile) for reproducible deployment | 2.0 | Medium |
-| CI/CD pipeline (build/install/smoke-test + submodule check + dep scan) | 2.0 | Medium |
-| Automated regression/smoke tests (assert exact `GET /` parity) | 2.0 | Medium |
-| Production config, `/health` endpoint & structured logging | 1.5 | Medium |
-| Deployment execution & post-deploy verification | 1.0 | Low |
-| **Total Remaining** | **11.0** | |
+|----------|-------|----------|
+| Human Code Review & PR Approval | 1.0 | High |
+| Submodule Remote Publishing (push NestedChild `blitzy` branch) | 1.0 | High |
+| Branch Consolidation & Merge to canonical (3 repos) | 0.5 | Medium |
+| Automated Test Suite Formalization (commit `pytest` port of validation checks) | 1.0 | Low |
+| CI/CD & Production WSGI Hardening (optional) | 0.5 | Low |
+| **Total Remaining** | **4.0** | Matches Remaining Hours in §1.2 and §7 |
 
-> Priority rollup: **High = 2.5 h**, **Medium = 7.5 h**, **Low = 1.0 h**.
+### 2.3 Hours Reconciliation
 
-### 2.3 Reconciliation
-
-| Check | Result |
-|---|---|
-| Section 2.1 total (Completed) | 19.0 h |
-| Section 2.2 total (Remaining) | 11.0 h |
-| 2.1 + 2.2 = Total Project Hours (Section 1.2) | 19.0 + 11.0 = **30.0 h** ✓ |
-| Completion % = 19.0 ÷ 30.0 × 100 | **63.3%** ✓ |
+| Check | Value | Status |
+|-------|-------|--------|
+| §2.1 Completed total | 23.0h | ✅ |
+| §2.2 Remaining total | 4.0h | ✅ |
+| §2.1 + §2.2 | 27.0h = §1.2 Total | ✅ |
+| Completion | 23.0 / 27.0 = 85.2% | ✅ |
 
 ---
 
 ## 3. Test Results
 
-All results below originate **exclusively from Blitzy's autonomous validation logs** for this project and were independently re-verified this session. **Note:** the repository contains **no formal test suite or test framework** — authoring one would exceed the AAP's explicit "no behavioral scope creep" boundary. The checks below are Blitzy's autonomous validation checks (ad-hoc harness using `py_compile`/`ast`, Python `importlib`, and Flask's `test_client`), not a committed unit-test suite.
+All tests below originate exclusively from Blitzy's autonomous validation execution for this project. **No third-party test framework exists in the repository**, so validation was performed via Flask `test_client`, direct service assertions, live Werkzeug servers, and `py_compile`. Every result was independently re-verified during this assessment.
 
 | Test Category | Framework | Total Tests | Passed | Failed | Coverage % | Notes |
-|---|---|---|---|---|---|---|
-| Compilation | `py_compile` + `ast.parse` | 6 | 6 | 0 | N/A | All 6 in-scope `.py` files compile with zero `SyntaxError` |
-| Service-layer logic | ad-hoc (`importlib`) | 21 | 21 | 0 | 100% of `service.py` paths | 7 checks × 3 repos: `calculate_total` (100/0/5/0) and `calculate_average` int-`0`/float nuance (25.0, 7/3) |
-| HTTP output parity (in-process) | Flask `test_client` | 3 | 3 | 0 | 100% of `GET /` path | Body == 6-line contract; HTTP 200; `text/plain; charset=utf-8`; len 44 |
-| HTTP output parity (`python app.py`) | live Werkzeug + curl | 3 | 3 | 0 | N/A | Real HTTP on dev server; exact body match |
-| HTTP output parity (`flask run`) | Flask CLI + curl | 3 | 3 | 0 | N/A | Real HTTP on fresh ports; exact body match |
-| Dependency integrity | `pip check` | 1 | 1 | 0 | N/A | "No broken requirements found" |
-| **Totals** | | **37** | **37** | **0** | — | **100% pass rate** |
+|---------------|-----------|-------------|--------|--------|------------|-------|
+| Service-layer parity (Unit) | Python assertions (venv) | 12 | 12 | 0 | 100% (2/2 functions × 3 repos) | `calculate_total([10,20,30,40])==100`, `calculate_total([])==0`, `calculate_average([10,20,30,40])==25.0` (float), `calculate_average([])==0` (int nuance) |
+| HTTP route behavior (Integration) | Flask `test_client` | 18 | 18 | 0 | 100% (1/1 route × 3 repos) | status 200, `text/plain; charset=utf-8`, exact body, `url_map==['/']`, `GET /nope`→404, `POST /`→405 |
+| Live-server runtime (End-to-End) | Werkzeug + `curl` | 6 | 6 | 0 | 3/3 apps × 2 modes | `flask --app app run` and `python app.py`; all 200 / text-plain / exact body |
+| Static compilation | `py_compile` / `-W error` | 6 | 6 | 0 | 100% (6/6 in-scope `.py`) | clean imports, no fatal warnings, no unused imports |
+| **Total** | — | **42** | **42** | **0** | **100% functional** | Headline `test_client` suite = 30/30 (12 unit + 18 integration) |
 
-> **Coverage note:** No coverage-instrumentation tool is configured. Because the codebase is tiny and deterministic, the logic and route checks exercise 100% of the executable code paths in `service.py` and the `GET /` view.
+> **Coverage note:** Formal line-coverage tooling (`coverage.py`) was not executed; coverage is expressed functionally (every route and every service function is exercised). Formalizing a committed suite with coverage reporting is Low-priority remaining task HT-4.
 
 ---
 
 ## 4. Runtime Validation & UI Verification
 
-**Runtime health — all three applications:**
+**Application runtime (all three repositories):**
 
-- ✅ **Operational** — Parent `600K_ParentRepo`: `GET /` → HTTP 200, `text/plain; charset=utf-8`, Content-Length 44.
-- ✅ **Operational** — `ChildRepo`: `GET /` → HTTP 200, exact body match.
-- ✅ **Operational** — `ChildRepo/NestedChild`: `GET /` → HTTP 200, exact body match (circular-import crash resolved).
+- ✅ **Operational** — Parent `600K_ParentRepo` Flask app serves `GET /` (verified on live Werkzeug server, port 5055).
+- ✅ **Operational** — `ChildRepo` Flask app serves `GET /` (verified live, port 5056).
+- ✅ **Operational** — `ChildRepo/NestedChild` Flask app serves `GET /` (verified live, port 5057) — previously crashed on import; now fully functional.
 
-**Run affordances (both documented paths verified):**
+**Endpoint / API verification (`GET /`, each repo):**
 
-- ✅ **Operational** — `python app.py` (Werkzeug dev server, default `:5000`) — verified on parent.
-- ✅ **Operational** — `FLASK_APP=app.py flask run` — verified on child (`:5001`) and nested (`:5002`).
+- ✅ **Operational** — HTTP `200 OK`.
+- ✅ **Operational** — `Content-Type: text/plain; charset=utf-8`, `Content-Length: 44`.
+- ✅ **Operational** — Response body byte-exact: `Total: 100\n10\n20\n30\n40\nApplication completed`.
+- ✅ **Operational** — `Server: Werkzeug/3.1.8 Python/3.13.7`.
 
-**UI verification:** The only user-facing surface is the plain-text HTTP response body. There is no HTML UI, component library, or design system (the source project had no UI). Response content and ordering verified identical to the original console output:
+**Error-path verification:**
 
-```text
-Total: 100
-10
-20
-30
-40
-Application completed
-```
+- ✅ **Operational** — Unknown path (`GET /nope`) → `404 Not Found` (framework default).
+- ✅ **Operational** — Disallowed method (`POST /`) → `405 Method Not Allowed` (framework default).
+- ✅ **Operational** — URL map contains exactly `['/']` (`static_folder=None` disables the default `/static` route).
 
-- ✅ **Operational** — Content parity across all three apps (line-for-line, same order).
-- ✅ **Operational** — Blitzy autonomous validation additionally captured browser screenshots (`parent_get_root_live_browser.png`, `nested_get_root_plaintext.png`) as visual evidence.
+**UI verification:**
 
-**API integration outcomes:** No external APIs, databases, or third-party services are involved (by design). ✅ No integration failures possible.
+- ⚠ **Partial (by design)** — There is **no graphical UI**. Per AAP §0.3.4, the sole user-facing surface is the `text/plain` HTTP response, which is fully verified above via `curl` and `test_client`. A prior autonomous run captured `blitzy/screenshots/parent_flask_get_root_200.png` showing the rendered plain-text response. No component library, styling, or interactive elements are in scope.
 
 ---
 
 ## 5. Compliance & Quality Review
 
-| AAP Deliverable / Benchmark | Requirement | Status | Progress | Notes |
-|---|---|---|---|---|
-| Framework introduction | Introduce Flask at every level | ✅ Pass | 100% | `create_app()` factory + `GET /` route in all 3 `app.py` |
-| Preserve computation verbatim (Rule 1) | `calculate_total`/`calculate_average` unchanged | ✅ Pass | 100% | All 3 `service.py` byte-identical (md5 `29f41cb0…`) |
-| Relocate orchestration (Rule 2) | `main()` logic → view returning exact lines | ✅ Pass | 100% | Exact 6-line body over HTTP |
-| Retain direct-run affordance (Rule 3) | `python app.py` still starts the app | ✅ Pass | 100% | `__main__` guard runs `app.run()`; `flask run` also works |
-| Preserve import model (Rule 4) | Keep `from service import calculate_total` | ✅ Pass | 100% | Retained; augmented with `from flask import Flask` |
-| Output/behavior parity | Same content & ordering as stdout | ✅ Pass | 100% | Verified 3/3 apps, len 44 |
-| `calculate_average` nuance | int-`0` for falsey input, float otherwise | ✅ Pass | 100% | 21/21 logic checks |
-| Include ALL submodules | No submodule excluded | ✅ Pass | 100% | Parent + Child + NestedChild all migrated |
-| NestedChild anomaly (AAP §0.6.2) | Resolve circular-import defect | ✅ Pass | 100% | `service.py` reconstructed as canonical module *(interpretation pending human confirmation)* |
-| Version-pin honesty | Real pinned release, no placeholder | ✅ Pass | 100% | `Flask==3.1.3` (all 3 manifests) |
-| Preserve metadata | `.gitmodules` / `.blitzyignore` retained | ✅ Pass | 100% | Unchanged; verified |
-| Honor ignore rules | `*.csv` never read/modified | ✅ Pass | 100% | 3× `large.csv` untouched |
-| Determinism | No new inputs/env/config | ✅ Pass | 100% | Hard-coded `[10,20,30,40]` retained |
-| Per-repo standalone operability | Each independently runnable | ✅ Pass | 100% | Each has own `app.py`/`service.py`/`README.md`/`requirements.txt` |
+AAP deliverables cross-mapped to quality/compliance benchmarks. Fixes applied during autonomous validation are noted.
 
-**Fixes applied during autonomous validation:**
-- **API-STATIC-1** — added `static_folder=None` to `Flask(...)` to keep the app surface minimal.
-- **DOC-F1** — README documentation corrected/expanded for the Flask run model.
-- **Docstring byte-parity** — normalized module docstrings.
-- **NestedChild reconstruction** — replaced the `app.py`-duplicate `service.py` with the canonical module, eliminating the `ImportError` crash.
-
-**Outstanding compliance items:** None within AAP scope. The only pending item is the human confirmation of the NestedChild interpretation.
+| Benchmark / AAP Requirement | Status | Progress | Evidence / Notes |
+|-----------------------------|--------|----------|------------------|
+| Behavior & output parity (exact 6-line body) | ✅ Pass | 100% | Byte-exact body verified live + `test_client` for all 3 apps |
+| `service.py` preserved verbatim (logic unchanged) | ✅ Pass | 100% | Only module docstring added; `calculate_total`/`calculate_average` identical |
+| Return-type nuance preserved (`calculate_average([])`→int `0`) | ✅ Pass | 100% | Asserted `type` is `int`, not `float` |
+| Flask pinned to verified real release `3.1.3` | ✅ Pass | 100% | All 3 `requirements.txt` byte-identical; `pip check` clean |
+| All 12 transformation targets delivered | ✅ Pass | 12/12 | 9 UPDATE + 3 CREATE verified |
+| NestedChild circular-import defect resolved | ✅ Pass | 100% | `service.py` reconstructed as canonical module; app runs cleanly |
+| Application-factory pattern (`create_app()`) | ✅ Pass | 100% | Present and testable in all 3 apps |
+| Direct-run affordance (`if __name__=="__main__": app.run()`) | ✅ Pass | 100% | `python app.py` starts each app |
+| Metadata retained unchanged (`.gitmodules`, `.blitzyignore`) | ✅ Pass | 5/5 | Contents confirmed unchanged (`*.csv`) |
+| CSV / bytecode / venv excluded | ✅ Pass | 100% | No CSV/pycache/venv committed |
+| Per-repository standalone operability | ✅ Pass | 3/3 | Each repo runs independently with its own manifest |
+| Submodule gitlink integrity | ✅ Pass | 100% | Parent→ChildRepo & ChildRepo→NestedChild gitlinks MATCH |
+| QA fixes applied during validation | ✅ Pass | — | API-STATIC-1 (`static_folder=None`), DOC-F1 (README), QA Issue 2 (docstring byte-parity) all resolved |
+| Committed automated test suite | ⚠ Outstanding | 0% | Validation was ad-hoc; formalization deferred to HT-4 (Low) |
+| NestedChild branch published to remote | ❌ Outstanding | 0% | Local-only; HT-2 (High) |
 
 ---
 
 ## 6. Risk Assessment
 
 | Risk | Category | Severity | Probability | Mitigation | Status |
-|---|---|---|---|---|---|
-| Dev WSGI server (`app.run()`/Werkzeug) not production-grade | Technical | Medium | High | Serve via gunicorn/waitress behind a reverse proxy | Open (path-to-prod) |
-| No automated tests guard the exact-output parity contract | Technical | Medium | Medium | Add pytest regression asserting `GET /` == 6-line body | Open (path-to-prod) |
-| Runtime drift: venv is Python 3.13.7 vs AAP target 3.12 (compatible; Flask supports 3.9+); no pinned version | Technical | Low | Low | Pin Python via `.python-version` / container base image | Open (minor) |
-| Endpoint has no authN/authZ (returns only static, non-sensitive text) | Security | Low | Low | Add auth only if the deployment context requires it | Accepted (matches AAP scope) |
-| Dependency vulnerability surface (Flask 3.1.3 is a security-fix release; tree current) | Security | Low | Low | Enable pip-audit / Dependabot scanning in CI | Open (path-to-prod) |
-| No explicit prod config guaranteeing debug is disabled on every launch path | Security | Low | Low | Set `FLASK_DEBUG=0` / run under gunicorn in prod | Open (minor) |
-| No health-check/liveness endpoint (only `GET /`) | Operational | Medium | Medium | Add lightweight `/health` returning 200 | Open (path-to-prod) |
-| No structured logging/monitoring hooks | Operational | Low | Medium | Add logging config + monitoring in prod | Open (path-to-prod) |
-| No containerization/IaC; manual deploy → reproducibility risk | Operational | Medium | Medium | Provide Dockerfile + CI build | Open (path-to-prod) |
-| venv/pip bootstrap fragility (ensurepip wheel removed → `python -m venv` may fail) | Operational | Low | Medium | Documented `--without-pip` workaround; containerization removes it | Mitigated (documented) |
-| Submodule pointer drift (future submodule commit without bumping parent pointer) | Integration | Medium | Medium | CI check `git submodule status --recursive`; document update flow | Mitigated now / Open for CI |
-| NestedChild interpretation ambiguity (AAP §0.6.2): reconstructed (intended) vs literal-crash | Integration | Medium | Low | Obtain explicit user confirmation (High-priority task) | Open (needs sign-off) |
-| No external integrations (no DB/APIs/secrets) → classic integration risks N/A | Integration | Low | Low | None required | Accepted (N/A by design) |
+|------|----------|----------|-------------|------------|--------|
+| NestedChild `blitzy` branch not on remote → recursive clone cannot resolve gitlink `dc04a108` | Integration | Medium | High | Push branch to `600K_Nested_ChildRepo` remote; verify recursive clone (HT-2) | Open |
+| No committed automated test suite (validation ad-hoc) | Technical | Low | Medium | Port 42 checks into `pytest` per repo (HT-4) | Open |
+| Dev-server-only (Werkzeug) — not for production traffic | Technical | Low | Low | gunicorn/waitress documented; add uniform guidance (HT-5) | Mitigated (documented) |
+| No CI/CD pipeline | Operational | Low | Medium | Add minimal GitHub Actions workflow (HT-5) | Open |
+| No Dockerfile / containerization | Operational | Low | Low | Optional; out of AAP scope | Accepted |
+| No health-check / monitoring endpoint | Operational | Low | Low | Out of AAP scope for a trivial deterministic app | Accepted |
+| 3-level gitlink propagation drift after merge | Integration | Low | Low | Re-verify gitlinks after branch merge (HT-3) | Mitigated (verified locally) |
+| Security surface (auth, secrets, injection, XSS) | Security | Low | Low | None applicable — no auth/secrets/user input/DB; static route disabled; Flask 3.1.3 already includes fix GHSA-68rp-wp8r-4726 | Mitigated |
 
-> **Posture:** LOW overall. 13 risks (6 Medium, 7 Low). **No risk stems from a code defect** — every AAP-scoped file is validated at 100%. Classic SQL-injection/XSS risks are **N/A** (no DB, no user input, plain-text response, no untrusted template interpolation). Every Open path-to-production risk maps 1:1 to a Section 2.2 remaining category.
+> **Overall risk profile: LOW.** The only above-Low item is the integration/publishing gap (NestedChild branch), which has a clear, quick resolution.
 
 ---
 
@@ -218,136 +199,125 @@ Application completed
 **Project hours breakdown** (Completed = Dark Blue `#5B39F3`, Remaining = White `#FFFFFF`):
 
 ```mermaid
-%%{init: {'theme':'base','themeVariables':{'pie1':'#5B39F3','pie2':'#FFFFFF','pieStrokeColor':'#B23AF2','pieStrokeWidth':'2px','pieOuterStrokeColor':'#B23AF2','pieOuterStrokeWidth':'2px','pieSectionTextColor':'#B23AF2','pieTitleTextSize':'16px'}}}%%
-pie showData title Project Hours — Completed vs Remaining
-    "Completed Work" : 19
-    "Remaining Work" : 11
+%%{init: {'theme':'base', 'themeVariables': {'pie1':'#5B39F3','pie2':'#FFFFFF','pieStrokeColor':'#B23AF2','pieOuterStrokeWidth':'2px','pieSectionTextColor':'#B23AF2','pieTitleTextSize':'16px','fontFamily':'sans-serif'}}}%%
+pie showData
+    title Project Hours (Total 27.0h)
+    "Completed Work" : 23
+    "Remaining Work" : 4
 ```
 
-**Remaining hours by priority:**
+**Remaining hours by category** (sums to 4.0h — matches §1.2 and §2.2):
 
 ```mermaid
-%%{init: {'theme':'base','themeVariables':{'pie1':'#B23AF2','pie2':'#5B39F3','pie3':'#A8FDD9','pieStrokeColor':'#333333','pieStrokeWidth':'1px','pieSectionTextColor':'#333333'}}}%%
-pie showData title Remaining Work by Priority (11.0 h)
-    "High" : 2.5
-    "Medium" : 7.5
-    "Low" : 1.0
+%%{init: {'theme':'base', 'themeVariables': {'xyChart': {'plotColorPalette':'#5B39F3'}}}}%%
+xychart-beta
+    title "Remaining Work by Category (hours)"
+    x-axis ["PR Review", "Submodule Push", "Branch Merge", "Test Suite", "CI/CD+WSGI"]
+    y-axis "Hours" 0 --> 1.5
+    bar [1.0, 1.0, 0.5, 1.0, 0.5]
 ```
 
-**Remaining hours per category (Section 2.2):**
-
-| Category | Hours | Bar |
-|---|---|---|
-| Containerization | 2.0 | ████████ |
-| CI/CD pipeline | 2.0 | ████████ |
-| Regression/smoke tests | 2.0 | ████████ |
-| Production WSGI server | 1.5 | ██████ |
-| Prod config / `/health` / logging | 1.5 | ██████ |
-| NestedChild confirmation | 1.0 | ████ |
-| Deployment execution | 1.0 | ████ |
-| **Total** | **11.0** | |
-
-> **Integrity:** "Remaining Work" = **11.0 h**, identical to Section 1.2 (Remaining Hours) and the Section 2.2 total. "Completed Work" = **19.0 h**, identical to Section 1.2 and the Section 2.1 total.
+| Distribution | Hours | Share |
+|--------------|-------|-------|
+| Completed Work | 23.0 | 85.2% |
+| Remaining Work | 4.0 | 14.8% |
+| **Total** | **27.0** | **100%** |
 
 ---
 
 ## 8. Summary & Recommendations
 
-**Achievements.** The requested migration is **complete**. All twelve AAP transformation targets across the three-repository chain were delivered, committed, and validated end-to-end: three Flask 3.1.3 applications built with the application-factory pattern, each serving the exact original output over HTTP `GET /`, with business logic preserved verbatim. The pre-existing NestedChild circular-import defect — which made that submodule non-functional — was diagnosed and repaired. Submodule linkage and ignore rules were preserved, and dependency pins reference the real `Flask==3.1.3` release.
+**Achievements.** The console-to-Flask migration is **functionally complete and validated at 85.2%** of total AAP-scoped effort. All 12 explicit transformation targets — spanning the parent repository and both submodules — are delivered, compile cleanly, and serve the byte-exact required output over HTTP. The most consequential engineering win was diagnosing and repairing the NestedChild circular-import defect (a `service.py` that was a byte-for-byte duplicate of `app.py`), which transformed a previously non-functional submodule into a fully working Flask application identical to its siblings. Behavior parity is exact, including the subtle integer-vs-float return-type nuance of `calculate_average`.
 
-**Completion.** The project is **63.3% complete** (19.0 h delivered of 30.0 h total). This figure follows the AAP-scoped hours methodology: 100% of AAP-scoped code is finished and validated, and the remaining **11.0 h** is entirely net-new **path-to-production** work — not rework or defect-fixing.
+**Remaining gaps.** The 4.0 remaining hours are exclusively path-to-production: human PR review, publishing the local-only NestedChild branch, consolidating branches, and optional test-suite/CI hardening. There are **no outstanding code defects**.
 
-**Remaining gaps & critical path.** The path to production runs through: (1) confirming the NestedChild interpretation *(1.0 h — the single item needing a human decision)*; (2) a production WSGI server *(1.5 h)*; (3) automated regression tests guarding the output contract *(2.0 h)*; and (4) containerization + CI/CD + health/logging/deploy *(6.5 h)*.
+**Critical path to production.** (1) Review & approve → (2) push the NestedChild branch (the one true release blocker for clean recursive cloning) → (3) merge branches and re-verify gitlinks. Steps 4–5 (test suite, CI/CD) are recommended hardening but not release-blocking.
 
-**Success metrics.** 37/37 autonomous validation checks pass; 3/3 apps return HTTP 200 with a byte-exact 44-byte body; `pip check` clean; git trees clean and submodule pointers consistent.
+**Success metrics.** 42/42 autonomous validation checks pass (100%); 6/6 in-scope Python files compile; 3/3 applications operational; gitlink integrity verified at all 3 levels; zero unresolved errors.
 
-**Production readiness assessment.** The application code is **production-quality and defect-free within AAP scope**, but the deployment surface is **not yet production-hardened** (it currently relies on the Flask development server). With the ~11 h of path-to-production work above — starting with the NestedChild confirmation and a production WSGI server — these applications are ready for a controlled production rollout.
+**Production-readiness assessment.** **Ready for human review and staged release.** The application is stateless, deterministic, and dependency-minimal (single pinned dependency). Recommended posture: publish the NestedChild branch immediately, then deploy behind a production WSGI server (gunicorn/waitress) rather than the Werkzeug dev server.
 
 | Metric | Value |
-|---|---|
+|--------|-------|
+| AAP-scoped completion | 85.2% |
 | AAP transformation targets delivered | 12 / 12 |
-| Autonomous validation checks passing | 37 / 37 (100%) |
-| Code defects outstanding | 0 |
-| Completion (AAP-scoped) | 63.3% |
-| Remaining effort | 11.0 h |
+| Autonomous validation checks passing | 42 / 42 |
+| Applications operational | 3 / 3 |
+| Unresolved code defects | 0 |
+| Release-blocking items | 1 (publish NestedChild branch) |
 
 ---
 
 ## 9. Development Guide
 
-All commands below were **tested during autonomous validation** on this environment (Python 3.13.7, pip 26.1.2). Each is copy-pasteable.
-
 ### 9.1 System Prerequisites
 
-- **Python** 3.9+ (AAP target 3.12; validated on 3.13.7 — Flask 3.1.x supports 3.9+).
-- **git** and **git-lfs** 3.7.1 (repository uses Git LFS pass-through hooks).
-- OS: Linux/macOS/WSL. Hardware: negligible (tiny app).
+- **Python 3.9+** (project targets 3.12; verified on CPython **3.13.7**).
+- **Git** with submodule support (**Git LFS** recommended for the chain).
+- **pip** and the `venv` module.
+- ~50 MB free disk for the virtual environment and Flask.
+- Network access to PyPI for the initial install (see troubleshooting if unavailable).
 
-### 9.2 Clone with Submodules
+### 9.2 Environment Setup
+
+Clone the full submodule chain, then create a virtual environment at the parent root (shared by all three repos):
 
 ```bash
-# Clone the full three-level chain in one step
-git clone --recurse-submodules <parent-repo-url>
-# Or, if already cloned:
+# 1. Clone with all submodules (parent -> ChildRepo -> NestedChild)
+git clone --recursive <parent-repo-url> 600K_ParentRepo
+cd 600K_ParentRepo
+
+# If already cloned without --recursive:
 git submodule update --init --recursive
-```
 
-### 9.3 Environment Setup
-
-```bash
-# From the repository root
+# 2. Create the virtual environment
 python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 ```
 
-**Clean-environment workaround** (if `python -m venv` cannot bootstrap pip because the bundled ensurepip wheel was removed):
+> **Clean-environment note (verified on this host):** `python3 -m venv .venv` may fail while bootstrapping pip (`ensurepip … returned non-zero exit status 1`). If so, create the venv without pip and bootstrap tooling externally:
+>
+> ```bash
+> python3 -m venv .venv --without-pip
+> python3 -m pip --python .venv/bin/python install --upgrade pip setuptools wheel
+> ```
+
+### 9.3 Dependency Installation
 
 ```bash
-python3 -m venv .venv --without-pip
-python3 -m pip --python .venv/bin/python install pip setuptools wheel
+# From any repo root (parent, ChildRepo, or ChildRepo/NestedChild)
+.venv/bin/python -m pip install -r requirements.txt
+
+# Verify (expected: Version: 3.1.3  and  "No broken requirements found.")
+.venv/bin/python -m pip show flask
+.venv/bin/python -m pip check
 ```
 
-### 9.4 Dependency Installation
+The parent `.venv` is the shared environment for all three repositories; each `requirements.txt` is byte-identical (`Flask==3.1.3`).
 
-Run from **each** repository directory you intend to launch:
+### 9.4 Application Startup
+
+Run from the repository you want to serve (parent, `ChildRepo`, or `ChildRepo/NestedChild`):
 
 ```bash
-python -m pip install -r requirements.txt   # installs Flask==3.1.3
+# Option A — direct run (Werkzeug dev server on 127.0.0.1:5000)
+.venv/bin/python app.py
+
+# Option B — Flask CLI (supports a custom port for parallel runs)
+.venv/bin/flask --app app run              # default port 5000
+.venv/bin/flask --app app run --port 5001  # e.g. run several apps side by side
 ```
 
-Expected: Flask 3.1.3 plus its transitive tree (Werkzeug 3.1.8, Jinja2 3.1.6, MarkupSafe 3.0.3, ItsDangerous 2.2.0, Click 8.4.2, Blinker 1.9.0). Verify integrity:
+### 9.5 Verification Steps
 
 ```bash
-python -m pip check      # -> "No broken requirements found."
+# With a server running, request the single endpoint:
+curl -s http://127.0.0.1:5000/
 ```
 
-### 9.5 Application Startup
-
-Run from the repository's **own directory** (the top-level import `from service import calculate_total` resolves from the current working directory):
-
-```bash
-# Affordance A — direct run (Werkzeug dev server on http://127.0.0.1:5000/)
-python app.py
-
-# Affordance B — Flask CLI (optionally choose a port)
-FLASK_APP=app.py flask run --port 5000
-```
-
-To run all three simultaneously, give each a distinct port, e.g. parent `:5000`, child `:5001`, nested `:5002`.
-
-### 9.6 Verification
-
-```bash
-curl -i http://127.0.0.1:5000/
-```
-
-Expected response:
+Expected output (exactly six lines, 44 bytes):
 
 ```text
-HTTP/1.1 200 OK
-Content-Type: text/plain; charset=utf-8
-Content-Length: 44
-
 Total: 100
 10
 20
@@ -356,22 +326,46 @@ Total: 100
 Application completed
 ```
 
-### 9.7 Example Usage
+Header/behavior checks:
 
 ```bash
-# Body only
-curl -s http://127.0.0.1:5000/
-# Headers only (confirm content type + length)
-curl -sI http://127.0.0.1:5000/
+curl -s -i http://127.0.0.1:5000/ | head -5   # 200 OK; Content-Type: text/plain; charset=utf-8
+curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:5000/nope   # 404
+curl -s -o /dev/null -w "%{http_code}\n" -X POST http://127.0.0.1:5000/   # 405
 ```
 
-### 9.8 Troubleshooting
+### 9.6 Example Usage
 
-- **`Address already in use` / port 5000 busy** → choose another port: `flask run --port 5001`, or free the port.
-- **`python -m venv` fails to bootstrap pip** → use the `--without-pip` workaround in §9.3.
-- **`ModuleNotFoundError: No module named 'flask'`** → ensure the venv is active and `pip install -r requirements.txt` ran for **that** repo.
-- **`ImportError` / `calculate_total` not found** → make sure you launch from the repository's own directory (cwd-sensitive import).
-- **"WARNING: This is a development server…"** → expected on the dev server; use gunicorn/waitress for production (remaining task, §1.6 #2).
+```bash
+# Serve all three apps simultaneously on distinct ports (from parent root):
+.venv/bin/flask --app app run --port 5000 &                    # parent
+( cd ChildRepo && ../.venv/bin/flask --app app run --port 5001 & )
+( cd ChildRepo/NestedChild && ../../.venv/bin/flask --app app run --port 5002 & )
+
+curl -s http://127.0.0.1:5000/   # parent   -> Total: 100 ...
+curl -s http://127.0.0.1:5001/   # child    -> Total: 100 ...
+curl -s http://127.0.0.1:5002/   # nested   -> Total: 100 ...
+```
+
+### 9.7 Troubleshooting
+
+| Symptom | Cause | Resolution |
+|---------|-------|------------|
+| `ensurepip … non-zero exit status 1` on `venv` creation | Host quirk (in-venv ensurepip fails) | Use `python3 -m venv .venv --without-pip` then bootstrap pip externally (see §9.2) |
+| `Address already in use` on startup | Port 5000 occupied | Start with `flask --app app run --port <N>` |
+| Submodule directories empty after clone | Cloned without `--recursive` | `git submodule update --init --recursive` |
+| Recursive clone fails to fetch NestedChild commit `dc04a108` | NestedChild `blitzy` branch not published to its remote | Push the branch (remaining task **HT-2**), then re-clone |
+| `ImportError: cannot import name 'calculate_total'` | Legacy NestedChild defect (pre-migration) | Already resolved — `service.py` is the canonical module on the migrated branch |
+
+### 9.8 Production Note
+
+Do **not** use the Werkzeug development server in production. Serve the module-level `app` (or the `create_app` factory) with a dedicated WSGI server — these are intentionally **not** in `requirements.txt`:
+
+```bash
+pip install gunicorn && gunicorn --bind 0.0.0.0:8000 --workers 4 "app:app"
+# or
+pip install waitress && waitress-serve --host 0.0.0.0 --port 8000 --call app:create_app
+```
 
 ---
 
@@ -380,91 +374,75 @@ curl -sI http://127.0.0.1:5000/
 ### Appendix A — Command Reference
 
 | Purpose | Command |
-|---|---|
-| Clone with submodules | `git clone --recurse-submodules <url>` |
-| Init submodules post-clone | `git submodule update --init --recursive` |
-| Create venv | `python3 -m venv .venv` |
-| Create venv (no pip) | `python3 -m venv .venv --without-pip` |
-| Bootstrap pip | `python3 -m pip --python .venv/bin/python install pip setuptools wheel` |
-| Install deps | `python -m pip install -r requirements.txt` |
-| Check deps | `python -m pip check` |
-| Run (dev server) | `python app.py` |
-| Run (Flask CLI) | `FLASK_APP=app.py flask run --port 5000` |
-| Verify endpoint | `curl -i http://127.0.0.1:5000/` |
-| Submodule status | `git submodule status --recursive` |
-| Byte-compile check | `python -m py_compile app.py service.py` |
+|---------|---------|
+| Init submodules | `git submodule update --init --recursive` |
+| Create venv (fallback) | `python3 -m venv .venv --without-pip` |
+| Bootstrap pip | `python3 -m pip --python .venv/bin/python install --upgrade pip setuptools wheel` |
+| Install deps | `.venv/bin/python -m pip install -r requirements.txt` |
+| Verify Flask | `.venv/bin/python -m pip show flask` |
+| Dependency health | `.venv/bin/python -m pip check` |
+| Run (direct) | `.venv/bin/python app.py` |
+| Run (CLI, custom port) | `.venv/bin/flask --app app run --port <N>` |
+| Compile-check | `.venv/bin/python -m py_compile app.py service.py` |
+| Smoke test | `curl -s http://127.0.0.1:5000/` |
+| Verify gitlink | `git ls-tree HEAD ChildRepo` |
 
 ### Appendix B — Port Reference
 
-| Service | Default Port | Notes |
-|---|---|---|
-| Parent app | 5000 | `app.run()` / `flask run` default |
-| ChildRepo app | 5000 (use 5001 to co-run) | any free port via `--port` |
-| NestedChild app | 5000 (use 5002 to co-run) | any free port via `--port` |
+| Port | Usage |
+|------|-------|
+| 5000 | Default Werkzeug dev server (`python app.py` / `flask run`) |
+| 5001–5002 | Suggested ports for running child/nested apps in parallel |
+| 8000 | Suggested production WSGI (gunicorn/waitress) port |
 
 ### Appendix C — Key File Locations
 
 | Path | Role |
-|---|---|
-| `app.py`, `ChildRepo/app.py`, `ChildRepo/NestedChild/app.py` | Flask app: `create_app()` factory + `GET /` route |
-| `service.py`, `ChildRepo/service.py`, `ChildRepo/NestedChild/service.py` | Service layer: `calculate_total`, `calculate_average` (byte-identical, md5 `29f41cb0…`) |
-| `requirements.txt` (×3) | Dependency manifest: `Flask==3.1.3` (md5 `7dbe00a3…`) |
-| `README.md` (×3) | Per-repo Flask install/run/usage docs |
-| `.gitmodules` (parent, `ChildRepo`) | Submodule wiring (retained unchanged) |
-| `.blitzyignore` (×3) | Ignore rules: `*.csv` (retained unchanged) |
-| `large.csv` (×3) | Out of scope (~16 MB each; never read/modified) |
+|------|------|
+| `app.py`, `ChildRepo/app.py`, `ChildRepo/NestedChild/app.py` | Flask applications (factory + `GET /`) |
+| `service.py`, `ChildRepo/service.py`, `ChildRepo/NestedChild/service.py` | Business logic (`calculate_total`, `calculate_average`) |
+| `requirements.txt` (×3) | Dependency manifest — `Flask==3.1.3` |
+| `README.md` (×3) | Per-repo Flask usage documentation |
+| `.gitmodules` (parent, ChildRepo) | Submodule wiring (retained unchanged) |
+| `.blitzyignore` (×3) | Ignore rules — `*.csv` (retained unchanged) |
+| `large.csv` (×3) | **Excluded** data (~16 MB each) — never read/edited |
 
 ### Appendix D — Technology Versions
 
-| Component | Version | Source |
-|---|---|---|
-| Python | 3.13.7 (env); target 3.12; min 3.9 | validated |
-| Flask | 3.1.3 (pinned) | `requirements.txt` |
-| Werkzeug | 3.1.8 | transitive |
-| Jinja2 | 3.1.6 | transitive |
-| MarkupSafe | 3.0.3 | transitive |
-| ItsDangerous | 2.2.0 | transitive |
-| Click | 8.4.2 | transitive |
-| Blinker | 1.9.0 | transitive |
-| pip | 26.1.2 | env |
-| git-lfs | 3.7.1 | env |
+| Component | Version |
+|-----------|---------|
+| Python (runtime verified) | 3.13.7 (targets 3.12; requires ≥3.9) |
+| Flask | 3.1.3 (pinned) |
+| Werkzeug | 3.1.8 |
+| Jinja2 | 3.1.6 |
+| MarkupSafe | 3.0.3 |
+| ItsDangerous | 2.2.0 |
+| Click | 8.4.2 |
+| Blinker | 1.9.0 |
 
 ### Appendix E — Environment Variable Reference
 
-| Variable | Purpose | Default |
-|---|---|---|
-| `FLASK_APP` | Entry module for the `flask` CLI | `app.py` (set when using `flask run`) |
-| `FLASK_RUN_PORT` / `--port` | Port for `flask run` | 5000 |
-| `FLASK_DEBUG` | Debug mode toggle | unset (off) — keep `0` in production |
-
-> No application-specific environment variables are required; the app is fully deterministic with a hard-coded input.
+| Variable | Required | Notes |
+|----------|----------|-------|
+| — | None | The application is fully deterministic and reads **no** environment variables, configuration, secrets, or request parameters. `FLASK_APP=app` is optional (the CLI auto-detects the module-level `app`). |
 
 ### Appendix F — Developer Tools Guide
 
-- **Byte-compile all in-scope files:** `python -m py_compile app.py service.py ChildRepo/app.py ChildRepo/service.py ChildRepo/NestedChild/app.py ChildRepo/NestedChild/service.py`
-- **In-process route check (no server needed):**
-  ```python
-  from app import app
-  c = app.test_client()
-  r = c.get("/")
-  assert r.status_code == 200
-  assert r.get_data(as_text=True) == "Total: 100\n10\n20\n30\n40\nApplication completed"
-  ```
-- **Keep git clean:** remove transient `__pycache__` created by compilation before committing.
-- **Linting/formatting:** none configured (no linter/formatter in the repo); git hooks are standard Git LFS pass-throughs.
+| Tool | Use |
+|------|-----|
+| `py_compile` | Static syntax/compile validation of in-scope `.py` files |
+| Flask `test_client` | Route/response testing without a live server |
+| `curl` | Live endpoint verification (`GET /`, 404, 405) |
+| `pip check` | Transitive dependency conflict detection |
+| `git ls-tree` / `git submodule status --recursive` | Gitlink and submodule integrity verification |
 
 ### Appendix G — Glossary
 
 | Term | Definition |
-|---|---|
-| **Application Factory** | The `create_app()` function that builds and returns a configured Flask instance, avoiding import-time global side effects. |
-| **Service Layer** | `service.py` — a framework-agnostic computation module (`calculate_total`, `calculate_average`). |
-| **WSGI** | Web Server Gateway Interface — the Python standard between web servers and applications; Flask is a WSGI framework. |
-| **Submodule chain** | The three-level linkage parent → `ChildRepo` → `ChildRepo/NestedChild`, wired via `.gitmodules`. |
-| **NestedChild anomaly (AAP §0.6.2)** | The pre-existing defect where `NestedChild/service.py` was a duplicate of `app.py`, causing a circular-import crash; resolved by reconstruction. |
-| **Output parity** | The requirement that the HTTP response body reproduce the original stdout content line-for-line and in order. |
-| **Path-to-production** | Standard activities required to deploy the deliverables (production server, containers, CI/CD, tests, deployment) counted in the completion denominator per PA1. |
-
----
-
-*Generated by the Blitzy autonomous project-assessment agent. All numbers validated for cross-section integrity: Completed 19.0 h + Remaining 11.0 h = Total 30.0 h; Completion 63.3%; Remaining 11.0 h identical across Sections 1.2, 2.2, and 7.*
+|------|------------|
+| Application Factory | The `create_app()` function that builds and returns the configured Flask instance |
+| Gitlink | A submodule reference: the specific commit SHA a parent repo pins for a submodule |
+| WSGI | Web Server Gateway Interface — the Python web-app/server contract Flask implements |
+| Behavior parity | The migrated HTTP output matches the original stdout output line-for-line |
+| Circular import | The pre-migration NestedChild defect where `service.py` imported from itself, crashing on startup |
+| Path-to-production | Standard deployment activities (review, publish, merge, CI) beyond source transformation |
