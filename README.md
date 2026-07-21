@@ -140,7 +140,8 @@ calculate_total([10, 20, 30, 40])  # -> 100
 
 ### `calculate_average(numbers)`
 
-Computes the arithmetic mean of a numeric iterable. [Source: service.py:L44]
+Computes the arithmetic mean of a sized numeric collection such as a list or
+tuple. [Source: service.py:L44]
 
 ```python
 def calculate_average(numbers): ...
@@ -148,11 +149,15 @@ def calculate_average(numbers): ...
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `numbers` | list of int/float | The numeric values to average. |
+| `numbers` | list/tuple of int/float (a *sized* collection) | The numeric values to average. Must support `len()`; unsized iterables such as generators are not supported. |
 
 **Returns:** `int` / `float` — the total divided by the number of elements
 (`calculate_total(numbers) / len(numbers)`). Returns `0` for an empty/falsey
 input, which guards against division by zero. [Source: service.py:L44]
+
+Because the mean is computed with `len(numbers)`, `numbers` must be a sized
+collection (for example a `list` or `tuple`); passing an unsized iterable such
+as a generator raises `TypeError`. [Source: service.py:L44]
 
 > **Note:** `calculate_average` is **defined but never invoked** anywhere in the
 > project — `main()` uses only `calculate_total`. It is documented here for
@@ -256,10 +261,10 @@ flowchart LR
   docstrings and comments has since made the two files differ textually, but
   their non-documentation statements and control flow remain equivalent. Because
   of that original duplication, `service.py` defines `main()`
-  [Source: ChildRepo/NestedChild/service.py:L43] and imports `calculate_total`
-  from `service` [Source: ChildRepo/NestedChild/service.py:L41] rather than
+  [Source: ChildRepo/NestedChild/service.py:L47] and imports `calculate_total`
+  from `service` [Source: ChildRepo/NestedChild/service.py:L45] rather than
   defining `calculate_total` / `calculate_average`. As a result, running
-  `ChildRepo/NestedChild/app.py` [Source: ChildRepo/NestedChild/app.py:L44]
+  `ChildRepo/NestedChild/app.py` [Source: ChildRepo/NestedChild/app.py:L48]
   raises a circular `ImportError` at runtime and exits with a non-zero status
   (exit code 1) — verified by executing `python3 app.py` in that directory on
   Python 3.13.7 (empty standard output). This behavior is preserved as-is. The
