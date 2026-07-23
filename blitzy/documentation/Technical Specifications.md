@@ -4,66 +4,68 @@
 
 ## 1.1 Executive Summary
 
-This Technical Specification documents a **minimal Python list-summation demonstration** organized as a three-level chain of Git submodules. The top-level project (`600K_ParentRepo`) contains a two-file Python program — a direct-execution entry point (`app.py`) and a reusable calculation utility module (`service.py`) — accompanied by a one-line `README.md` and a `.gitmodules` descriptor that links a child repository (`ChildRepo`), which in turn links a further nested repository (`ChildRepo/NestedChild`).
+This Technical Specification documents **`600K_ParentRepo`**, a deliberately minimal, standard-library-only Python program that sums a fixed list of numbers and prints the results, packaged as the top of a nested Git-submodule tree. The root project contains a two-file program — a direct-execution entry point (`app.py`) and a reusable calculation module (`service.py`) — alongside a comprehensive `README.md` and a `.gitmodules` descriptor that links a child repository (`ChildRepo`), which in turn links a further nested repository (`ChildRepo/NestedChild`). The same two-file structure is replicated at each of the three repository levels.
 
-The evidenced behavior is a single, fixed workflow. `app.py` imports `calculate_total` from `service.py`, sums the hard-coded list `[10, 20, 30, 40]`, and writes the result and each element to standard output. Executing the root `app.py` prints `Total: 100`, the four numbers on separate lines, and the closing line `Application completed`.
+The evidenced behavior is a single, fixed workflow. `app.py` imports `calculate_total` from `service.py`, sums the hard-coded list `[10, 20, 30, 40]`, and writes the result and each element to standard output. Executing the root `app.py` on Python 3.12.3 prints `Total: 100`, the four numbers on separate lines, and the closing line `Application completed`, exiting with status code `0`.
 
 **Project at a glance:**
 
 | Attribute | Value (as evidenced in the repository) |
 | --- | --- |
-| Project / origin | `600K_ParentRepo` (GitHub account `lakshya-blitzy`) |
-| Language & runtime | Python; f-string usage in `app.py` requires Python 3.6+ |
-| Codebase size | 92 lines across 6 Python files (3 × `app.py`, 3 × `service.py`) |
-| Runtime dependencies | None — standard library only; the sole import statement anywhere is `from service import calculate_total` |
-| Structure | Parent repository plus two nested Git submodules (`ChildRepo` → `NestedChild`) |
+| Project / origin | `600K_ParentRepo`, hosted under the GitHub account `lakshya-blitzy` |
+| Language & runtime | Python; f-string usage in `app.py` requires Python 3.6+; verified on Python 3.12.3 |
+| Codebase size | 282 lines across 6 Python files (three `app.py` + three `service.py`) |
+| Runtime dependencies | None — standard library only; the sole import anywhere is `from service import calculate_total` |
+| Repository structure | Parent repository plus two nested Git submodules (`ChildRepo` → `NestedChild`) |
+| Documentation | Comprehensive `README.md` (278 lines) plus module/function docstrings at the root and `ChildRepo`; the `NestedChild` `README.md` is a one-line title |
 | Manifests / tests / CI | None present (no `requirements.txt`, `setup.py`, `pyproject.toml`, test suite, or CI configuration) |
 
-**Core business problem.** The repository contains no business, product, or requirements documentation; each `README.md` holds only a title heading (`# app.py`, `# 600K_ChildRepo`, `# 600K_Nested_ChildRepo`). Consequently, no business problem is stated within the codebase. Judged strictly on the code, the repository's evidenced purpose is technical rather than commercial: it illustrates (a) a clean separation between an application entry point (`app.py`) and a reusable calculation service (`service.py`), and (b) the composition of repositories through nested Git submodules. It is best characterized as a scaffold / reference example rather than a production business system.
+**Core business problem.** The repository contains no business, product, or requirements documentation, and it should not be read as solving a commercial problem. Judged strictly on its contents, the project's evidenced purpose is technical and illustrative: it demonstrates (a) a clean separation between an application entry point (`app.py`) and a reusable calculation service (`service.py`), and (b) the composition of independent repositories through nested Git submodules. The Git history reinforces this reading — the 18-commit log on branch `2007_01` is dominated by scaffolding and documentation activity (for example, commit subjects such as "docs: expand README with setup, submodule composition, API reference, deployment guide" and "Adding Blitzy Technical Specifications"). The system is therefore best characterized as a scaffold / reference example rather than a production business system.
 
-**Key stakeholders and users.** No stakeholder, user persona, or ownership documentation is present in the repository. The only evidenced participants are described below, inferred solely from executable behavior and repository metadata:
+**Key stakeholders and users.** No stakeholder, persona, or ownership documentation exists in the repository. The only evidenced participants, inferred from executable behavior and repository metadata, are summarized below:
 
 | Stakeholder / User | Evidenced role |
 | --- | --- |
-| Developer / reader | Executes `python app.py` to run the demonstration and reads `service.py` to reuse `calculate_total` / `calculate_average` |
-| Hosting account / maintainer | The `lakshya-blitzy` GitHub account that hosts the parent repository and both submodule remotes referenced in `.gitmodules` |
+| Developer / reader | Runs `python app.py` to execute the demonstration and reads or imports `service.py` to reuse `calculate_total` / `calculate_average` |
+| Hosting account / maintainer | The `lakshya-blitzy` GitHub account that hosts the parent repository and both submodule remotes declared in `.gitmodules` |
 
-**Expected business impact and value proposition.** The repository does not document any quantified business impact, revenue objective, or value proposition, and none should be inferred. As a demonstration artifact, its value is strictly illustrative: it provides a compact, dependency-free example of the entry-point/service separation pattern and of nested Git submodule composition. One material caveat is documented in this specification: the deepest submodule (`ChildRepo/NestedChild`) is non-functional because its `service.py` is a byte-for-byte copy of `app.py` and therefore does not define `calculate_total`; running that copy raises a circular-import `ImportError`. Only the root and first-level (`ChildRepo`) programs execute successfully.
+**Expected business impact and value proposition.** The repository documents no quantified business impact, revenue objective, or value proposition, and none should be inferred. As a demonstration artifact, its value is strictly educational and illustrative: it provides a compact, dependency-free, well-documented example of the entry-point/service separation pattern and of nested Git submodule composition. One material caveat is carried forward from the current code: the deepest submodule (`ChildRepo/NestedChild`) is non-functional because its `service.py` is a byte-for-byte duplicate of its `app.py` and therefore never defines `calculate_total`; running that copy raises a circular-import `ImportError` and exits with status `1`. Only the root and first-level (`ChildRepo`) programs execute successfully.
 
 ## 1.2 System Overview
 
-This system overview describes the repository's context, its capabilities and components, and the criteria against which its behavior can be verified. All statements are grounded in the repository's files and observed runtime behavior; where the prompt calls for information the repository does not document, that absence is stated explicitly rather than inferred.
+This system overview describes the repository's context, its capabilities and components, and the criteria against which its behavior can be verified. All statements are grounded in the repository's files and observed runtime behavior; where this section's structure calls for information the repository does not document (market positioning, service-level agreements, key performance indicators, and the like), that absence is stated explicitly rather than inferred.
 
 ### 1.2.1 Project Context
 
-**Business context and market positioning.** The repository does not document any business context, target market, or competitive positioning. The `README.md` files at every level consist of a single title heading and contain no problem statement, product description, or goals. The Git history reinforces this reading: the parent repository has only six commits with scaffolding-oriented messages (`Initial commit`, `Create app.py`, `Create service.py`, `Create .blitzyignore`, `Add files via upload`, `Add child submodule`). The project is therefore positioned, on the available evidence, as a demonstration/scaffold example rather than a market-facing product.
+**Business context and market positioning.** The repository documents no business context, target market, or competitive positioning. The root and `ChildRepo` `README.md` files are comprehensive but strictly *technical* — they cover an overview, prerequisites, setup/installation, submodule composition, an API reference, and a run guide — and contain no problem statement, product description, revenue goal, or market analysis. The `ChildRepo/NestedChild` `README.md` is only a one-line title (`# 600K_Nested_ChildRepo`). The Git history is consistent with this reading: the 18 commits on branch `2007_01` carry scaffolding- and documentation-oriented subjects. On the available evidence the project is positioned as a demonstration / scaffold example rather than a market-facing product.
 
 **Current system limitations.** There is no evidence that this project replaces or upgrades a predecessor system; no legacy references, migration notes, or deprecated modules exist. The relevant limitations are intrinsic to the current code:
 
-- The application operates only on a hard-coded input list (`[10, 20, 30, 40]` in `app.py`); it accepts no arguments, files, or interactive input.
-- `service.py` defines `calculate_average`, but no entry point ever calls it, so that capability is present in code yet unexercised by the workflow.
-- The deepest submodule `ChildRepo/NestedChild` is broken: its `service.py` is a byte-for-byte copy of `app.py`, so it does not define `calculate_total`, and executing `NestedChild/app.py` raises a circular-import `ImportError`.
+- The application operates only on a hard-coded input list (`[10, 20, 30, 40]` in `app.py`); it accepts no command-line arguments, files, or interactive input.
+- `service.py` defines `calculate_average`, but no entry point ever calls it, so that capability exists in code yet is unexercised by the workflow.
+- The deepest submodule, `ChildRepo/NestedChild`, is broken: its `service.py` is a byte-for-byte duplicate of its `app.py`, so it does not define `calculate_total`, and executing `NestedChild/app.py` raises a circular-import `ImportError`.
 
-**Integration with the existing enterprise landscape.** At runtime the system integrates with nothing external — it has zero third-party dependencies, performs no network, database, or file I/O, and its only import statement anywhere is the intra-repository `from service import calculate_total`. The only integration expressed in the repository is at the source-composition level: `.gitmodules` declares a submodule link from the parent to `ChildRepo` (`https://github.com/lakshya-blitzy/600K_ChildRepo.git`), and `ChildRepo/.gitmodules` declares a further link to `NestedChild` (`https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`).
+**Integration with the existing enterprise landscape.** At runtime the system integrates with nothing external — it has zero third-party dependencies, performs no network, database, or file I/O, and its only import statement anywhere is the intra-repository `from service import calculate_total`. The only integration expressed in the repository is at the source-composition level: the root `.gitmodules` declares a submodule link to `ChildRepo` (`https://github.com/lakshya-blitzy/600K_ChildRepo.git`), and `ChildRepo/.gitmodules` declares a further link to `NestedChild` (`https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`). These links are pinned to specific commits (`ChildRepo` at `63b3f43`, `NestedChild` at `d57c9dd`).
 
 ### 1.2.2 High-Level Description
 
-**Primary system capabilities.** The system exposes a small, pure calculation API and a single stdout-oriented workflow:
+**Primary system capabilities.** The system exposes a small, pure calculation API and a single standard-output workflow, replicated at each repository level:
 
 | Capability | Location | Behavior |
 | --- | --- | --- |
-| Summation | `service.py` → `calculate_total(numbers)` | Iteratively accumulates and returns the sum; returns `0` for empty input |
-| Average | `service.py` → `calculate_average(numbers)` | Returns `0` for falsy input, otherwise `calculate_total(numbers) / len(numbers)` (defined but not invoked by any entry point) |
-| Fixed workflow | `app.py` → `main()` | Sums `[10, 20, 30, 40]`, prints `Total: 100`, prints each number, prints `Application completed` |
+| Summation (F-001) | `service.py` → `calculate_total(numbers)` | Iteratively accumulates and returns the sum; returns `0` for empty input |
+| Average (F-002) | `service.py` → `calculate_average(numbers)` | Returns `0` for falsy input, otherwise `calculate_total(numbers) / len(numbers)`; defined but not invoked by any entry point |
+| Fixed workflow (F-003) | `app.py` → `main()` | Sums `[10, 20, 30, 40]`, prints `Total: 100`, prints each number, prints `Application completed` |
+| Submodule composition (F-004) | `.gitmodules` (build-time) | Links the parent to `ChildRepo` and `ChildRepo` to `NestedChild`, replicating the structure at each level |
 
-**Major system components.** The repository comprises the following first-order components, replicated at each of the three submodule levels:
+**Major system components.** The repository comprises the following first-order components, mirrored across the three repository levels:
 
 | Component | Type | Responsibility |
 | --- | --- | --- |
-| `app.py` | Entry point | Defines `main()` under an `if __name__ == "__main__"` guard; orchestrates the workflow |
-| `service.py` | Utility module | Provides the pure `calculate_total` / `calculate_average` functions |
-| `README.md` | Documentation | One-line title heading only |
-| `.gitmodules` | Configuration | Declares the child Git submodule (absent at the deepest level) |
+| `app.py` | Entry point | Defines `main()` under an `if __name__ == "__main__"` guard; orchestrates the fixed-list workflow and stdout output |
+| `service.py` | Utility module | Provides the pure `calculate_total` and `calculate_average` functions; no imports, classes, or module-level state |
+| `README.md` | Documentation | Comprehensive at the root (278 lines) and `ChildRepo` (273 lines); a one-line title at `NestedChild` |
+| `.gitmodules` | Configuration | Declares the child Git submodule and its remote URL (absent at the leaf `NestedChild`) |
 | `ChildRepo`, `NestedChild` | Submodules | Nested repositories mirroring the same two-file structure |
 
 The relationships among these components are summarized below.
@@ -73,28 +75,28 @@ flowchart TD
     subgraph Parent["600K_ParentRepo (root repository)"]
         direction TB
         PGit[".gitmodules"]
-        PApp["app.py — main()"]
-        PSvc["service.py — calculate_total / calculate_average"]
+        PApp["app.py: main()"]
+        PSvc["service.py: calculate_total / calculate_average"]
         PApp -->|"imports calculate_total"| PSvc
     end
     subgraph Child["ChildRepo (Git submodule)"]
         direction TB
         CGit[".gitmodules"]
-        CApp["app.py — main()"]
-        CSvc["service.py — calculate_total / calculate_average"]
+        CApp["app.py: main()"]
+        CSvc["service.py: calculate_total / calculate_average"]
         CApp -->|"imports calculate_total"| CSvc
     end
-    subgraph Nested["ChildRepo/NestedChild (Git submodule)"]
+    subgraph Nested["ChildRepo/NestedChild (Git submodule, leaf)"]
         direction TB
-        NApp["app.py — main()"]
-        NSvc["service.py — copy of app.py (no calculate_total)"]
-        NApp -.->|"import fails (ImportError)"| NSvc
+        NApp["app.py: main()"]
+        NSvc["service.py: duplicate of app.py, no calculate_total"]
+        NApp -.->|"import fails: circular ImportError"| NSvc
     end
-    PGit -->|"references submodule"| CApp
-    CGit -->|"references submodule"| NApp
+    PGit -->|"pins submodule 63b3f43"| CApp
+    CGit -->|"pins submodule d57c9dd"| NApp
 ```
 
-**Core technical approach.** The design applies a straightforward separation of concerns: `app.py` is a thin orchestrator that delegates arithmetic to `service.py`, whose functions are pure (no I/O, no shared mutable state, no side effects beyond their return values). The program is standard-library-only and portable across Python 3.6+ (the sole version-sensitive feature is f-string formatting in `app.py`). Repository composition is achieved with native Git submodules nested two levels deep, with each level intended to mirror the same minimal two-file structure.
+**Core technical approach.** The design applies a straightforward separation of concerns: `app.py` is a thin orchestrator that delegates arithmetic to `service.py`, whose functions are pure (no I/O, no shared mutable state, no side effects beyond their return values). The program is standard-library-only and portable across Python 3.6+ (the sole version-sensitive feature is f-string formatting in `app.py`). Repository composition is achieved with native Git submodules nested two levels deep, with each level intended to mirror the same minimal two-file structure. The executable logic at the root and `ChildRepo` is equivalent, though the two files are no longer byte-identical because each carries its own docstrings and inline comments.
 
 ### 1.2.3 Success Criteria
 
@@ -102,12 +104,12 @@ The repository does **not** define any formal objectives, service-level agreemen
 
 | Verifiable behavior (observed) | Expected result |
 | --- | --- |
-| Run root `python app.py` | Prints `Total: 100`, then `10`, `20`, `30`, `40`, then `Application completed`; exits successfully |
-| Run `ChildRepo/app.py` | Produces output identical to the root program |
+| Run root `python app.py` | Prints `Total: 100`, then `10`, `20`, `30`, `40`, then `Application completed`; exits with code `0` |
+| Run `ChildRepo/app.py` | Produces output identical to the root program; exits with code `0` |
+| Run `ChildRepo/NestedChild/app.py` | Fails with a circular-import `ImportError`; empty standard output; exits with code `1` |
 | `calculate_total([10, 20, 30, 40])` | Returns `100` (empty input returns `0`) |
-| `calculate_average(numbers)` | Returns `calculate_total(numbers) / len(numbers)`; returns `0` for empty/falsy input |
 
-**Critical success factor.** Correct execution depends on each `app.py` being co-located with a `service.py` that actually defines `calculate_total`. This factor is satisfied at the root and `ChildRepo` levels but violated at `ChildRepo/NestedChild`, where `service.py` is a copy of `app.py`; consequently `NestedChild/app.py` fails at import time with a circular-import `ImportError`. Full success of the demonstration across all three levels is therefore not currently achieved.
+**Critical success factor.** Correct execution depends on each `app.py` being co-located with a `service.py` that actually defines `calculate_total`. This factor is satisfied at the root and `ChildRepo` levels but violated at `ChildRepo/NestedChild`, where `service.py` is a duplicate of `app.py`; consequently `NestedChild/app.py` fails at import time. Full success of the demonstration across all three levels is therefore not currently achieved — a factual current-state finding, preserved as-is in the code and documentation.
 
 ## 1.3 Scope
 
@@ -119,10 +121,10 @@ This section delimits what the repository actually implements (in-scope) versus 
 
 | Element | In-scope detail |
 | --- | --- |
-| Summation capability | `calculate_total(numbers)` in `service.py` — the reusable primitive invoked by the workflow; returns the accumulated sum (`0` for empty input) |
-| Average capability | `calculate_average(numbers)` in `service.py` — defined and available for reuse; returns `0` for falsy input, otherwise sum ÷ count |
-| Primary user workflow | `main()` in `app.py` — sums the fixed list `[10, 20, 30, 40]` and prints `Total: 100`, each number, and `Application completed` |
-| Essential integration | Intra-repository import `from service import calculate_total`; source-level composition via nested Git submodules declared in `.gitmodules` |
+| Summation capability (F-001) | `calculate_total(numbers)` in `service.py` — the reusable primitive invoked by the workflow; returns the accumulated sum (`0` for empty input) |
+| Average capability (F-002) | `calculate_average(numbers)` in `service.py` — defined and available for reuse; returns `0` for falsy input, otherwise sum ÷ count |
+| Primary user workflow (F-003) | `main()` in `app.py` — sums the fixed list `[10, 20, 30, 40]` and prints `Total: 100`, each number, and `Application completed` |
+| Essential integration (F-004) | Intra-repository import `from service import calculate_total`; source-level composition via nested Git submodules declared in `.gitmodules` |
 | Key technical requirements | Python 3.6+ runtime; standard library only; no build, packaging, or dependency-installation step |
 
 **Implementation boundaries.** The system's operating envelope is intentionally narrow:
@@ -147,12 +149,14 @@ This section delimits what the repository actually implements (in-scope) versus 
 | Concurrency / asynchronous execution | Out of scope — all functions are synchronous |
 | Packaging, tests, CI/CD, containerization | Out of scope — no manifests, test suite, pipelines, or `Dockerfile` |
 
-**Data excluded by policy.** CSV data files (pattern `*.csv`, including the ~16 MB `large.csv` present at every level) are excluded from documentation and use per the repository's `.blitzyignore` files; no code reads them in any case.
+**Data excluded by policy.** CSV data files (pattern `*.csv`, including a `large.csv` present at every repository level) are excluded from documentation and use per the repository's `.blitzyignore` files; no code reads them in any case.
+
+**Integration points not covered.** No external integration points — network or web APIs, databases, message queues, caches, or third-party services — are implemented or declared anywhere in the codebase, and none are asserted here. The only connections that exist are the in-scope intra-repository import and the build-time Git submodule links.
 
 **Capabilities present but not exercised, and unsupported use cases.**
 
 - `calculate_average` is defined in `service.py` but is never invoked by any entry point; its execution is outside the demonstrated workflow.
-- The `ChildRepo/NestedChild` demonstration is an unsupported use case: its `service.py` is a copy of `app.py` and lacks `calculate_total`, so `NestedChild/app.py` fails at import time with a circular-import `ImportError`.
+- The `ChildRepo/NestedChild` demonstration is an unsupported use case: its `service.py` duplicates its `app.py` and lacks `calculate_total`, so `NestedChild/app.py` fails at import time with a circular-import `ImportError` (exit code `1`, empty standard output).
 - Any use requiring variable, user-supplied, or streamed input is unsupported, because the workflow operates exclusively on the hard-coded list.
 
 **Future-phase considerations.** The repository documents no roadmap, backlog, milestone, or `TODO`/`FIXME` markers. No future phases are committed within the codebase, and none are asserted here; the observed `NestedChild` defect is recorded above as a factual current-state finding rather than a planned enhancement.
@@ -163,3059 +167,3021 @@ The following repository files, folders, and metadata were inspected as evidence
 
 **Root repository (`600K_ParentRepo`)**
 
-- `README.md` — one-line title (`# app.py`); established the absence of narrative documentation.
-- `app.py` — entry point defining `main()` under the `__main__` guard; established the fixed-list summation workflow and stdout output.
-- `service.py` — established the `calculate_total` and `calculate_average` function definitions and their pure behavior.
-- `.gitmodules` — established the `ChildRepo` submodule declaration and its remote URL.
-- `.blitzyignore` — established the `*.csv` exclusion rule honored throughout this section.
+- `README.md` - comprehensive project documentation (278 lines); established the project's purpose, prerequisites (Python 3.6+, Git), setup/installation, submodule composition, API reference, run guide, and the documented `NestedChild` known issue.
+- `app.py` - the direct-execution entry point defining `main()` under the `__main__` guard; established the fixed-list summation workflow, the `from service import calculate_total` import, and the standard-output behavior.
+- `service.py` - established the `calculate_total` and `calculate_average` definitions and their pure, side-effect-free behavior (`calculate_average` defined but never invoked).
+- `.gitmodules` - established the `ChildRepo` submodule declaration and its remote URL.
+- `.blitzyignore` - established the `*.csv` exclusion rule honored throughout this section.
+- `tech_spec.md` - root-level file confirmed byte-identical to the documentation specification; noted for completeness.
 
 **First-level submodule (`ChildRepo/`)**
 
-- `ChildRepo/` — folder; the first nested Git submodule mirroring the root structure.
-- `ChildRepo/README.md` — one-line title (`# 600K_ChildRepo`).
-- `ChildRepo/app.py` — verified byte-identical to the root `app.py` (identical successful runtime output).
-- `ChildRepo/service.py` — verified byte-identical to the root `service.py`.
-- `ChildRepo/.gitmodules` — established the `NestedChild` submodule declaration and its remote URL.
+- `ChildRepo/` - folder; the first nested Git submodule, mirroring the root two-file structure.
+- `ChildRepo/README.md` - comprehensive documentation (273 lines), title `# 600K_ChildRepo`.
+- `ChildRepo/app.py` - entry point whose executable logic is equivalent to the root (carries its own docstrings, so not byte-identical); produced identical successful runtime output.
+- `ChildRepo/service.py` - helper module whose executable logic is equivalent to the root `service.py`.
+- `ChildRepo/.gitmodules` - established the `NestedChild` submodule declaration and its remote URL.
 
 **Second-level submodule (`ChildRepo/NestedChild/`)**
 
-- `ChildRepo/NestedChild/` — folder; the deepest nested Git submodule.
-- `ChildRepo/NestedChild/README.md` — one-line title (`# 600K_Nested_ChildRepo`).
-- `ChildRepo/NestedChild/app.py` — verified byte-identical to the root `app.py`.
-- `ChildRepo/NestedChild/service.py` — verified byte-identical to `app.py` (the defect: no `calculate_total`, causing the circular-import `ImportError`).
+- `ChildRepo/NestedChild/` - folder; the deepest nested Git submodule (a leaf, with no `.gitmodules`).
+- `ChildRepo/NestedChild/README.md` - a one-line title (`# 600K_Nested_ChildRepo`).
+- `ChildRepo/NestedChild/app.py` - verified byte-identical to its sibling `service.py`.
+- `ChildRepo/NestedChild/service.py` - the defect: a duplicate of `app.py` that does not define `calculate_total`, causing the circular-import `ImportError`.
+
+**Documentation directory**
+
+- `blitzy/documentation/Technical Specifications.md` - the existing reverse-engineered specification; consulted for Feature Catalog terminology (F-001–F-004) and Introduction framing, with its quantitative details re-verified against current code.
 
 **Repository metadata**
 
-- Git history and configuration (branch `2007_01`, six-commit log, `git submodule status --recursive`, origin remote) — established the scaffolding nature of the project and the nested-submodule topology.
-- Runtime execution of `app.py` at each level with Python 3.12.3 — established the verified output and the `NestedChild` failure.
+- Git history and configuration (branch `2007_01`, 18-commit log, and `git submodule status --recursive` showing the pins `ChildRepo` = `63b3f43` and `NestedChild` = `d57c9dd`) - established the scaffolding/documentation nature of the project and the nested-submodule topology.
+- Runtime execution of `app.py` at each level with Python 3.12.3 - established the verified standard output at the root and `ChildRepo`, and the `NestedChild` circular-import failure (exit code `1`, empty standard output).
 
 # 2. Product Requirements
 
 ## 2.1 Feature Catalog
 
-This section decomposes the repository into discrete, testable features. Because the codebase is a minimal Python list-summation demonstration organized as a three-level Git-submodule chain (see Section 1.2 System Overview), the feature set is small and every feature below is traced directly to observed source files and verified runtime behavior. No business, product, or requirements documentation exists in the repository — each `README.md` contains only a one-line title — so "Business Value" and "User Benefits" are framed in the illustrative/technical terms the code actually supports rather than as commercial claims. No features are inferred beyond what the code implements.
+This catalog enumerates the discrete, independently testable features that are actually evidenced in the repository. Four features — F-001 through F-004 — constitute the entire behavior of the system, consistent with the capability inventory in Section 1.2 System Overview (§1.2.2). Feature identifiers are carried forward verbatim from that section to preserve end-to-end traceability. Because the repository is a deliberately minimal, standard-library-only demonstration (see Section 1.1 Executive Summary), the catalog is intentionally small; no features beyond those observed directly in `app.py`, `service.py`, and the `.gitmodules` descriptors are asserted. All four features are replicated at each level of the `600K_ParentRepo → ChildRepo → NestedChild` submodule tree; the functional analysis below is stated once and applies at every level except where the NestedChild leaf defect is explicitly noted.
 
-**Feature summary**
+### 2.1.1 Feature Overview
 
-| Feature ID | Feature Name | Feature Category | Priority |
+The following two tables classify the feature set. Status values are restricted to the standard lifecycle vocabulary (Proposed / Approved / In Development / Completed); operational nuances that fall outside that vocabulary are captured in the accompanying note column.
+
+| Feature ID | Feature Name | Category | Priority |
 | --- | --- | --- | --- |
-| F-001 | List Summation Service | Core Calculation Service | Critical |
-| F-002 | Arithmetic Mean (Average) Service | Core Calculation Service | Low |
-| F-003 | Fixed-List Summation Workflow (Entry Point) | Application Workflow | Critical |
-| F-004 | Nested Git Submodule Composition | Repository Composition (build-time) | Medium |
+| F-001 | List Summation (`calculate_total`) | Core Calculation Service | Critical |
+| F-002 | Arithmetic Mean (`calculate_average`) | Core Calculation Service | Low |
+| F-003 | Fixed-List Entry-Point Workflow (`main`) | Application Workflow / CLI Entry Point | Critical |
+| F-004 | Nested Git-Submodule Composition | Repository Composition (Build-Time) | Medium |
 
-All four features are present and committed on branch `2007_01`; their catalog `Status` is therefore `Completed`, with two documented caveats recorded in the relevant entries: F-002 is implemented but not invoked by any entry point, and the deepest instance of F-004 (`ChildRepo/NestedChild`) is defective.
+| Feature ID | Status | Operational Note |
+| --- | --- | --- |
+| F-001 | Completed | Implemented and exercised at the root and `ChildRepo` levels |
+| F-002 | Completed | Implemented but never invoked by any entry point (dormant API) |
+| F-003 | Completed | Runs successfully at root and `ChildRepo`; the equivalent copy fails at the `NestedChild` leaf |
+| F-004 | Completed | Submodules declared and pinned; the deepest (`NestedChild`) leaf is non-functional at runtime |
 
-### 2.1.1 F-001 — List Summation Service
-
-**Feature Metadata**
+### 2.1.2 F-001: List Summation (`calculate_total`)
 
 | Attribute | Value |
 | --- | --- |
 | Unique ID | F-001 |
-| Feature Name | List Summation Service |
+| Feature Name | List Summation |
 | Feature Category | Core Calculation Service |
-| Priority Level | Critical |
+| Priority | Critical |
 | Status | Completed |
+| Primary Source Artifact | `service.py` → `calculate_total(numbers)` (L18–L41) |
 
-**Description**
+**Overview.** `calculate_total(numbers)` initializes a running accumulator to `0`, performs a single `for`-loop pass over a numeric iterable adding each element, and returns the accumulated total; an empty iterable naturally returns `0` (`service.py` L35, L38–L39, L41).
 
-- **Overview:** The function `calculate_total(numbers)` in `service.py` initializes an accumulator to `0`, iterates the supplied iterable adding each element, and returns the accumulated sum. It is defined identically at `service.py` (root) and `ChildRepo/service.py`. Verified behavior: `calculate_total([10, 20, 30, 40])` returns `100`; empty input returns `0`.
-- **Business Value:** None is documented in the repository. Judged on the code alone, this is the single reusable arithmetic primitive on which the demonstration's only executed output depends, so it carries the highest intrinsic importance in the codebase.
-- **User Benefits:** A developer can import one dependency-free function and reuse it directly; the `total = 0` initialization means empty input yields `0` rather than an error, so callers need no special-casing.
-- **Technical Context:** A pure function — no I/O, no side effects, no shared mutable state — implemented with a linear (`O(n)`) accumulation loop using only the Python standard library. It is the common primitive reused by both the workflow (F-003, via import) and the average service (F-002, via internal call).
+**Business Value.** This is the single reusable arithmetic primitive on which the demonstration's headline output (`Total: 100`) depends. It embodies the clean entry-point/service separation pattern that Section 1.1 identifies as the repository's evidenced purpose.
 
-**Dependencies**
+**User Benefits.** Developers can import and reuse the helper with `from service import calculate_total` without installing any third-party dependency. Because it is deterministic and side-effect-free, it is trivial to reason about and to test.
+
+**Technical Context.** A pure function with no imports, no classes, no module-level state, no I/O, and no mutation of its argument (`service.py` module docstring L9–L11). It targets Python 3.6+ and is replicated with functionally equivalent logic at the root and `ChildRepo` tiers.
 
 | Dependency Type | Detail |
 | --- | --- |
-| Prerequisite Features | None |
-| System Dependencies | Python 3.6+ runtime (standard library only; observed executing under Python 3.12.3) |
-| External Dependencies | None — zero third-party packages |
-| Integration Requirements | Must be importable as a module named `service`; consumed via the statement `from service import calculate_total` |
+| Prerequisite Features | None — F-001 is the base computation primitive |
+| System Dependencies | Python 3.6+ interpreter; Python standard library only (no imports in `service.py`) |
+| External Dependencies | None |
+| Integration Requirements | Consumed by F-003 (`main` calls it — `app.py` L34) and by F-002 (`calculate_average` delegates to it — `service.py` L78); must be importable as `from service import calculate_total` |
 
-### 2.1.2 F-002 — Arithmetic Mean (Average) Service
-
-**Feature Metadata**
+### 2.1.3 F-002: Arithmetic Mean (`calculate_average`)
 
 | Attribute | Value |
 | --- | --- |
 | Unique ID | F-002 |
-| Feature Name | Arithmetic Mean (Average) Service |
+| Feature Name | Arithmetic Mean |
 | Feature Category | Core Calculation Service |
-| Priority Level | Low |
-| Status | Completed (implemented but not invoked by any entry point) |
+| Priority | Low |
+| Status | Completed (defined but never invoked) |
+| Primary Source Artifact | `service.py` → `calculate_average(numbers)` (L44–L78) |
 
-**Description**
+**Overview.** `calculate_average(numbers)` returns `0` for empty/falsey input (guarding against division by zero) and otherwise returns `calculate_total(numbers) / len(numbers)` (`service.py` L75–L76, L78).
 
-- **Overview:** The function `calculate_average(numbers)` in `service.py` returns `0` for falsy/empty input; otherwise it returns `calculate_total(numbers) / len(numbers)`. It is defined at `service.py:10` and `ChildRepo/service.py:10`. It is **not** present in `ChildRepo/NestedChild/service.py`, whose contents are a copy of `app.py`.
-- **Business Value:** None is documented. Its illustrative value is demonstrating function composition — reuse of the F-001 primitive within a second calculation.
-- **User Benefits:** Available for import and reuse; the leading `if not numbers: return 0` guard avoids a division-by-zero error on empty input.
-- **Technical Context:** A pure function that depends on F-001. Repository-wide search confirms it is never imported or called by any `app.py` or other module, so it is unexercised by the demonstrated workflow (effectively dead code relative to the entry point).
+**Business Value.** It rounds out the calculation API for completeness and reuse and illustrates internal composition, since it delegates its summation to F-001 rather than re-implementing it.
 
-**Dependencies**
+**User Benefits.** The helper is available for import and reuse and safely handles the empty-input edge case by returning `0` instead of raising an error.
+
+**Technical Context.** Because the mean is computed with `len(numbers)`, the argument must be a *sized* collection such as a `list` or `tuple`; unsized iterables such as generators raise `TypeError` (`service.py` docstring L69–L71). The function is defined but never invoked by any entry point — `main()` uses only `calculate_total` (`service.py` note L54–L56, confirmed by inspection).
 
 | Dependency Type | Detail |
 | --- | --- |
-| Prerequisite Features | F-001 (its return value is computed by calling `calculate_total`) |
-| System Dependencies | Python 3.6+ runtime (standard library only) |
+| Prerequisite Features | F-001 — delegates summation to `calculate_total` |
+| System Dependencies | Python 3.6+ interpreter; standard library only |
 | External Dependencies | None |
-| Integration Requirements | Must be co-located with `calculate_total` in the same `service` module; no caller currently integrates it |
+| Integration Requirements | None active — the function is not wired into any workflow; exercising it would require a new caller |
 
-### 2.1.3 F-003 — Fixed-List Summation Workflow (Entry Point)
-
-**Feature Metadata**
+### 2.1.4 F-003: Fixed-List Entry-Point Workflow (`main`)
 
 | Attribute | Value |
 | --- | --- |
 | Unique ID | F-003 |
-| Feature Name | Fixed-List Summation Workflow (Entry Point) |
-| Feature Category | Application Workflow |
-| Priority Level | Critical |
-| Status | Completed |
+| Feature Name | Fixed-List Entry-Point Workflow |
+| Feature Category | Application Workflow / CLI Entry Point |
+| Priority | Critical |
+| Status | Completed (root and `ChildRepo`; non-functional at the `NestedChild` leaf) |
+| Primary Source Artifact | `app.py` → `main()` (L17–L46) |
 
-**Description**
+**Overview.** `main()` builds the hard-coded list `[10, 20, 30, 40]`, delegates summation to `calculate_total`, prints `Total: 100`, prints each number on its own line in order, and finally prints `Application completed`; it returns `None` and writes only to standard output (`app.py` L32, L34, L36, L39–L40, L42).
 
-- **Overview:** The `main()` function in `app.py` defines the hard-coded list `[10, 20, 30, 40]`, computes its total via `calculate_total`, prints `Total: 100`, prints each element on its own line, and prints the sentinel line `Application completed`. Execution is gated by an `if __name__ == "__main__": main()` guard. The file is byte-identical at all three levels.
-- **Business Value:** None is documented. This is the single end-to-end demonstration path — the only behavior a user observes when running the project.
-- **User Benefits:** Running `python app.py` produces deterministic output and exits successfully with no arguments, configuration, or dependency installation required.
-- **Technical Context:** A thin orchestrator that delegates all arithmetic to `service.py` and writes only to standard output; it performs no input handling, error handling, configuration, or persistence. At the `ChildRepo/NestedChild` level the identical entry point cannot run because the co-located `service` module lacks `calculate_total`.
+**Business Value.** This is the end-to-end demonstration that ties the calculation service to observable output — the project's headline behavior as framed in Section 1.1.
 
-**Process flow (verified runtime behavior)**
+**User Benefits.** A single command, `python app.py`, produces deterministic output and exits with status code `0`, with no arguments or configuration required.
 
-```mermaid
-flowchart TD
-    Start(["Run: python app.py"]) --> Guard{"__name__ == __main__ ?"}
-    Guard -->|"No (module imported)"| Skip(["main() not executed"])
-    Guard -->|"Yes (direct execution)"| Init["numbers = [10, 20, 30, 40]"]
-    Init --> Call["total = calculate_total(numbers)  ->  100"]
-    Call --> P1["print total line: 'Total: 100'"]
-    P1 --> Loop["for number in numbers: print(number)"]
-    Loop --> Done["print('Application completed')"]
-    Done --> Exit(["Exit code 0"])
-```
-
-**Dependencies**
+**Technical Context.** The entry point imports `calculate_total` from the local `service` module (`app.py` L15) and is guarded by `if __name__ == "__main__":`, so importing `app` has no side effects (`app.py` L45–L46). It requires Python 3.6+ because of the f-string at L36. The workflow is replicated at `ChildRepo` (`main` at `ChildRepo/app.py` L16); at `NestedChild` the equivalent workflow fails at import time (see F-004 and Section 2.4).
 
 | Dependency Type | Detail |
 | --- | --- |
-| Prerequisite Features | F-001 (imports and calls `calculate_total`) |
-| System Dependencies | Python 3.6+ runtime (f-string formatting); standard-output stream |
+| Prerequisite Features | F-001 — `main` calls `calculate_total` |
+| System Dependencies | Python 3.6+; standard library only; a co-located `service.py` that defines `calculate_total` |
 | External Dependencies | None |
-| Integration Requirements | Must be co-located with a `service.py` that defines `calculate_total` (satisfied at root and `ChildRepo`; violated at `ChildRepo/NestedChild`) |
+| Integration Requirements | Intra-repository import `from service import calculate_total`; must be run from the directory containing both `app.py` and `service.py` |
 
-### 2.1.4 F-004 — Nested Git Submodule Composition
-
-**Feature Metadata**
+### 2.1.5 F-004: Nested Git-Submodule Composition
 
 | Attribute | Value |
 | --- | --- |
 | Unique ID | F-004 |
-| Feature Name | Nested Git Submodule Composition |
-| Feature Category | Repository Composition (build-time structure) |
-| Priority Level | Medium |
-| Status | Completed (parent and `ChildRepo` faithful; `NestedChild` instance defective) |
+| Feature Name | Nested Git-Submodule Composition |
+| Feature Category | Repository Composition (Build-Time) |
+| Priority | Medium |
+| Status | Completed (declared and pinned; deepest leaf non-functional at runtime) |
+| Primary Source Artifact | `.gitmodules` (root) and `ChildRepo/.gitmodules` |
 
-**Description**
+**Overview.** The root `.gitmodules` declares a single submodule, `ChildRepo` (remote `https://github.com/lakshya-blitzy/600K_ChildRepo.git`), and `ChildRepo/.gitmodules` declares `NestedChild` (remote `https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`), producing the two-level tree `600K_ParentRepo → ChildRepo → NestedChild`. Each level mirrors the same two-file structure.
 
-- **Overview:** The root `.gitmodules` declares submodule `ChildRepo` (path `ChildRepo`, remote `https://github.com/lakshya-blitzy/600K_ChildRepo.git`); `ChildRepo/.gitmodules` declares submodule `NestedChild` (path `NestedChild`, remote `https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`). Each of the three levels is intended to mirror the same two-file (`app.py` + `service.py`) structure. `ChildRepo/NestedChild` itself has no `.gitmodules` (it is the leaf).
-- **Business Value:** None is documented. Its illustrative value is demonstrating repository composition through native Git submodules nested two levels deep.
-- **User Benefits:** Provides a concrete example of nesting repositories and reusing an identical module layout across levels.
-- **Technical Context:** This is a source-composition-level integration only; there is no runtime coupling between the levels (each `app.py` imports only its own sibling `service.py`). The deepest level does not faithfully reproduce the structure: `ChildRepo/NestedChild/service.py` is a byte-for-byte copy of `app.py`, so `calculate_total` is missing there.
+**Business Value.** It demonstrates the composition of independent repositories through native Git submodules — a build-time / source-structure concern rather than a runtime capability — which Section 1.1 identifies as one of the two things the project illustrates.
 
-**Dependencies**
+**User Benefits.** A single recursive clone (`git clone --recursive <repository-url>`) or `git submodule update --init --recursive` populates all levels in one step (root `README.md`, Setup and Installation).
+
+**Technical Context.** The submodules are pinned to specific commits — `ChildRepo` at `63b3f43` and `NestedChild` at `d57c9dd` (verified via `git submodule status --recursive`). `NestedChild` is a leaf with no `.gitmodules`, and its `README.md` is a one-line title. The leaf is non-functional at runtime because its `service.py` duplicates its `app.py` (see Section 2.4.4).
 
 | Dependency Type | Detail |
 | --- | --- |
-| Prerequisite Features | None (this feature encapsulates and replicates F-001, F-002, and F-003 at each level) |
-| System Dependencies | Git with submodule support |
-| External Dependencies | GitHub-hosted submodule remotes `600K_ChildRepo` and `600K_Nested_ChildRepo` (both under the `lakshya-blitzy` account) |
-| Integration Requirements | `.gitmodules` `path`/`url` entries at the root and `ChildRepo` levels; population requires `git submodule update --init --recursive` (and network access to the remotes) |
+| Prerequisite Features | None — build-time composition, independent of the runtime features |
+| System Dependencies | Git (any recent version) |
+| External Dependencies | GitHub-hosted remotes under the `lakshya-blitzy` account (`600K_ChildRepo.git`, `600K_Nested_ChildRepo.git`) |
+| Integration Requirements | Recursive clone/init to populate submodules; network access to GitHub at clone time |
 
-## 2.2 Functional Requirements Table
+## 2.2 Functional Requirements
 
-Each feature from Section 2.1 is expanded below into numbered, testable requirements using the identifier format `F-XXX-RQ-YYY`. Every requirement's acceptance criteria are stated in terms of behavior verified by directly executing the code (Python 3.12.3) or by inspecting the tracked files. A repository-wide observation that applies to **all** features and is therefore not repeated verbosely per row: the codebase contains **no input validation, no error handling, no logging, no authentication/authorization, no compliance controls, and no documented performance budgets, SLAs, or KPIs**. Where a "Performance & Validation" row below reads "None," that absence was verified, not assumed.
+Each feature is decomposed into numbered requirements using the identifier format `F-XXX-RQ-YYY`. Because the repository defines no formal service-level agreements, key performance indicators, or automated test suite (§1.2.3), acceptance criteria are grounded in objectively reproducible runtime behavior and the pure-function contracts documented in the source; every criterion below was confirmed by direct execution on Python 3.12.3. Priority uses the Must-Have / Should-Have / Could-Have scale, and Complexity is rated relative to this minimal codebase. For each requirement group there are four tables — Requirement Details, Acceptance Criteria, Technical Specifications, and Validation Rules — each limited to at most four columns.
 
-### 2.2.1 F-001 — List Summation Service
-
-**Requirement Details**
+### 2.2.1 F-001 Requirements — List Summation
 
 | Requirement ID | Description | Priority | Complexity |
 | --- | --- | --- | --- |
-| F-001-RQ-001 | Return the arithmetic sum of the numeric elements of the input iterable | Must-Have | Low |
-| F-001-RQ-002 | Return `0` when the input iterable is empty | Should-Have | Low |
+| F-001-RQ-001 | Sum all elements of a numeric iterable in a single pass and return the accumulated total | Must-Have | Low |
+| F-001-RQ-002 | Return `0` for an empty iterable | Must-Have | Low |
+| F-001-RQ-003 | Behave as a pure function — perform no I/O and do not mutate the input | Should-Have | Low |
 
-**Technical Specifications**
-
-| Requirement ID | Input Parameters | Output / Response | Data Requirements |
-| --- | --- | --- | --- |
-| F-001-RQ-001 | `numbers` — an in-memory iterable of numeric values | The accumulated sum (an `int` when all inputs are `int`, e.g. `100`) | Single in-memory iterable; no external data source |
-| F-001-RQ-002 | `numbers` — an empty iterable (`[]`) | `0` | None |
-
-**Acceptance Criteria (testable)**
-
-- **F-001-RQ-001:** `calculate_total([10, 20, 30, 40])` returns `100`; confirmed end-to-end by running `python app.py`, which prints `Total: 100`.
-- **F-001-RQ-002:** `calculate_total([])` returns `0`, because the accumulator is initialized to `0` and the `for` loop body never executes.
-
-**Performance & Validation**
-
-| Dimension | As Evidenced |
+| Requirement ID | Acceptance Criteria (Testable) |
 | --- | --- |
-| Performance Criteria | None documented; algorithmic behavior is a single `O(n)` accumulation pass |
-| Business Rules | Empty input yields `0` (accumulator starts at `0`) |
-| Data Validation | None — no type or range checks; a non-numeric element would raise an unhandled `TypeError` at runtime |
-| Security Requirements | None documented; pure in-memory computation with no I/O |
-| Compliance Requirements | None documented |
+| F-001-RQ-001 | `calculate_total([10, 20, 30, 40])` returns `100`; `calculate_total([5])` returns `5` |
+| F-001-RQ-002 | `calculate_total([])` returns `0` |
+| F-001-RQ-003 | The input list is unchanged after the call; no standard-output, file, or network access occurs |
 
-### 2.2.2 F-002 — Arithmetic Mean (Average) Service
+| Specification Aspect | Detail |
+| --- | --- |
+| Input Parameters | `numbers`: an iterable of numeric values (int/float); elements are assumed numeric |
+| Output / Response | `int` or `float` — the accumulated sum returned to the caller; no standard-output side effect |
+| Performance Criteria | Single traversal, O(n) time and O(1) extra space (one accumulator); no formal budget defined (§1.2.3) |
+| Data Requirements | An in-memory numeric iterable; no persistence or external data source |
 
-**Requirement Details**
+| Validation Category | Rule |
+| --- | --- |
+| Business Rules | Summing zero elements yields `0` (the arithmetic identity for an empty sum) |
+| Data Validation | No explicit validation; non-numeric elements raise `TypeError`, and a non-iterable argument raises `TypeError` (both uncaught) |
+| Security Requirements | None applicable — no I/O, no external input, no secrets handled |
+| Compliance Requirements | None defined in the repository |
+
+### 2.2.2 F-002 Requirements — Arithmetic Mean
 
 | Requirement ID | Description | Priority | Complexity |
 | --- | --- | --- | --- |
-| F-002-RQ-001 | Return the arithmetic mean (sum ÷ count) of a non-empty input iterable | Could-Have | Low |
-| F-002-RQ-002 | Return `0` for falsy/empty input (division-by-zero guard) | Should-Have | Low |
+| F-002-RQ-001 | Compute the arithmetic mean of a sized numeric collection as sum ÷ count | Should-Have | Low |
+| F-002-RQ-002 | Return `0` for empty/falsey input to guard against division by zero | Should-Have | Low |
 
-**Technical Specifications**
-
-| Requirement ID | Input Parameters | Output / Response | Data Requirements |
-| --- | --- | --- | --- |
-| F-002-RQ-001 | `numbers` — a non-empty in-memory iterable of numeric values | Quotient of `calculate_total(numbers) / len(numbers)` (a `float`, e.g. `25.0`) | Single in-memory iterable; no external data source |
-| F-002-RQ-002 | `numbers` — a falsy value such as `[]` | `0` | None |
-
-**Acceptance Criteria (testable)**
-
-- **F-002-RQ-001:** `calculate_average([10, 20, 30, 40])` returns `25.0` (computed as `100 / 4`). Note: this function is not invoked by any entry point, so the criterion is verified by direct call rather than through the `app.py` workflow.
-- **F-002-RQ-002:** `calculate_average([])` returns `0` via the leading `if not numbers: return 0` guard, so no division by zero occurs.
-
-**Performance & Validation**
-
-| Dimension | As Evidenced |
+| Requirement ID | Acceptance Criteria (Testable) |
 | --- | --- |
-| Performance Criteria | None documented; `O(n)` (delegates summation to `calculate_total`) |
-| Business Rules | Falsy/empty input yields `0` (explicit guard) |
-| Data Validation | Guard on falsy input only; no numeric-type checks |
-| Security Requirements | None documented; pure in-memory computation with no I/O |
-| Compliance Requirements | None documented |
+| F-002-RQ-001 | `calculate_average([10, 20, 30, 40])` returns `25.0` |
+| F-002-RQ-002 | `calculate_average([])` returns `0` |
 
-### 2.2.3 F-003 — Fixed-List Summation Workflow (Entry Point)
+| Specification Aspect | Detail |
+| --- | --- |
+| Input Parameters | `numbers`: a *sized* numeric collection (list/tuple) that supports `len()` |
+| Output / Response | `int` or `float` — the mean, or `0` for empty/falsey input |
+| Performance Criteria | Delegates one O(n) pass to `calculate_total` plus one `len()` evaluation; no formal budget |
+| Data Requirements | An in-memory sized collection; unsized iterables such as generators are unsupported |
 
-**Requirement Details**
+| Validation Category | Rule |
+| --- | --- |
+| Business Rules | Empty/falsey input yields `0`, avoiding a `ZeroDivisionError` |
+| Data Validation | No explicit validation; an unsized iterable raises `TypeError` at `len()`, and non-numeric elements raise `TypeError` during summation |
+| Security Requirements | None applicable — pure function, no I/O |
+| Compliance Requirements | None defined in the repository |
+
+### 2.2.3 F-003 Requirements — Fixed-List Entry-Point Workflow
 
 | Requirement ID | Description | Priority | Complexity |
 | --- | --- | --- | --- |
-| F-003-RQ-001 | Compute the total of the hard-coded list and print it as the first output line | Must-Have | Low |
-| F-003-RQ-002 | Print each element of the list on its own line | Must-Have | Low |
-| F-003-RQ-003 | Print the completion sentinel, run only under the `__main__` guard, and exit successfully | Should-Have | Low |
+| F-003-RQ-001 | Print `Total: 100` for the fixed list `[10, 20, 30, 40]` | Must-Have | Low |
+| F-003-RQ-002 | Print each input number on its own line, in original order | Must-Have | Low |
+| F-003-RQ-003 | Print `Application completed` as the final line and exit with status code `0` | Must-Have | Low |
+| F-003-RQ-004 | Execute `main()` only on direct execution; importing `app` must have no side effects | Should-Have | Low |
 
-**Technical Specifications**
-
-| Requirement ID | Input Parameters | Output / Response | Data Requirements |
-| --- | --- | --- | --- |
-| F-003-RQ-001 | None (hard-coded list `[10, 20, 30, 40]`) | Standard-output line `Total: 100` | The fixed in-memory list `[10, 20, 30, 40]` |
-| F-003-RQ-002 | None (iterates the same fixed list) | Standard-output lines `10`, `20`, `30`, `40` | The same fixed list |
-| F-003-RQ-003 | None | Final line `Application completed`; process exit code `0` | None |
-
-**Acceptance Criteria (testable)**
-
-- **F-003-RQ-001:** Running `python app.py` prints `Total: 100` as the first line.
-- **F-003-RQ-002:** The next four lines are `10`, `20`, `30`, and `40`, each on its own line, in order.
-- **F-003-RQ-003:** The final line is `Application completed`; the process exits with code `0`; and importing the module (rather than running it) produces no output because `main()` executes only under `if __name__ == "__main__"`. (At `ChildRepo/NestedChild`, this workflow fails at import time — see F-004-RQ-003.)
-
-**Performance & Validation**
-
-| Dimension | As Evidenced |
+| Requirement ID | Acceptance Criteria (Testable) |
 | --- | --- |
-| Performance Criteria | None documented; a single run-to-completion pass over a constant 4-element workload |
-| Business Rules | Operates exclusively on the hard-coded list; output is deterministic |
-| Data Validation | None — there is no argument, stdin, or file input to validate |
-| Security Requirements | None documented; writes only to stdout and accepts no external input |
-| Compliance Requirements | None documented |
+| F-003-RQ-001 | Running `python app.py` prints `Total: 100` as the first line |
+| F-003-RQ-002 | Output lines two through five are `10`, `20`, `30`, `40` in that order |
+| F-003-RQ-003 | The final standard-output line is `Application completed`; the process exits with code `0` |
+| F-003-RQ-004 | `import app` produces no standard output (guard at `app.py` L45–L46) |
 
-### 2.2.4 F-004 — Nested Git Submodule Composition
+| Specification Aspect | Detail |
+| --- | --- |
+| Input Parameters | None — the list `[10, 20, 30, 40]` is hard-coded (`app.py` L32); no CLI arguments, stdin, or files |
+| Output / Response | Six standard-output lines; function return value `None`; process exit code `0` |
+| Performance Criteria | Run-to-completion single process with six stdout writes; no formal budget (§1.2.3) |
+| Data Requirements | A single in-memory list of four integers |
 
-**Requirement Details**
+| Validation Category | Rule |
+| --- | --- |
+| Business Rules | Output is deterministic for the fixed input; the printed total is always `100` |
+| Data Validation | None — the input is constant, so there is no user input to validate |
+| Security Requirements | None applicable — standard-output only; no external input, secrets, network, or file I/O; the `__main__` guard prevents import-time side effects |
+| Compliance Requirements | None defined in the repository |
+
+### 2.2.4 F-004 Requirements — Nested Git-Submodule Composition
 
 | Requirement ID | Description | Priority | Complexity |
 | --- | --- | --- | --- |
-| F-004-RQ-001 | Root repository declares the `ChildRepo` submodule with its path and remote URL | Must-Have | Low |
-| F-004-RQ-002 | `ChildRepo` declares the `NestedChild` submodule with its path and remote URL | Must-Have | Low |
-| F-004-RQ-003 | Each level reproduces the two-file (`app.py` + `service.py`) structure | Should-Have | Medium |
+| F-004-RQ-001 | Root `.gitmodules` declares the `ChildRepo` submodule with its remote URL | Must-Have | Low |
+| F-004-RQ-002 | `ChildRepo/.gitmodules` declares the `NestedChild` submodule with its remote URL | Must-Have | Low |
+| F-004-RQ-003 | A recursive clone/init populates both submodule levels at their pinned commits | Should-Have | Medium |
 
-**Technical Specifications**
-
-| Requirement ID | Input Parameters | Output / Response | Data Requirements |
-| --- | --- | --- | --- |
-| F-004-RQ-001 | Root `.gitmodules` | Entry `[submodule "ChildRepo"]` with `path = ChildRepo` and `url = .../600K_ChildRepo.git` | Git submodule metadata + pinned commit |
-| F-004-RQ-002 | `ChildRepo/.gitmodules` | Entry `[submodule "NestedChild"]` with `path = NestedChild` and `url = .../600K_Nested_ChildRepo.git` | Git submodule metadata + pinned commit |
-| F-004-RQ-003 | The tracked `app.py`/`service.py` files at each level | Matching two-file structure at each level | The six tracked Python files |
-
-**Acceptance Criteria (testable)**
-
-- **F-004-RQ-001:** The root `.gitmodules` contains the `ChildRepo` submodule stanza with the stated path and GitHub remote (verified).
-- **F-004-RQ-002:** `ChildRepo/.gitmodules` contains the `NestedChild` submodule stanza with the stated path and GitHub remote (verified); `ChildRepo/NestedChild` has no `.gitmodules` (it is the leaf).
-- **F-004-RQ-003:** `app.py` is byte-identical (MD5 `a7f6989…`) at all three levels and `service.py` is byte-identical (MD5 `12093c1…`) at the root and `ChildRepo`. **Known failure:** `ChildRepo/NestedChild/service.py` is a byte-for-byte copy of `app.py` (MD5 `a7f6989…`) and therefore does not define `calculate_total`; running `ChildRepo/NestedChild/app.py` raises a circular-import `ImportError`. The mirror is thus faithfully reproduced only at the root and `ChildRepo` levels.
-
-**Performance & Validation**
-
-| Dimension | As Evidenced |
+| Requirement ID | Acceptance Criteria (Testable) |
 | --- | --- |
-| Performance Criteria | Not applicable — build-time composition, not a runtime path |
-| Business Rules | Each submodule is referenced at a pinned commit; the leaf level carries no `.gitmodules` |
-| Data Validation | None — Git does not validate that a submodule's `service.py` defines `calculate_total`, which is exactly the unguarded condition that the `NestedChild` defect violates |
-| Security Requirements | None documented; submodule remotes are public GitHub HTTPS URLs |
-| Compliance Requirements | None documented |
+| F-004-RQ-001 | `.gitmodules` maps path `ChildRepo` to `https://github.com/lakshya-blitzy/600K_ChildRepo.git` |
+| F-004-RQ-002 | `ChildRepo/.gitmodules` maps path `NestedChild` to `https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git` |
+| F-004-RQ-003 | `git submodule status --recursive` reports `ChildRepo` at `63b3f43` and `NestedChild` at `d57c9dd` |
+
+| Specification Aspect | Detail |
+| --- | --- |
+| Input Parameters | Clone/init flags: `--recursive` or `--init --recursive` |
+| Output / Response | Populated `ChildRepo/` and `ChildRepo/NestedChild/` working trees at the pinned SHAs |
+| Performance Criteria | Bounded by network and Git operations; no formal budget defined |
+| Data Requirements | Read access to the two GitHub remotes at clone time |
+
+| Validation Category | Rule |
+| --- | --- |
+| Business Rules | Each level mirrors the same two-file (`app.py` + `service.py`) structure; `NestedChild` is a leaf with no `.gitmodules` |
+| Data Validation | Submodule entries pin specific commits; omitting `--recursive` leaves the submodule directories empty |
+| Security Requirements | Use clean public URLs; never embed access tokens or credentials in a shared clone URL (root `README.md` security note) |
+| Compliance Requirements | None defined in the repository |
 
 ## 2.3 Feature Relationships
 
-The relationships below are limited to those directly evidenced in the source code. Because the entire repository contains exactly one import statement (`from service import calculate_total`) and one internal cross-function call, the dependency graph is small and unambiguous. Two relationship kinds are distinguished: **runtime dependencies** (a feature executes another's code) and **build-time composition** (a feature packages another's code without runtime coupling).
+The relationships documented here are limited strictly to those directly evidenced by import statements, function calls, and submodule declarations in the source. No relationships are inferred beyond that evidence, and — consistent with §1.3.2 — there are no external integration points (network/API, database, message queue, cache, or third-party service) anywhere in the codebase.
 
 ### 2.3.1 Feature Dependency Map
 
+The runtime features form a two-level dependency chain rooted at the summation primitive (F-001); the build-time composition feature (F-004) replicates that runtime feature set at every level of the submodule tree. The dashed edge denotes a relationship that exists in code but is never exercised at runtime.
+
 ```mermaid
 flowchart TD
-    F004["F-004 Nested Git Submodule Composition<br/>(build-time; .gitmodules)"]
-    F003["F-003 Fixed-List Summation Workflow<br/>(app.py: main)"]
-    F002["F-002 Arithmetic Mean Service<br/>(service.py: calculate_average)"]
-    F001["F-001 List Summation Service<br/>(service.py: calculate_total)"]
-
-    F003 -->|"imports and calls<br/>(app.py lines 1, 6)"| F001
-    F002 -->|"calls<br/>(service.py line 14)"| F001
-    F004 -.->|"encapsulates &amp; replicates per level"| F003
-    F004 -.->|"encapsulates &amp; replicates per level"| F002
-    F004 -.->|"encapsulates &amp; replicates per level"| F001
+    subgraph Runtime["Runtime Features (replicated per repository level)"]
+        direction TB
+        F003["F-003: Fixed-List Workflow<br/>app.py main()"]
+        F001["F-001: List Summation<br/>service.py calculate_total()"]
+        F002["F-002: Arithmetic Mean<br/>service.py calculate_average()"]
+    end
+    subgraph BuildTime["Build-Time Composition"]
+        direction TB
+        F004["F-004: Nested Git-Submodule Composition<br/>.gitmodules"]
+    end
+    F003 -->|"imports and calls (app.py L15, L34)"| F001
+    F002 -.->|"delegates to; not invoked (service.py L78)"| F001
+    F004 -->|"replicates runtime features per level"| F003
 ```
-
-Solid arrows denote runtime dependencies; dashed arrows denote build-time encapsulation. The map shows F-001 as the sole shared dependency: it has no prerequisites of its own, while both F-003 (via module import) and F-002 (via an internal call) depend on it. F-004 is a structural feature that contains the other three at each submodule level but introduces no runtime edges between levels.
-
-| Dependent Feature | Depends On | Relationship Type | Evidence |
-| --- | --- | --- | --- |
-| F-003 | F-001 | Runtime module import + call | `from service import calculate_total` (`app.py:1`); `calculate_total(numbers)` (`app.py:6`) |
-| F-002 | F-001 | Intra-module function call | `calculate_total(numbers)` (`service.py:14`) |
-| F-004 | F-001, F-002, F-003 | Build-time encapsulation (per-level replication) | root `.gitmodules`, `ChildRepo/.gitmodules`; identical file sets per level |
-
-There is **no** evidenced relationship between F-002 and F-003: the workflow never calls `calculate_average`, and the average function is not part of the executed path.
 
 ### 2.3.2 Integration Points
 
-| Integration Point | Mechanism | Evidence |
+All integration is intra-process (a single Python module import and function call) or build-time (Git submodule declarations). The evidenced integration points are:
+
+| Integration Point | Type | Evidence |
 | --- | --- | --- |
-| Workflow → Summation | Python module import resolving `service` as a sibling module, then a direct function call | `app.py:1` (import), `app.py:6` (call) |
-| Average → Summation | In-module function call within `service.py` | `service.py:14` |
-| Parent → child source composition | Git submodule reference (path + remote URL) in `.gitmodules` | root `.gitmodules` (`ChildRepo`), `ChildRepo/.gitmodules` (`NestedChild`) |
+| `from service import calculate_total` | Intra-process module import (F-003 → F-001) | `app.py` L15; `ChildRepo/app.py` L14 |
+| `calculate_total(numbers)` invocation | Function call (F-003 → F-001) | `app.py` L34 |
+| `calculate_total(numbers) / len(numbers)` | Internal delegation (F-002 → F-001) | `service.py` L78 |
+| Root → `ChildRepo` submodule link | Build-time Git submodule (F-004) | `.gitmodules` |
+| `ChildRepo` → `NestedChild` submodule link | Build-time Git submodule (F-004) | `ChildRepo/.gitmodules` |
 
-A critical negative finding: there is **no cross-repository or inter-level runtime integration**. Each `app.py` resolves `service` only from its own directory; no code imports from a parent or child submodule. This is why the `ChildRepo/NestedChild` defect is contained to that level — it breaks only `NestedChild/app.py`, not the root or `ChildRepo` programs.
+### 2.3.3 Shared Components
 
-### 2.3.3 Shared Components and Common Services
+The system's structure is a two-file pattern — an entry-point module and a calculation module — replicated across all three repository levels. The following components are shared in the sense that each hosts one or more features and is reproduced at every level:
 
-| Shared Element | Type | Consumed By |
+| Shared Component | Role | Features Hosted |
 | --- | --- | --- |
-| `service.py` | Module (calculation utility) | F-003 imports it; F-001 and F-002 are defined within it |
-| `calculate_total` | Function (common primitive) | F-003 (via import) and F-002 (via internal call) |
-| `app.py` `main()` pattern | Entry-point convention | F-003 at each level; replicated by F-004 |
+| `service.py` | Pure calculation module (no imports, classes, or state) | F-001, F-002 |
+| `app.py` | Entry-point orchestrator under an `__main__` guard | F-003 |
+| `.gitmodules` | Git submodule declaration (absent at the `NestedChild` leaf) | F-004 |
 
-**Common services.** The single common service in the system is the `calculate_total` primitive (F-001). It sits at the center of the dependency map: the workflow depends on it and the average function is built on top of it. `service.py` is the shared component that houses the calculation logic, and the `app.py` entry-point pattern is the shared orchestration convention that F-004 replicates across the three submodule levels — faithfully at the root and `ChildRepo`, and defectively at `ChildRepo/NestedChild` (where `service.py` is a copy of `app.py` and thus provides no shared `calculate_total`).
+At the root and `ChildRepo` levels these components carry functionally equivalent logic (they differ only by their docstrings and inline comments, so they are not byte-identical). At the `NestedChild` leaf the two files are byte-for-byte identical to each other, which is the root cause of the leaf defect analyzed in §2.4.4.
+
+### 2.3.4 Common Services
+
+The only common service in the system is the calculation service embodied by `service.py`. Within it, `calculate_total` (F-001) is the single shared primitive consumed by both the fixed-list workflow (F-003, via import and call) and the average helper (F-002, via internal delegation). There is no service framework, dependency-injection container, message bus, shared runtime process, or other cross-cutting service beyond this module-level reuse — the repository has zero third-party dependencies and performs no I/O other than the standard-output writes in F-003.
 
 ## 2.4 Implementation Considerations
 
-The considerations below are derived from the observed implementation, not from any design document (none exists). Several constraints are **cross-cutting** and apply to every feature: the code requires Python 3.6+ (f-string usage in `app.py`), uses the standard library only (zero third-party packages), has no build/packaging step, no automated tests, no CI configuration, and no logging or error handling. Execution is single-process, synchronous, and deterministic. These shared constraints are referenced rather than repeated in each feature table below.
+This section records the technical constraints, performance and scalability characteristics, security implications, and maintenance factors for each feature, drawn directly from the source. Because the repository defines no formal SLAs, benchmarks, tests, or CI (§1.3.2), performance and scalability entries describe intrinsic algorithmic characteristics rather than measured or contracted targets.
 
-### 2.4.1 F-001 — List Summation Service
+### 2.4.1 F-001: List Summation
 
-| Consideration | Detail (as evidenced) |
+| Dimension | Detail |
 | --- | --- |
-| Technical Constraints | Standard-library-only pure function; relies on `total += number` with `total` initialized to `int` `0`, so elements must support numeric addition; no type guarding is present |
-| Performance Requirements | None documented; behavior is a single `O(n)` accumulation pass, adequate for the small in-memory inputs used |
-| Scalability Considerations | Operates entirely in memory and synchronously; bounded by the caller-supplied iterable; no streaming, chunking, or parallelism |
-| Security Implications | Minimal attack surface — no I/O and no external input; however, the absence of input validation means a non-numeric element would raise an unhandled `TypeError` |
-| Maintenance Requirements | Defined in two locations (`service.py` and `ChildRepo/service.py`); edits must be duplicated to keep the copies consistent, and there are no tests to detect regressions |
+| Technical Constraints | Pure function in `service.py` (L18) with no imports, classes, or module-level state; accumulates from `total = 0` in a single `for` loop and returns the running total. Elements are assumed numeric (`service.py` docstring L26-27); returns `0` for an empty iterable. The module documents a Python 3.6+ target (`service.py` L11-12); behavior verified on Python 3.12.3. |
+| Performance Requirements | Linear O(n) time, O(1) auxiliary space, single traversal of the input. No numeric performance target is defined in the repository. |
+| Scalability Considerations | Synchronous, single-threaded, fully in-memory; cost grows linearly with input length. In the shipped workflow (F-003) the input is a fixed 4-element list, so runtime cost is negligible. No streaming or parallel execution is provided. |
+| Security Implications | Minimal attack surface: performs no I/O, accepts no external input, and uses no `eval`/deserialization. It trusts caller-supplied data and performs no type validation, so non-numeric elements propagate a `TypeError` from the `+=` operation. |
+| Maintenance Requirements | Fully documented via docstrings; no unit tests exist. The function is replicated with equivalent logic at the root and `ChildRepo` levels (and at the `NestedChild` leaf), so any change must be applied at each level independently. |
 
-### 2.4.2 F-002 — Arithmetic Mean (Average) Service
+### 2.4.2 F-002: Arithmetic Mean
 
-| Consideration | Detail (as evidenced) |
+| Dimension | Detail |
 | --- | --- |
-| Technical Constraints | Depends on F-001 (`calculate_total`); returns a `float` from `/` division; carries the same implicit numeric-type assumption |
-| Performance Requirements | None documented; `O(n)` overall (one summation pass plus `len`) |
-| Scalability Considerations | Same profile as F-001 — in-memory and synchronous; no large-input handling |
-| Security Implications | Same minimal surface; the `if not numbers` guard prevents `ZeroDivisionError`, but no other validation exists |
-| Maintenance Requirements | Unexercised by any caller, creating a risk of silent drift; duplicated across `service.py`/`ChildRepo/service.py`; absent entirely from `ChildRepo/NestedChild/service.py`; no tests |
+| Technical Constraints | Defined in `service.py` (L44); delegates summation to `calculate_total` and divides by `len(numbers)` (L78). Requires a *sized* collection (list/tuple); unsized iterables such as generators raise `TypeError` because `len()` is evaluated (docstring L69-71). Division-by-zero is guarded by returning `0` for empty/falsey input (L75-76). |
+| Performance Requirements | O(n) — one pass in `calculate_total` plus O(1) `len()` and division. No performance target is defined. |
+| Scalability Considerations | Same linear, in-memory characteristics as F-001. Because the function is never invoked (see below), it contributes no runtime footprint. |
+| Security Implications | Same minimal surface as F-001: pure, no I/O, no external input. |
+| Maintenance Requirements | Dormant API — defined but never invoked anywhere in the project (`service.py` docstring L54-56; §1.2.2). Being both untested and unused, it carries a latent risk of behavioral drift; it is also triplicated across the three repository levels. |
 
-### 2.4.3 F-003 — Fixed-List Summation Workflow (Entry Point)
+### 2.4.3 F-003: Fixed-List Entry-Point Workflow
 
-| Consideration | Detail (as evidenced) |
+| Dimension | Detail |
 | --- | --- |
-| Technical Constraints | Requires f-string support (Python 3.6+); must be co-located with a `service.py` that defines `calculate_total`; input is hard-coded, so there are no arguments, stdin, or file inputs |
-| Performance Requirements | None documented; a constant 4-element workload executed once to completion |
-| Scalability Considerations | Single-process, single-run, no concurrency or asynchronous execution; output volume is fixed |
-| Security Implications | Writes only to standard output and consumes no external input; with no error handling, an import failure is uncaught — exactly the outcome observed at `ChildRepo/NestedChild` |
-| Maintenance Requirements | The entry point is triplicated (three byte-identical `app.py` files); any change must be propagated to all three levels; no tests or CI guard the behavior |
+| Technical Constraints | Orchestrated by `main()` in `app.py` (L17); imports `calculate_total` (L15) and operates on the hardcoded list `[10, 20, 30, 40]` (L32). Accepts no command-line arguments or external input and writes only to standard output. Execution is gated by an `if __name__ == "__main__"` guard (L45-46), so importing the module produces no side effects (verified: `import app` yields no stdout). Depends on F-001. |
+| Performance Requirements | Trivial fixed workload of four elements; wall-clock cost is dominated by standard-output writes. No performance target is defined. |
+| Scalability Considerations | Single-shot batch execution; the input is not parameterized and there is no concurrency, so the feature does not scale beyond its fixed list without code change. |
+| Security Implications | Writes only to stdout and reads no external input, leaving no injection or input-parsing attack surface. |
+| Maintenance Requirements | No tests or CI; logic is triplicated across levels. Verified functional at the root and `ChildRepo` levels (prints `Total: 100`, the four operands, then `Application completed`; exit code 0). It is **non-functional at the `NestedChild` leaf** because of the circular-import defect analyzed in §2.4.4. |
 
-### 2.4.4 F-004 — Nested Git Submodule Composition
+### 2.4.4 F-004: Nested Git-Submodule Composition
 
-| Consideration | Detail (as evidenced) |
+| Dimension | Detail |
 | --- | --- |
-| Technical Constraints | Requires Git submodule support and two-level nesting; populating the tree needs network access to the GitHub remotes and `git submodule update --init --recursive` |
-| Performance Requirements | Not applicable — this is a build-time composition concern, not a runtime execution path |
-| Scalability Considerations | Each added level multiplies the duplicated files; there is no code-sharing mechanism between levels — every level is a full copy of the same two files |
-| Security Implications | Submodule remotes are public GitHub HTTPS URLs referenced at pinned commits; there is no verification of submodule contents, which is why the defective `NestedChild` copy was integrated undetected |
-| Maintenance Requirements | Highest maintenance burden in the system — six near-duplicate files kept in sync across three repositories; the outstanding `NestedChild` defect (its `service.py` is a copy of `app.py`) causes a reproducible `ImportError` and must be corrected by restoring a `service.py` that defines `calculate_total` |
+| Technical Constraints | Build-time only, declared in `.gitmodules` (root → `ChildRepo`) and `ChildRepo/.gitmodules` (`ChildRepo` → `NestedChild`). Population requires a recursive clone/update; submodules are pinned to specific commit SHAs (`ChildRepo` at `63b3f43`, `NestedChild` at `d57c9dd`) whose remotes are external GitHub repositories under the `lakshya-blitzy` account. `NestedChild` is declared and pinned but not initialized in the working checkout. |
+| Performance Requirements | No runtime cost; the only cost is clone/fetch time proportional to the number and size of submodules. |
+| Scalability Considerations | Fixed three-level depth (parent → `ChildRepo` → `NestedChild`); each level replicates the same two-file (`app.py` + `service.py`) pattern rather than sharing code. |
+| Security Implications | Supply-chain: pinning to explicit commit SHAs provides reproducibility and integrity of the referenced revisions, but availability and integrity depend on the external GitHub remotes; no submodule signature verification is evidenced in the repository. |
+| Maintenance Requirements | The deepest leaf is defective (see analysis below) and is recorded as a Known Issue in `README.md`. Because the two-file pattern is copied per level, corrective and evolutionary changes must be propagated to each level individually. |
 
-## 2.5 Traceability Matrix and Requirement Governance
+#### 2.4.4.1 NestedChild Circular-Import Defect
 
-This sub-section links every requirement to its source evidence and verification method, records how the requirements are versioned, and states the assumptions and constraints under which they were derived. All line references are to the tracked files on branch `2007_01` at commit `c77daf2`.
+The `NestedChild` leaf is non-functional. Its `service.py` and `app.py` are byte-for-byte identical, and both begin with `from service import calculate_total`. Consequently `service.py` attempts to import a symbol from itself, and `calculate_total` is never actually defined at the leaf. Running `python3 app.py` at `NestedChild` produces no standard output and exits with code 1, raising `ImportError: cannot import name 'calculate_total' from partially initialized module 'service' (most likely due to a circular import)`.
 
-### 2.5.1 Requirements Traceability Matrix
+This defect degrades two features at the deepest level only: F-003 (the workflow cannot run) and F-004 (the composition's deepest leaf is broken). The root and `ChildRepo` levels are unaffected. The corrective action is to make `NestedChild/service.py` *define* `calculate_total` (and `calculate_average`) as the root and `ChildRepo` modules do, rather than importing the name from itself.
 
-**Feature-to-requirement coverage**
+## 2.5 Traceability Matrix
 
-| Feature ID | Requirement IDs | Primary Source |
+This matrix traces every functional requirement defined in §2.2 back to its source artifact and forward to the evidence that verifies it, and links each feature to the related specification sections. Because the repository contains no automated test suite or CI (§1.3.2), verification is by first-hand execution and static inspection of the source at the current `HEAD` (branch `2007_01`, commit `9ba0477`), performed on Python 3.12.3.
+
+### 2.5.1 Feature-to-Requirement-to-Source Matrix
+
+| Requirement ID | Requirement Summary | Source Artifact (file:line) |
 | --- | --- | --- |
-| F-001 | F-001-RQ-001, F-001-RQ-002 | `service.py` |
-| F-002 | F-002-RQ-001, F-002-RQ-002 | `service.py` |
-| F-003 | F-003-RQ-001, F-003-RQ-002, F-003-RQ-003 | `app.py` |
-| F-004 | F-004-RQ-001, F-004-RQ-002, F-004-RQ-003 | `.gitmodules` (+ per-level files) |
+| F-001-RQ-001 | Sum a numeric iterable in a single pass | `service.py` L35-41 |
+| F-001-RQ-002 | Return `0` for an empty iterable | `service.py` L35, L41 |
+| F-001-RQ-003 | Behave as a pure, side-effect-free function | `service.py` L9-11, L18-41 |
+| F-002-RQ-001 | Compute mean as total ÷ count (→ 25.0 for the sample) | `service.py` L78 |
+| F-002-RQ-002 | Return `0` for empty/falsey input (no division by zero) | `service.py` L75-76 |
+| F-003-RQ-001 | Sum the fixed list and print `Total: 100` | `app.py` L34, L36 |
+| F-003-RQ-002 | Print each operand on its own line | `app.py` L39-40 |
+| F-003-RQ-003 | Print `Application completed` and exit 0 | `app.py` L42 |
+| F-003-RQ-004 | Produce no side effects on import (`__main__` guard) | `app.py` L45-46 |
+| F-004-RQ-001 | Root repository declares the `ChildRepo` submodule | `.gitmodules` |
+| F-004-RQ-002 | `ChildRepo` declares the `NestedChild` submodule | `ChildRepo/.gitmodules` |
+| F-004-RQ-003 | Submodules resolve to pinned commit SHAs | Git submodule pins (`63b3f43`, `d57c9dd`) |
 
-**Requirement traceability**
+### 2.5.2 Requirement-to-Verification Matrix
 
-| Requirement ID | Feature | Source Evidence | Verification Method |
-| --- | --- | --- | --- |
-| F-001-RQ-001 | F-001 | `service.py:1-7` (`calculate_total`) | Dynamic — `python app.py` prints `Total: 100` |
-| F-001-RQ-002 | F-001 | `service.py:2,4-5` (accumulator + loop) | Static — code inspection (`total = 0`, empty loop) |
-| F-002-RQ-001 | F-002 | `service.py:14` (`calculate_total(numbers) / len(numbers)`) | Dynamic — direct call returns `25.0` |
-| F-002-RQ-002 | F-002 | `service.py:11-12` (`if not numbers: return 0`) | Static — code inspection of the guard |
-| F-003-RQ-001 | F-003 | `app.py:4,6,8` (fixed list, call, print total) | Dynamic — first stdout line is `Total: 100` |
-| F-003-RQ-002 | F-003 | `app.py:10-11` (loop printing each element) | Dynamic — stdout lines `10`, `20`, `30`, `40` |
-| F-003-RQ-003 | F-003 | `app.py:13,15-16` (sentinel + `__main__` guard) | Dynamic — last line `Application completed`, exit `0`; import yields no output |
-| F-004-RQ-001 | F-004 | root `.gitmodules` (`ChildRepo` stanza) | Static — file inspection |
-| F-004-RQ-002 | F-004 | `ChildRepo/.gitmodules` (`NestedChild` stanza) | Static — file inspection |
-| F-004-RQ-003 | F-004 | `app.py` / `service.py` at all three levels | MD5 comparison + dynamic run (`NestedChild/app.py` → `ImportError`) |
+| Requirement ID | Verification Method | Expected / Observed Result |
+| --- | --- | --- |
+| F-001-RQ-001 | Function invocation | `calculate_total([10,20,30,40])` → `100` |
+| F-001-RQ-002 | Function invocation | `calculate_total([])` → `0` |
+| F-001-RQ-003 | Static inspection + module import | No I/O or mutation; `import app` emits no stdout |
+| F-002-RQ-001 | Function invocation | `calculate_average([10,20,30,40])` → `25.0` |
+| F-002-RQ-002 | Function invocation | `calculate_average([])` → `0` |
+| F-003-RQ-001 | Runtime execution (`python3 app.py`) | First stdout line `Total: 100` (root & `ChildRepo`) |
+| F-003-RQ-002 | Runtime execution | Lines `10`, `20`, `30`, `40` printed in order |
+| F-003-RQ-003 | Runtime execution + exit code | Final line `Application completed`; exit code `0` |
+| F-003-RQ-004 | Module import | `import app` produces no stdout |
+| F-004-RQ-001 | Static file inspection | `.gitmodules` declares `ChildRepo` remote/path |
+| F-004-RQ-002 | Static file inspection | `ChildRepo/.gitmodules` declares `NestedChild` |
+| F-004-RQ-003 | Git submodule state inspection | `ChildRepo` → `63b3f43`; `NestedChild` → `d57c9dd` |
 
-Every requirement traces to a concrete file and a repeatable verification method; the only requirement with a verified negative outcome is F-004-RQ-003 at the `NestedChild` level.
+### 2.5.3 Cross-Reference Matrix
 
-### 2.5.2 Requirement Versioning
+Each feature is linked to the requirements sections that specify it and to the Section 1 context that frames it. The process/behavior view for all runtime features is the dependency map in §2.3.1.
 
-The repository carries no requirements document, roadmap, semantic version, release tag, or `CHANGELOG` (`git tag` returns nothing and no version/release files exist). The requirements in this section are therefore a **baseline (v1.0)** reverse-engineered from the tracked source at the commit below; any change to the six tracked Python files or the two `.gitmodules` descriptors invalidates the affected acceptance criteria and requires re-baselining.
+| Feature ID | Requirements Sections | Related Context Sections |
+| --- | --- | --- |
+| F-001 | §2.1.2, §2.2.1, §2.4.1 | §1.2.2, §1.2.3, §2.3.1 |
+| F-002 | §2.1.3, §2.2.2, §2.4.2 | §1.2.2, §2.3.1 |
+| F-003 | §2.1.4, §2.2.3, §2.4.3 | §1.2.2, §1.2.3, §2.3.1, §2.4.4.1 |
+| F-004 | §2.1.5, §2.2.4, §2.4.4 | §1.2.2, §1.3, §2.4.4.1 |
 
-| Governance Item | Value (as evidenced) |
-| --- | --- |
-| Requirements baseline version | 1.0 (reverse-engineered from current source) |
-| Source branch | `2007_01` |
-| Source commit (HEAD) | `c77daf2` — "Add child submodule" |
-| Total commits in history | 6 |
-| Release tags / CHANGELOG | None present |
-| Version control | Git, with two nested submodules (`ChildRepo`, `ChildRepo/NestedChild`) |
+### 2.5.4 Assumptions, Constraints, and Requirement Versioning
 
-### 2.5.3 Assumptions and Constraints
+**Assumptions.** The following assumptions are stated in or implied by the source and its docstrings:
 
-**Assumptions**
+- Inputs to the calculation functions are numeric; the functions perform no type validation (`service.py` L26-27).
+- `calculate_average` (F-002) is invoked only with sized collections; unsized iterables raise `TypeError` (`service.py` L69-71).
+- The runtime targets Python 3.6+ per the module docstring (`service.py` L11-12); all behavior above was confirmed on Python 3.12.3.
+- Full composition (F-004) assumes a recursive submodule clone/update with access to the external GitHub remotes under the `lakshya-blitzy` account.
 
-| ID | Assumption |
-| --- | --- |
-| A-01 | The four catalogued features constitute the complete functional surface — supported by exhaustive inspection (only six `.py` files and a single import statement repository-wide) |
-| A-02 | The `Completed` status reflects committed presence in the repository, because no issue tracker, roadmap, or formal sign-off exists |
-| A-03 | Priority and complexity ratings are relative to the demonstration's single executed path (F-001 and F-003 are Critical as the only working end-to-end path; F-002 is Low because it is unexercised) |
-| A-04 | The numeric-input expectation of `calculate_total`/`calculate_average` is inferred from the only observed input (`[10, 20, 30, 40]`); no type contract is declared in code |
+**Constraints.** The following constraints bound these requirements and are evidenced by the repository's contents:
 
-**Constraints**
+- Standard-library only — no third-party runtime dependencies and no dependency manifest (`requirements.txt`, `setup.py`, and `pyproject.toml` are absent).
+- No automated tests and no CI configuration exist, so all acceptance criteria are behavior-based (§1.3.2).
+- Feature logic is replicated across the three repository levels rather than shared, so requirements must be satisfied independently at each level.
+- The `NestedChild` leaf does not satisfy F-003 (and thus breaks the deepest level of F-004) because of the circular-import defect documented in §2.4.4.1.
 
-| ID | Constraint |
-| --- | --- |
-| C-01 | No requirements, design, roadmap, or tests exist in the repository; requirements are reverse-engineered and testable only against observed behavior |
-| C-02 | CSV files (e.g., `large.csv` at each level) are excluded from analysis by the `.blitzyignore` `*.csv` rule and are not read by any code |
-| C-03 | The `ChildRepo/NestedChild` `ImportError` is a verified current-state defect, not a planned future enhancement; no roadmap or commit proposes a fix |
-| C-04 | All requirements and acceptance criteria are scoped to branch `2007_01` at commit `c77daf2`; other branches were not used as evidence |
+**Requirement Versioning.** These requirements constitute the baseline set (v1.0) for the current `HEAD` of branch `2007_01` (commit `9ba0477`). They are reverse-engineered from the source rather than maintained in a separate requirements register; consequently the authoritative version reference is the Git revision itself, and any change to `app.py`, `service.py`, `.gitmodules`, or the submodule pins constitutes a new requirement baseline.
 
 ## 2.6 References
 
-The following repository files, folders, metadata, and cross-referenced specification sections were inspected as evidence for this Product Requirements section. No external web sources were used.
+The following repository artifacts and specification sections were examined first-hand and cited as evidence throughout Section 2. No external web sources were used; all behavior was verified by direct inspection and execution of the source at branch `2007_01`, commit `9ba0477`.
 
-**Root repository (`600K_ParentRepo`)**
+**Source Files**
 
-- `app.py` - established F-003 (the `main()` workflow, `__main__` guard, stdout output) and the F-001 consumer via `from service import calculate_total`.
-- `service.py` - established F-001 (`calculate_total`, lines 1-7) and F-002 (`calculate_average`, lines 10-14, including the internal call at line 14).
-- `.gitmodules` - established F-004-RQ-001 (the `ChildRepo` submodule path and remote URL).
-- `.blitzyignore` - established the `*.csv` exclusion (constraint C-02) honored throughout this section.
-- `README.md` - established the absence of any business/requirements documentation (one-line title only).
+- `app.py` — Root entry-point; established F-003 (`main()`, the fixed list `[10, 20, 30, 40]`, the `Total:` and per-operand prints, `Application completed`, and the `__main__` guard) and its dependency on F-001 via `from service import calculate_total`.
+- `service.py` — Root calculation module; established F-001 (`calculate_total`) and F-002 (`calculate_average`), their return values and edge cases, and the module-level purity/no-state constraints and Python 3.6+ target.
+- `ChildRepo/app.py` — Second-level entry-point; confirmed the two-file pattern and functional equivalence to the root workflow.
+- `ChildRepo/service.py` — Second-level calculation module; confirmed replication of F-001/F-002.
+- `ChildRepo/NestedChild/app.py` — Leaf entry-point; confirmed it is byte-identical to the leaf `service.py` and imports `calculate_total` from `service`.
+- `ChildRepo/NestedChild/service.py` — Leaf calculation module; established the circular-import defect (imports `calculate_total` from itself) analyzed in §2.4.4.1.
+- `ChildRepo/NestedChild/README.md` — Leaf documentation, reviewed alongside the defect analysis.
+- `README.md` — Project overview and Known Issues; corroborated the documented `NestedChild` defect.
 
-**First-level submodule (`ChildRepo/`)**
+**Configuration and Submodule Declarations**
 
-- `ChildRepo/` - folder; the first nested Git submodule mirroring the root two-file structure.
-- `ChildRepo/app.py` - verified byte-identical to root `app.py` (MD5 `a7f6989…`); evidence for F-004-RQ-003.
-- `ChildRepo/service.py` - verified byte-identical to root `service.py` (MD5 `12093c1…`); evidence for F-004-RQ-003.
-- `ChildRepo/.gitmodules` - established F-004-RQ-002 (the `NestedChild` submodule path and remote URL).
-- `ChildRepo/README.md` - one-line title (`# 600K_ChildRepo`).
+- `.gitmodules` — Root submodule declaration; established F-004-RQ-001 (the `ChildRepo` link).
+- `ChildRepo/.gitmodules` — Second-level submodule declaration; established F-004-RQ-002 (the `NestedChild` link).
 
-**Second-level submodule (`ChildRepo/NestedChild/`)**
+**Folders (Submodule Tree)**
 
-- `ChildRepo/NestedChild/` - folder; the deepest (leaf) submodule, with no `.gitmodules`.
-- `ChildRepo/NestedChild/app.py` - verified byte-identical to root `app.py`.
-- `ChildRepo/NestedChild/service.py` - verified byte-identical to `app.py` (MD5 `a7f6989…`); the defect behind F-004-RQ-003's negative outcome (no `calculate_total`, causing the circular-import `ImportError`).
-- `ChildRepo/NestedChild/README.md` - one-line title (`# 600K_Nested_ChildRepo`).
+- `ChildRepo/` — Second-level submodule, pinned at commit `63b3f43`; contained the mirrored `app.py`/`service.py` and its own `.gitmodules`.
+- `ChildRepo/NestedChild/` — Third-level (leaf) submodule, declared and pinned at commit `d57c9dd`; contained the defective mirrored files.
 
-**Repository metadata and runtime verification**
+**Governance Files Consulted**
 
-- Git metadata (branch `2007_01`, HEAD `c77daf2`, six-commit log, empty `git tag` list, `git submodule status --recursive`) - established the versioning baseline (Section 2.5.2) and the nested-submodule topology.
-- Runtime execution under Python 3.12.3 at each level - established the dynamic acceptance-criteria outcomes (root and `ChildRepo` succeed; `NestedChild/app.py` raises `ImportError`).
-- Repository-wide search for imports and function usages - established the call graph in Section 2.3 (single import statement; `calculate_average` never invoked).
+- `.blitzyignore` (root, `ChildRepo/`, `ChildRepo/NestedChild/`) — Each excludes `*.csv`; the CSV data files at every level were therefore neither read nor documented.
 
-**Cross-referenced specification sections**
+**Cross-Referenced Specification Sections**
 
-- 1.1 Executive Summary - corroborated the demonstration/scaffold characterization and the codebase-size facts.
-- 1.2 System Overview - corroborated the component structure and provided the referenced component/data-flow diagram (1.2.2).
-- 1.3 Scope - corroborated the in-scope capabilities and out-of-scope absences reflected in the feature set.
-- 1.4 References - corroborated the evidentiary file inventory.
+- §1.1 Executive Summary — System purpose and demonstration intent.
+- §1.2 System Overview — Source of the canonical feature identifiers (§1.2.2) and de-facto acceptance criteria (§1.2.3) reused throughout Section 2.
+- §1.3 Scope — Boundary that confirms the absence of external integrations, tests, and CI (§1.3.2).
+- §1.4 References — Governing definitions and terminology.
 
 # 3. Technology Stack
 
 ## 3.1 Programming Languages
 
-The system is implemented in a **single programming language — Python** — across every component and every submodule level. No other programming, scripting, templating, markup, or query language is present anywhere in the repository. The complete source inventory consists solely of `app.py` and `service.py` files (six Python source files, 92 lines in total) and their compiled bytecode, replicated at the root and at each nested submodule level.
+The system's technology stack is deliberately minimal. The entire codebase is implemented in a **single programming language — Python** — using only the language's built-in features and standard library; there are no third-party runtime dependencies, no build or packaging tooling, and no database, network, or cloud services (each documented in the sub-sections that follow). This section inventories the language, its versions, and the rationale, grounded strictly in the repository's source files.
+
+Python is the only programming, scripting, templating, markup, or query language present anywhere in the repository. The complete source inventory is six Python modules — a paired `app.py` (entry point) and `service.py` (numeric helpers) replicated at each of the three repository tiers — totaling 282 lines including docstrings and comments. Markdown (`README.md`) is documentation and `.gitmodules` is Git configuration; neither is application code. A repository-wide, non-ignored file-extension census confirms this composition: 6 `.py`, 4 `.pyc` (generated bytecode), 4 `.md`, 3 `.blitzyignore`, and 2 `.gitmodules`.
 
 ### 3.1.1 Language Inventory by Component
 
-Because the repository is a pure-Python demonstration with no web, mobile, native, or infrastructure tiers, the "platform/component" breakdown reduces to the two Python roles that recur at each of the three repository levels (`600K_ParentRepo` root, `ChildRepo`, and `ChildRepo/NestedChild`):
+Because the design intentionally mirrors the same two-file structure at every level of the Git-submodule tree (`600K_ParentRepo → ChildRepo → NestedChild`), the language mapping is uniform across all components:
 
-| Component / Platform | Language | File(s) per level | Role |
+| Component / Tier | Language | Source Files | Role |
 | --- | --- | --- | --- |
-| Application entry point | Python | `app.py` | Defines `main()`; orchestrates the fixed-list workflow and writes to standard output under an `if __name__ == "__main__"` guard |
-| Calculation utility module | Python | `service.py` | Provides the pure `calculate_total` / `calculate_average` functions |
-| Compiled bytecode cache | CPython bytecode | `__pycache__/service.cpython-312.pyc` | Auto-generated import cache (not hand-written source) |
+| Root (`600K_ParentRepo`) | Python (3.6+) | `app.py` (46 lines), `service.py` (78 lines) | Entry-point orchestration + pure numeric helpers |
+| `ChildRepo` (submodule) | Python (3.6+) | `ChildRepo/app.py` (48 lines), `ChildRepo/service.py` (78 lines) | Mirror of the root workflow and helpers |
+| `ChildRepo/NestedChild` (leaf submodule) | Python (3.6+) | `NestedChild/app.py` (16 lines), `NestedChild/service.py` (16 lines) | Bare duplicate leaf (undocumented; see defect note) |
 
-There is no front-end, back-end service tier, mobile application, native code, or infrastructure-definition language in the repository. Consequently, the multi-platform language categories implied by a full-stack default (web/JavaScript-TypeScript, mobile, native iOS/Android/macOS, desktop) are **not applicable** to this system — only server-side/CLI-style Python exists.
+Key characteristics observed in the source:
 
-### 3.1.2 Language Version and Runtime
+- **Separation of concerns.** `app.py` is a thin orchestrator whose `main()` builds a fixed list, delegates arithmetic to `service.py`, and prints results; `service.py` provides pure, side-effect-free functions (`calculate_total`, `calculate_average`) documented as having "no imports, no classes, and no module-level state."
+- **Uniform vocabulary.** The same identifiers (`calculate_total`, `calculate_average`, `main`) recur at every tier, so the language footprint is identical across components.
+- **Leaf divergence.** The `NestedChild/app.py` and `NestedChild/service.py` files are 16 lines each — the bare, undocumented duplicate that produces the leaf's circular-import defect (see §3.1.2 and cross-referenced §2.4.4).
 
-The prompt requires explicit version numbers. Two distinct, individually verifiable version facts apply, and both are reported because they answer different questions (the portability floor versus the toolchain that actually compiled the code):
+### 3.1.2 Version Constraints, Selection Rationale, and Dependencies
+
+**Version floor — Python 3.6+.** The minimum supported interpreter is Python 3.6, driven by the use of f-string literal formatting in the entry point (`app.py:L36`):
+
+```python
+total = calculate_total(numbers)
+print(f"Total: {total}")   # f-string formatting requires Python >= 3.6
+```
+
+Beyond f-strings the code uses only basic control flow and built-ins, so any modern CPython 3.x satisfies the requirement.
+
+**Observed toolchain — CPython 3.12.** The repository's compiled bytecode caches (`__pycache__/*.cpython-312.pyc`, four files) carry the CPython 3.12 bytecode magic number `cb0d0d0a`, and the interpreter available in the environment reports Python 3.12.3; §2.4 records that behavior was verified on Python 3.12.3. The root `README.md` prerequisites table additionally documents successful verification on **Python 3.13.7**. In summary, the source is written to a conservative **3.6+** floor while the artifacts present were produced by **CPython 3.12**, and execution has been confirmed on both 3.12.3 and 3.13.7.
 
 | Attribute | Value | Evidence |
 | --- | --- | --- |
-| Minimum language level | **Python 3.6+** | The highest version-sensitive feature used is f-string formatting (`print(f"Total: {total}")` in `app.py`). No walrus operator (`:=`, 3.8+), `match`/`case` (3.10+), or type annotations were found that would raise the floor |
-| Observed toolchain | **CPython 3.12** | Every committed `__pycache__/service.cpython-312.pyc` cache carries bytecode magic number `cb0d0d0a` (CPython 3.12), identical to the environment interpreter reported as Python 3.12.3 |
-| Runtime execution model | Single-process, synchronous, run-to-completion | `main()` executes once under the `if __name__ == "__main__"` guard; no concurrency, async, or long-running process |
+| Minimum language version | Python 3.6+ | f-strings in `app.py:L36`; `service.py` docstring "targets Python 3.6+" |
+| Observed compile toolchain | CPython 3.12 | `__pycache__/service.cpython-312.pyc` magic `cb0d0d0a`; interpreter 3.12.3 |
+| Documented verification | Python 3.13.7 and 3.12.3 | root `README.md` prerequisites; §2.4 Implementation Considerations |
 
-In short, the source is written to a conservative **Python 3.6+** minimum, while the bytecode caches present in the repository were produced by a **CPython 3.12** interpreter. This is consistent with the "Python 3.6+ runtime; standard library only" constraint recorded in the System Overview and Scope sections of this specification.
+**Selection rationale.** As a teaching / demonstration scaffold (§1.2), Python with a standard-library-only, built-in-only design maximizes portability and eliminates any installation, dependency-resolution, or build step — the root `README.md` states "the project runs with a stock Python interpreter out of the box." The pure-function style of `service.py` keeps the helpers trivially reusable and testable, and the standard-library-only constraint makes the code forward-compatible across subsequent 3.x releases without any dependency pinning.
 
-### 3.1.3 Selection Criteria, Constraints, and Dependencies
+**Constraints and dependencies.** The only import statement anywhere in the codebase is the **intra-repository** `from service import calculate_total` (`app.py:L15`); there are no standard-library or third-party imports. This creates a single structural constraint: each `app.py` must be co-located with a `service.py` that actually **defines** `calculate_total`. That invariant holds at the root and `ChildRepo` tiers but is **violated at the `NestedChild` leaf**, where `service.py` is a byte-for-byte duplicate of `app.py` and therefore re-issues `from service import calculate_total` against itself, producing a circular-import `ImportError` (exit code 1, empty standard output). This is a documented, preserved defect analyzed in §2.4.4. The language choice itself imposes no other external constraints — no runtime, operating-system, or hardware-architecture lock-in beyond a CPython 3.6+ interpreter.
 
-**Selection criteria (inferred from the code).** The repository contains no design document that justifies the language choice; the following rationale is inferred only from observable properties and is consistent with Python's fitness for a minimal teaching/scaffold example:
+## 3.2 Frameworks &amp; Libraries
 
-- **Zero-setup execution** — a Python source file runs directly with a system interpreter, with no compilation, build, or dependency-installation step, matching the repository's complete absence of manifests and build files.
-- **Readability of a pure-function example** — the summation and average logic in `service.py` is expressed as small, side-effect-free functions, which suits Python's concise syntax and low ceremony.
-- **Standard-library-only portability** — relying only on language built-ins removes any external toolchain requirement, aligning with the self-contained demonstration goal.
+No application framework or third-party library is used anywhere in the system. The repository contains no dependency manifest and no import of any external package; the codebase relies exclusively on the Python language and, in practice, touches only language built-ins. This is a deliberate design property of the demonstration scaffold (§1.2) rather than an omission.
 
-**Constraints and dependencies.**
+**Framework surface.** There is no web, CLI, GUI, ORM, testing, or AI/agent framework in the codebase. None of the frameworks commonly assumed for such a stack are present — a targeted inventory found no Flask/Django/FastAPI, no Langchain or model SDK, and no front-end or native-application toolchain. The application's control flow is hand-written in plain Python: `app.py` orchestrates through a `main()` function guarded by `if __name__ == "__main__"`, and `service.py` exposes plain module-level functions.
 
-- **No external language dependencies.** The only `import` statement anywhere in the repository is the intra-repository `from service import calculate_total`; there is no dependency on any third-party package, and not even a non-built-in standard-library module is imported.
-- **Numeric-type assumption.** `calculate_total` relies on `total += number` with the accumulator initialized to integer `0`, so inputs must support numeric addition; there is no type guarding, and a non-numeric element would raise an unhandled `TypeError`.
-- **Module co-location constraint.** Each `app.py` must sit beside a `service.py` that actually defines `calculate_total`. This holds at the root and `ChildRepo` levels but is violated at `ChildRepo/NestedChild`, where `service.py` is a byte-for-byte copy of `app.py`; executing `NestedChild/app.py` therefore fails with a circular-import `ImportError`.
-- **Security posture (language level).** As a pure-computation program with no I/O, network access, or external input, the language-level attack surface is minimal; the only material caveat is the absence of input validation noted above.
-
-
-## 3.2 Frameworks and Libraries
-
-The repository uses **no application frameworks and no third-party libraries of any kind.** This is a deliberate, verifiable characteristic of the codebase — confirmed by the total absence of dependency manifests and by static inspection of every import statement — rather than a gap in this specification. The functionality is realized entirely with Python language built-ins.
-
-### 3.2.1 Framework and Library Inventory
-
-The table below records each framework/library category the prompt asks about, together with its verified status in this repository:
-
-| Category | Status | Evidence |
+| Framework / library category | Status | Evidence |
 | --- | --- | --- |
-| Web / API framework (e.g., Flask, FastAPI, Django) | **Not present** | No web server, routing, WSGI/ASGI, or request-handling code; no such imports |
-| Frontend / UI framework (e.g., React, TailwindCSS) | **Not present** | No JavaScript/TypeScript, HTML, or CSS files exist anywhere |
-| AI / ML framework (e.g., LangChain) | **Not present** | No AI/ML imports, model code, or prompt orchestration |
-| Testing framework (e.g., pytest, unittest) | **Not present** | No test files, fixtures, or test-runner configuration |
-| Third-party utility libraries | **Not present** | The only import anywhere is the intra-repository `from service import calculate_total` |
-| Python standard-library modules | **None imported** | No `import` of any standard-library module (e.g., `sys`, `os`, `csv`); the code uses only language built-ins (`print`, f-strings, `len`, arithmetic operators, `for`) |
+| Web / API framework | None | No such imports; no network I/O anywhere (§1.2, §1.3.2) |
+| CLI / argument-parsing framework | None | Input is a hard-coded list; the only import is the intra-repo `service` import (`app.py:L15`) |
+| AI / agent framework | None | No `langchain` or model-SDK imports present |
+| ORM / database library | None | No database code or drivers (see §3.5) |
+| Testing framework | None | No `pytest`/`unittest` usage and no test files (see §3.6) |
+| UI / front-end framework | None | Repository is Python-only; no JavaScript/TypeScript sources (§3.1) |
 
-None of the frameworks or libraries named in the default technology stack (Flask, LangChain, React, TailwindCSS, React-Native, ElectronJS, and the native toolkits) appear in the repository. Since no library is used, there are no framework or library **version numbers** to report — the only versioned component in the entire stack is the Python language itself (see §3.1.2).
+**Standard-library usage.** The only "library" available to the code is the Python Standard Library, and the code uses it only implicitly through built-in functions and operators — `print()`, `len()`, the `for` loop, and the `+`/`+=`/`/` arithmetic operators. There are **no `import` statements that resolve to standard-library modules**; the single import anywhere is the intra-repository `from service import calculate_total` (§3.1.2). Accordingly, `service.py` is documented as having "no imports, no classes, and no module-level state."
 
-### 3.2.2 Compatibility Requirements
+**Compatibility requirements.** Because there are no frameworks or libraries, there are no inter-package version-compatibility constraints, dependency-resolution requirements, or transitive-dependency trees to manage. The sole compatibility requirement is the language-level one established in §3.1.2: a CPython interpreter at version **3.6 or newer** (for f-string support). The code has been observed to run unchanged on CPython 3.12.3 and, per the root `README.md`, 3.13.7.
 
-Because there are no frameworks or libraries, there are **no inter-package version-compatibility constraints, dependency-resolution requirements, or transitive-dependency trees** to manage. The single compatibility requirement is the language-level one established in §3.1.2: a Python interpreter at version **3.6 or newer** (for f-string support). The code runs unchanged on the observed **CPython 3.12** toolchain, and its standard-library-only, built-in-only design makes it forward-compatible with subsequent 3.x releases without any dependency-pinning activity.
+**Justification.** For a minimal teaching/demonstration project, avoiding frameworks and libraries removes all installation and dependency-management friction and keeps the example readable end-to-end. It also yields a stable, forward-compatible baseline: standard-library-only, built-in-only code needs no version pinning and no periodic dependency upgrades.
 
-### 3.2.3 Justification
-
-The zero-framework, zero-library approach is coherent with the repository's purpose as a minimal list-summation demonstration:
-
-- **Fit for purpose.** The workload — summing a fixed four-element list and printing the result — needs nothing beyond built-in language constructs, so no framework or library would add value.
-- **Self-containment.** Avoiding libraries keeps the example runnable with a bare interpreter and eliminates any install step, which matches the observed absence of dependency manifests and lockfiles.
-- **Security benefit.** A no-dependency posture removes third-party supply-chain and known-vulnerability (CVE) exposure entirely; there are no external packages to patch, pin, mirror, or audit, and no transitive dependencies that could introduce risk.
-
+**Security implications.** The absence of third-party frameworks and libraries eliminates the corresponding attack surface — there is no dependency supply chain to compromise, no known-vulnerability (CVE) exposure inherited from external packages, and no framework configuration to harden. The residual security considerations are intrinsic to the hand-written code: for example, `calculate_total`/`calculate_average` perform no input validation, so a non-numeric element would propagate a `TypeError` (§2.4), which is a property of the code rather than of any framework.
 
 ## 3.3 Open Source Dependencies
 
-The repository declares and consumes **zero open-source or third-party dependencies.** No package manifests, lockfiles, or vendored packages of any kind exist, and no package registry (PyPI, npm, or otherwise) is referenced. This is confirmed both by a full-tree file scan (no manifests found) and by static analysis of every import statement.
+The system has **no open-source or third-party package dependencies**. Every item requested for this sub-section — third-party/open-source libraries, package dependencies, package registries, and pinned versions — resolves to *none* for this codebase, verified by both the absence of any dependency manifest and the absence of any external import.
 
-### 3.3.1 Declared Dependencies and Manifests
+**No dependency manifests.** The repository contains no `requirements.txt`, `setup.py`, `setup.cfg`, `pyproject.toml`, `Pipfile`, `poetry.lock`, or any other manifest/lock file at any tier — confirmed by a recursive search over all non-ignored paths. The root `README.md` states this explicitly: there are "no third-party runtime dependencies and no dependency manifest."
 
-A scan of the root, `ChildRepo`, and `ChildRepo/NestedChild` levels found none of the dependency-declaration or lock artifacts that a Python or JavaScript project would use:
+**No package-registry usage.** Because nothing is declared or imported, no package registry (PyPI, conda-forge, and the like) is consulted, and there is no install step (`pip install`, `poetry install`, etc.). The application runs directly on a stock interpreter.
 
-| Manifest / lockfile type | Present? | Consequence |
+| Requested item | Finding for this system |
+| --- | --- |
+| Third-party / open-source libraries | None |
+| Package dependencies (direct or transitive) | None |
+| Package registries | None used (no PyPI / conda) |
+| Pinned dependency versions | None (no manifest or lock file) |
+
+**Only versioned dependency is the runtime.** The single versioned piece of software the code depends on is the Python interpreter/runtime itself — minimum **Python 3.6+**, observed **CPython 3.12** (§3.1.2). CPython is itself open-source software, but it is the execution environment, not a packaged library dependency bundled with the project, and it is not vendored into the repository.
+
+**External repository references (not package dependencies).** The only external references declared anywhere are the **Git submodule remotes**, public GitHub HTTPS URLs recorded in `.gitmodules` and `ChildRepo/.gitmodules`:
+
+| Submodule | Remote URL | Pinned commit |
 | --- | --- | --- |
-| `requirements.txt` / `requirements*.txt` | No | No pip-installable dependency set |
-| `pyproject.toml` (PEP 517/518) | No | No build-system or dependency declaration |
-| `setup.py` / `setup.cfg` | No | Not packaged as a distributable |
-| `Pipfile` / `Pipfile.lock` (pipenv) | No | No pipenv-managed environment |
-| `poetry.lock` / any `*.lock` | No | No locked dependency graph |
-| `package.json` / `package-lock.json` | No | No Node/JavaScript ecosystem dependencies |
+| `ChildRepo` | `https://github.com/lakshya-blitzy/600K_ChildRepo.git` | `63b3f43` |
+| `NestedChild` | `https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git` | `d57c9dd` |
 
-Correspondingly, there are no `venv`, `.venv`, `node_modules`, `site-packages`, `dist`, or `build` directories anywhere in the tree.
-
-### 3.3.2 Effective Dependency Graph
-
-Static analysis of every `import` confirms the runtime dependency graph is entirely internal:
-
-- The only import statement anywhere is `from service import calculate_total` — a repository-local module import, not an external package.
-- No standard-library module is imported; the code relies only on Python built-ins.
-
-The prompt's requested items — "third-party / open-source libraries identified," "package dependencies," "registries," and "versions" — therefore all resolve to **none** for this system. The only versioned software the system depends on is the Python interpreter/runtime itself (Python 3.6+ minimum; observed CPython 3.12), documented in §3.1.2. The only external *repository* references are the Git submodule remotes (public GitHub HTTPS URLs) declared in `.gitmodules`; these are a source-composition mechanism resolved at checkout time rather than packaged library dependencies, and are detailed in §3.6.
-
-### 3.3.3 Implications
-
-- **Supply-chain security.** With no external packages and no transitive dependencies, the repository has no third-party CVE surface, no dependency-confusion risk, and nothing to pin, mirror, or scan.
-- **Reproducibility.** Any Python 3.6+ interpreter reproduces identical behavior with no install step, because there is no dependency resolution to perform.
-- **Maintenance.** There is no dependency-update burden (no version bumps, no lockfile regeneration); the only version-management concern in the system is the Python runtime level itself.
-
+These are a **source-composition mechanism resolved at checkout time** (via a recursive `git clone` / `git submodule update`), not packaged library dependencies pulled from a package index. They are described as an external integration in §3.4 and as part of the development/deployment model in §3.6. Consequently there is no transitive dependency tree, no dependency-vulnerability surface inherited from packaged libraries, and no version-pinning maintenance beyond the submodule commit SHAs themselves.
 
 ## 3.4 Third-Party Services
 
-The system integrates with **no third-party services.** It performs no network, database, or file I/O and embeds no external SDKs, so there are no external APIs, authentication providers, monitoring tools, or cloud services to document. This is consistent with the System Overview finding that, at runtime, "the system integrates with nothing external."
+At runtime the system integrates with **no third-party services of any kind**. It performs no network, HTTP, or socket I/O; makes no external or web-API calls; uses no authentication/identity provider; emits no telemetry to any monitoring or observability platform; and provisions no cloud resources. This is consistent with the system's scope (§1.2, §1.3.2), which records that "no external integration points — network or web APIs, databases, message queues, caches, or third-party services — are implemented or declared anywhere in the codebase."
+
+None of the externally hosted services commonly assumed for such a stack are present — there is no cloud platform (AWS/Azure/GCP), no managed authentication service (e.g., Auth0), and no monitoring/APM tool.
 
 | Service category | Status | Evidence |
 | --- | --- | --- |
-| External APIs / integrations | **None** | No HTTP client, SDK, or network code; no endpoint or credential configuration |
-| Authentication services (e.g., Auth0) | **None** | No auth, identity, token, or session logic; the program has no users or access control |
-| Monitoring / observability tools | **None** | No logging, metrics, tracing, error-reporting, or APM instrumentation of any kind |
-| Cloud services (e.g., AWS) | **None** | No cloud SDKs, service clients, credentials, or region/endpoint configuration |
-| Messaging / queue / streaming services | **None** | No brokers, queues, or event streams |
+| External / web APIs | None | No network I/O; the only import is intra-repository (§1.2) |
+| Authentication / identity services | None | No auth code, tokens, or provider configuration (§1.3.2) |
+| Monitoring / observability / telemetry | None | No logging, metrics, or tracing hooks (§2.4, §1.3.2) |
+| Cloud services (compute / storage / managed) | None | Runs as a local script; no cloud SDKs or configuration |
+| Source hosting (build/checkout time only) | GitHub | Submodule remotes in `.gitmodules`, `ChildRepo/.gitmodules` |
 
-The only external references anywhere in the repository are the **Git submodule remotes** declared in `.gitmodules` — public GitHub HTTPS URLs for `600K_ChildRepo` (`https://github.com/lakshya-blitzy/600K_ChildRepo.git`) and `600K_Nested_ChildRepo` (`https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`). These are source-composition references resolved by Git tooling at checkout time (see §3.6), **not** runtime service integrations. None of the third-party services named in the default stack (Auth0, AWS, and similar) are present.
+**The single external touchpoint: GitHub (checkout-time only).** The one external service the project interacts with is **GitHub**, and only during source acquisition — not at application runtime. The submodule remotes are public GitHub HTTPS repositories under the `lakshya-blitzy` account:
 
-**Credential / security note.** The repository's tracked source contains no API keys, tokens, secrets, or service credentials. The committed `.gitmodules` files reference the submodules over clean, credential-free HTTPS URLs, so there is no secret material to leak from the repository's versioned content.
+- `ChildRepo` → `https://github.com/lakshya-blitzy/600K_ChildRepo.git` (pinned at `63b3f43`)
+- `NestedChild` → `https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git` (pinned at `d57c9dd`)
 
+The integration mechanism is Git over HTTPS: a recursive `git clone --recursive` (or `git submodule update --init --recursive`) fetches these remotes and populates the working tree. Once checked out, executing the program touches nothing external.
 
-## 3.5 Databases and Storage
+**Integration requirements and security implications.** Populating the tree requires network access to GitHub and a Git client (§3.6); the remotes are pinned to explicit commit SHAs, which provides reproducibility and integrity of the *referenced revisions*. However, availability and integrity ultimately depend on the external GitHub remotes, and the repository evidences **no submodule signature or commit verification** (§2.4.4) — a supply-chain consideration. The root `README.md` adds an operational security note: use clean, token-free clone URLs and "never embed access tokens or credentials in a clone URL that you share."
 
-The system uses **no database and no persistent storage.** It is a stateless, in-memory computation that reads no external data and writes only to standard output; there is no schema, migration, query, transaction, or persistence layer anywhere in the repository.
+## 3.5 Databases &amp; Storage
+
+The system uses **no database and no persistent storage of any kind**. There is no primary or secondary database, no data-persistence layer, no caching service, and no external storage service. All data is held in memory for the duration of a single run and emitted only to standard output.
+
+**No databases.** No relational database (PostgreSQL, MySQL, SQLite, etc.), NoSQL store (e.g., MongoDB), embedded database, driver, or ORM appears anywhere in the codebase — there are no database imports, connection strings, schemas, or query code (§1.3.2). None of the databases commonly assumed for such a stack are present.
+
+**Data-persistence strategy: none (in-memory, ephemeral).** The workflow's only data is the hard-coded in-memory list `[10, 20, 30, 40]` constructed in `main()` (`app.py`); the computed total and each element are written to standard output, after which the process exits and nothing is retained. The program reads no files and writes no files — it "performs no network, database, or file I/O" (§1.2). Persistence is therefore neither implemented nor required.
+
+**Caching: none.** No in-process or external cache (e.g., Redis, Memcached) exists. The only cache-like artifact in the tree is the CPython `__pycache__/` directory containing compiled `*.cpython-312.pyc` bytecode; this is a **Python bytecode import cache produced by the interpreter, not an application data cache** (its role is discussed in §3.6).
+
+**Storage services: none.** There is no object/blob storage (e.g., S3), no file store, and no volume or mount. The CSV files present at each tier are excluded from use and documentation by the repository's `.blitzyignore` (`*.csv`) and are not read by any code in any case (§1.3.2).
 
 | Storage concern | Status | Evidence |
 | --- | --- | --- |
-| Primary database | **None** | No database driver or ORM (e.g., SQLAlchemy, PyMongo, sqlite3); no connection string or DSN |
-| Secondary / analytical store | **None** | No secondary datastore of any kind |
-| Data persistence strategy | **None (ephemeral)** | State exists only as the in-memory list `[10, 20, 30, 40]` during a single run; nothing is written or saved |
-| Caching solution | **None** | No in-process or external cache (e.g., Redis). The `__pycache__` directory is a Python bytecode import cache, not an application data cache |
-| Object / file storage | **None** | No file reads or writes; no cloud object storage (e.g., S3) |
+| Primary database | None | No DB imports, drivers, schemas, or connection strings (§1.3.2) |
+| Secondary database | None | No secondary datastore of any kind |
+| Persistence strategy | In-memory only, ephemeral | Hard-coded list in `app.py`; output to stdout; no file/DB I/O (§1.2) |
+| Caching | None (bytecode cache only) | `__pycache__/*.cpython-312.pyc` is a bytecode import cache, not a data cache |
+| Storage services | None | No object/blob/file store; `*.csv` excluded via `.blitzyignore` |
 
-The only data the program handles is a **hard-coded, in-memory list of four integers** declared in `app.py`, which is passed to `calculate_total` and printed to standard output. No external data source is opened, and no result is retained after the process exits.
+**Security implications.** With no datastore, no persisted data, and no external storage, there is no data-at-rest, no credentials or connection secrets to manage, and no storage-layer attack surface. The system's only output channel is standard output.
 
-**CSV data note.** A large CSV file (`large.csv`, approximately 16 MB) is present at every repository level, but it is excluded from documentation and use by the repository's `.blitzyignore` files (pattern `*.csv`). Independently of that policy, no code reads it — there is no `csv` import and no file-open call anywhere — so it forms no part of the system's storage architecture. None of the databases named in the default stack (MongoDB and similar) are present.
+## 3.6 Development &amp; Deployment
 
-
-## 3.6 Development and Deployment
-
-The repository defines **no formal build, packaging, containerization, or CI/CD tooling.** The development-and-deployment model is deliberately minimal: edit Python source, run it directly with a CPython interpreter, and compose the multi-repository tree with native Git submodules. This aligns with the Scope section, where "Packaging, tests, CI/CD, containerization" are explicitly out of scope — "no manifests, test suite, pipelines, or `Dockerfile`" exist.
+The development-and-deployment model is deliberately minimal and matches the standard-library-only design: edit Python source, run it directly with a CPython interpreter, and compose the multi-repository tree with native Git submodules. The repository defines **no build system, no packaging, no containerization, and no CI/CD tooling** — an alignment explicitly recorded in scope, where "Packaging, tests, CI/CD, containerization" are out of scope with "no manifests, test suite, pipelines, or `Dockerfile`" (§1.3.2).
 
 ### 3.6.1 Development Tooling
 
-| Tool category | Status / tool | Evidence |
-| --- | --- | --- |
-| Language runtime / interpreter | CPython 3.12 (minimum Python 3.6+) | `__pycache__/service.cpython-312.pyc` magic `cb0d0d0a`; interpreter Python 3.12.3 |
-| Version control | Git (with submodules) | `.git/`, `.gitmodules`, submodule `.git` gitdir pointer files |
-| Editor / IDE configuration | None | No `.editorconfig`, IDE project, or workspace files |
-| Linter / formatter / type checker | None configured | No `flake8`, `ruff`, `black`, or `mypy` configuration |
-| Test framework / runner | None | No test files or test-runner configuration |
-| Dependency / environment manager | None | No manifests, lockfiles, or virtual environments (see §3.3) |
+Only two tools are required to develop and run the system: a CPython interpreter and Git.
 
-The practical development workflow evidenced by the repository is: edit `app.py` / `service.py`, then run the module directly with a Python 3.6+ interpreter. On first import of `service`, CPython writes a `service.cpython-312.pyc` bytecode cache into `__pycache__`; those caches are the only build-like artifacts present in the repository.
+| Tool | Version | Role | Evidence |
+| --- | --- | --- | --- |
+| CPython interpreter | 3.6+ min; CPython 3.12 observed (3.12.3); 3.13.7 documented | Runs the program; the only runtime (§3.1.2) | `__pycache__/*.cpython-312.pyc` magic `cb0d0d0a`; root `README.md` prerequisites |
+| Git | Any recent version (2.43.0 observed) | Version control and submodule composition/acquisition | `.gitmodules`, `ChildRepo/.gitmodules`; root `README.md` prerequisites |
+
+No editor/IDE configuration, linter, formatter, type-checker, pre-commit hook, or test configuration is committed to the repository — there is no `.editorconfig`, `.flake8`, `mypy.ini`, `.pre-commit-config.yaml`, or `tox.ini` at any tier. Development is therefore "bring your own editor," with the interpreter as the only mandatory tool.
 
 ### 3.6.2 Build System
 
-There is **no build system.** No `Makefile`, build script, task runner, or packaging configuration (`setup.py`, `pyproject.toml`) exists. As a standard-library-only Python program, the code requires no compilation or bundling step before execution — the only "build" is the implicit bytecode compilation performed by the interpreter at import time (producing the `__pycache__/*.pyc` files). There is no distributable artifact (no wheel, sdist, or archive) and no packaging metadata.
+There is **no build system.** No `Makefile`, build script, task runner, or packaging configuration (`setup.py`, `pyproject.toml`) exists. As standard-library-only Python, the code requires no compilation or bundling step before execution; the only "build" is the **implicit bytecode compilation** performed by the interpreter on first import, which produces the `__pycache__/*.cpython-312.pyc` caches. Those bytecode caches are the only build-like artifacts present in the repository. There is no distributable artifact (no wheel, sdist, or archive) and no packaging metadata.
 
-### 3.6.3 Source Composition — Nested Git Submodules
+### 3.6.3 Containerization and CI/CD
 
-The single composition mechanism in the repository is **native Git submodules**, nested two levels deep:
-
-- The root `600K_ParentRepo` declares the `ChildRepo` submodule in its `.gitmodules` (`url = https://github.com/lakshya-blitzy/600K_ChildRepo.git`).
-- `ChildRepo` declares the `NestedChild` submodule in its own `.gitmodules` (`url = https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`).
-- The submodule working directories carry gitdir pointer files (`ChildRepo/.git` → `../.git/modules/ChildRepo`; `NestedChild/.git` → `../../.git/modules/ChildRepo/modules/NestedChild`).
-
-Populating the full tree requires network access to the public GitHub remotes and a recursive checkout — `git clone --recursive` or `git submodule update --init --recursive`. The submodules are referenced at pinned commits, and (as recorded in the Implementation Considerations) there is no verification of submodule contents; this is how the defective `NestedChild` copy — whose `service.py` is a byte-for-byte copy of `app.py` — was integrated without detection.
-
-The development-composition-execution toolchain is summarized below:
-
-```mermaid
-flowchart TD
-    Dev["Developer / operator"]
-    subgraph VCS["Source Composition (Git submodules)"]
-        direction TB
-        Parent["600K_ParentRepo (root)"]
-        Child["ChildRepo"]
-        Nested["ChildRepo/NestedChild"]
-        Parent -->|".gitmodules reference"| Child
-        Child -->|".gitmodules reference"| Nested
-    end
-    subgraph Exec["Local Execution (CPython 3.12)"]
-        direction TB
-        Run["python app.py"]
-        Pyc["__pycache__/service.cpython-312.pyc<br/>bytecode compiled on import"]
-        Out["stdout: Total, numbers, completion"]
-        Run -->|"from service import calculate_total"| Pyc
-        Run --> Out
-    end
-    Dev -->|"git clone --recursive"| Parent
-    Nested -.->|"working tree checked out"| Run
-```
-
-### 3.6.4 Containerization, CI/CD, and Infrastructure
+No containerization, orchestration, infrastructure-as-code, or continuous-integration/delivery tooling is present:
 
 | Concern | Status | Evidence |
 | --- | --- | --- |
-| Containerization | **None** | No `Dockerfile`, `docker-compose.yml`, or container manifest |
-| CI / CD pipelines | **None** | No `.github/workflows`, and no other CI configuration (GitLab CI, CircleCI, Jenkins, etc.) |
-| Infrastructure as Code | **None** | No Terraform (`*.tf`), CloudFormation, or other IaC files |
-| Deployment target / orchestration | **None documented** | No deployment descriptor, service definition, or environment configuration |
+| Containerization | None | No `Dockerfile`, `docker-compose`, or Kubernetes manifests; `README.md`: "no container or cloud deployment" |
+| CI/CD pipelines | None | No `.github/workflows`, GitLab CI, Jenkins, or other pipeline configuration (§1.3.2) |
+| Infrastructure as Code | None | No Terraform/CloudFormation or provisioning code |
+| Automated tests / quality gates | None | No test suite or test framework; verification is manual (§2.4) |
 
-None of the deployment technologies named in the default stack (Docker, Terraform, GitHub Actions, AWS) are present. The de-facto "deployment" is local execution: obtain the repository recursively (to include the submodules) and run `python app.py`, which prints its output and exits. Because there is no CI/CD, there is also no automated gate that would have caught the `NestedChild` defect prior to integration.
+The de-facto quality gate is manual execution and inspection of standard output, as captured by the success criteria in §1.2.3.
 
+### 3.6.4 Deployment and Run Model
+
+Deployment is simply direct execution of a script from a checked-out working tree; there is no deployment target, packaging, or release process.
+
+- **Acquire.** Clone recursively so the submodules populate: `git clone --recursive <repository-url>`, or for an existing checkout, `git submodule update --init --recursive` (root `README.md`).
+- **Run.** From a given tier's directory, execute `python app.py` (use `python3 app.py` where `python` resolves to Python 2).
+- **Observe.** The root and `ChildRepo` programs print `Total: 100`, each operand, then `Application completed`, exiting 0; the `NestedChild` leaf fails at import with a circular-import `ImportError` (empty stdout, exit 1) — the preserved defect analyzed in §2.4.4.
+
+The end-to-end acquisition-and-run workflow, including the checkout-time GitHub integration (§3.4) and the per-tier runtime outcomes, is:
+
+```mermaid
+flowchart TD
+    Dev["Developer workstation: CPython 3.6+ (observed 3.12.3), Git 2.43.0"]
+    Clone["git clone --recursive (or git submodule update --init --recursive)"]
+    GH["GitHub submodule remotes: ChildRepo @ 63b3f43, NestedChild @ d57c9dd"]
+    Tree["Populated working tree: ParentRepo → ChildRepo → NestedChild"]
+    RunRoot["Run: python app.py (root tier)"]
+    RunChild["Run: python app.py (ChildRepo tier)"]
+    RunNested["Run: python app.py (NestedChild leaf)"]
+    OK["stdout: Total: 100, then 10/20/30/40, then Application completed (exit 0)"]
+    Fail["Circular ImportError: empty stdout (exit 1)"]
+    Bytecode["Side effect on first import: __pycache__/*.cpython-312.pyc written"]
+
+    Dev --> Clone
+    Clone -->|fetch pinned submodules over HTTPS| GH
+    GH --> Tree
+    Tree --> RunRoot
+    Tree --> RunChild
+    Tree --> RunNested
+    RunRoot --> OK
+    RunChild --> OK
+    RunNested --> Fail
+    RunRoot -.-> Bytecode
+    RunChild -.-> Bytecode
+```
 
 ## 3.7 References
 
-The following repository files, folders, and specification sections were examined as evidence for this Technology Stack section. Paths are relative to the repository root. No external web sources were used.
+The following repository files, folders, direct environment observations, and previously authored specification sections were examined as evidence for this section. No web sources were used.
 
-**Repository files:**
+**Files**
 
-- `app.py` - Established Python as the sole language, the f-string usage that sets the Python 3.6+ floor, the intra-repository `from service import calculate_total` import, and the fixed-list stdout workflow.
-- `service.py` - Established the pure `calculate_total` / `calculate_average` functions and the complete absence of imports.
-- `README.md` - Established the one-line documentation (no setup, dependency, or build instructions).
-- `.gitmodules` - Established the `ChildRepo` submodule declaration and its public GitHub HTTPS remote URL.
-- `.blitzyignore` - Established the `*.csv` exclusion policy applied throughout this section.
-- `__pycache__/service.cpython-312.pyc` - Established the observed CPython 3.12 toolchain via bytecode magic number `cb0d0d0a`.
-- `ChildRepo/.gitmodules` - Established the `NestedChild` submodule declaration and its remote URL.
-- `ChildRepo/.git`, `ChildRepo/NestedChild/.git` - Established the submodule gitdir pointer structure (nested two levels deep).
-- `ChildRepo/app.py`, `ChildRepo/service.py`, `ChildRepo/README.md` - Established the mirrored two-file Python structure at the child submodule level.
-- `ChildRepo/NestedChild/app.py` - Established the mirrored entry point at the deepest level.
-- `ChildRepo/NestedChild/service.py` - Established the NestedChild defect (a byte-for-byte copy of `app.py` that lacks `calculate_total`).
-- `ChildRepo/NestedChild/README.md` - Established the minimal documentation at the deepest level.
+- `app.py` — Root entry point; established the f-string usage (`app.py:L36`) that sets the Python 3.6+ floor, the sole intra-repository import `from service import calculate_total` (`app.py:L15`), and the fixed-list `main()` workflow.
+- `service.py` — Root helper module; established the pure `calculate_total`/`calculate_average` functions, the documented "no imports, no classes, and no module-level state," and the Python 3.6+ target.
+- `.gitmodules` — Root Git submodule declaration; established the `ChildRepo` remote URL.
+- `README.md` — Root project documentation; established the prerequisites (Python 3.6+, verified on 3.13.7; Git any recent version), the "no third-party runtime dependencies and no dependency manifest" statement, the recursive clone/update commands, "the project runs with a stock Python interpreter out of the box," the tokenless-clone-URL security note, and "no container or cloud deployment."
+- `ChildRepo/app.py`, `ChildRepo/service.py` — Established the mirrored Python implementation at the middle tier.
+- `ChildRepo/.gitmodules` — Established the `NestedChild` remote URL.
+- `ChildRepo/README.md` — Established the middle-tier prerequisites table (Python / Git / third-party packages = None), "no container or cloud deployment," and the `NestedChild` known-issue.
+- `ChildRepo/NestedChild/app.py`, `ChildRepo/NestedChild/service.py` — Established the 16-line duplicate leaf files whose self-import produces the circular `ImportError` defect.
+- `__pycache__/service.cpython-312.pyc` (and the other three `*.cpython-312.pyc` caches) — Established the observed CPython 3.12 toolchain via bytecode magic number `cb0d0d0a`.
+- `.blitzyignore` (root, `ChildRepo/`, `ChildRepo/NestedChild/`) — Established the `*.csv` exclusion honored throughout this section.
 
-**Repository folders:**
+**Folders**
 
-- `` (repository root) - Established the top-level structure and the verified absence of any dependency manifests, build files, CI/CD configuration, Dockerfiles, and IaC files.
-- `ChildRepo/` - Established the child submodule contents and mirrored structure.
-- `ChildRepo/NestedChild/` - Established the nested submodule contents.
-- `__pycache__/`, `ChildRepo/__pycache__/`, `ChildRepo/NestedChild/__pycache__/` - Established the CPython 3.12 bytecode caches (identical `cb0d0d0a` magic across all three).
+- `__pycache__/` (each tier) — Contained the CPython bytecode caches; the only build-like artifacts (§3.6.2) and a bytecode cache rather than a data cache (§3.5).
+- `ChildRepo/` — Contained the first-level submodule tier mirroring the root two-file structure.
+- `ChildRepo/NestedChild/` — Contained the leaf submodule tier exhibiting the circular-import defect.
 
-**Excluded by policy (not opened):**
+**Direct environment observations**
 
-- `large.csv` (present at every repository level) - Excluded per the `.blitzyignore` `*.csv` rule; not read by any code and used here only to confirm its presence and exclusion from the storage architecture (§3.5).
+- `python3 --version` → Python 3.12.3 and `git --version` → git version 2.43.0 — established the observed toolchain versions.
+- File-extension census and recursive manifest search over all non-ignored paths — established the absence of dependency manifests, configuration files, `Dockerfile`, `Makefile`, shell scripts, and CI/CD configuration.
 
-**Cross-referenced specification sections:**
+**Cross-referenced specification sections**
 
-- §1.2 System Overview - Corroborated zero third-party dependencies, standard-library-only design, Python 3.6+ portability, nested Git submodules, and the NestedChild defect.
-- §1.3 Scope - Corroborated the "Python 3.6+ runtime; standard library only; no build, packaging, or dependency-installation step" constraint and the out-of-scope status of packaging, tests, CI/CD, and containerization.
-- §2.4 Implementation Considerations - Corroborated the absence of build/packaging/tests/CI, the submodule composition constraints (recursive checkout, network access to GitHub remotes), and the lack of submodule-content verification.
-
+- §1.2 System Overview — zero runtime external integration; demonstration-scaffold context; §1.2.3 run-outcome success criteria.
+- §1.3 Scope — §1.3.2 out-of-scope boundary (packaging, tests, CI/CD, containerization; no database/network/API) and the `*.csv` exclusion.
+- §2.4 Implementation Considerations — behavior verified on Python 3.12.3, the minimal security surface, and the §2.4.4 `NestedChild` circular-import defect with the submodule SHA-pinning supply-chain note.
 
 # 4. Process Flowchart
 
 ## 4.1 System Workflows
 
-The workflows documented in this section reflect the repository's behavior exactly as implemented and verified by execution under Python 3.12.3. The codebase is a minimal, standard-library-only Python demonstration organized as a three-level Git-submodule chain (`600K_ParentRepo` → `ChildRepo` → `ChildRepo/NestedChild`; see Section 1.2 System Overview). Consequently its runtime behavior is a **single, synchronous, deterministic batch computation** driven entirely by hard-coded input, with **no** network calls, database access, file I/O, message/event processing, or background scheduling anywhere in the tree. Every flow below is traced to specific lines of `app.py` and `service.py` and to the features catalogued in Section 2.1 (F-001 through F-004). Where the prompt calls for constructs the code does not contain — external integrations, asynchronous events, retry loops — that absence is stated explicitly rather than inferred.
+This chapter documents the executable workflows of the repository exactly as the code performs them. The system is a deliberately minimal, standard-library-only Python program that is replicated across a three-level Git-submodule tree (`600K_ParentRepo` → `ChildRepo` → `ChildRepo/NestedChild`); it exposes no web server, network endpoint, message broker, scheduler, database, or user interface. Consequently its "workflows" are the deterministic, run-to-completion process-execution flows of the command-line entry point (`app.py`, feature F-003), the pure calculation helpers it delegates to (`service.py`, features F-001 and F-002), and the build-time submodule composition that reproduces this structure at every tier (`.gitmodules`, feature F-004).
 
-**Actors and system boundaries.** The workflow involves exactly one human actor and a small set of in-process software boundaries; there are no remote services.
+Every flow below is grounded in the source and in observed runtime behavior. Where a workflow concern named by this section's template does not exist in the code — event processing, message queues, batch scheduling, service-level timing — that absence is stated explicitly rather than inferred. The repository defines no service-level agreements (SLAs) or key performance indicators (KPIs) anywhere (§1.2.3), so the diagrams describe control flow and outcomes rather than time budgets; timing is discussed further in §4.2.
 
-| Actor / Boundary | Role in the Workflow | Evidence |
-| --- | --- | --- |
-| Developer / Operator | Invokes the program from a shell (`python app.py`); supplies no arguments, stdin, or configuration | `app.py:15-16` (`__main__` guard) |
-| Python 3.12 runtime / module loader | Loads `app.py`, resolves the `service` import, evaluates the `__main__` guard | `app.py:1`, `app.py:15` |
-| `app.py` — `main()` (F-003) | Orchestrates the workflow: builds the fixed list, requests the total, writes output | `app.py:3-13` |
-| `service.py` — `calculate_total` (F-001) | Pure summation primitive invoked by the workflow | `service.py:1-7` |
-| Standard output (stdout) | The sole output sink; receives all six printed lines | `app.py:8`, `app.py:11`, `app.py:13` |
+### 4.1.1 Core Business Processes
 
-The three submodule levels do **not** interact at runtime: each `app.py` resolves `service` only from its own directory, so there is no cross-level data flow (see Section 2.3 Feature Relationships).
+The repository's one end-to-end business process is the **fixed-list summation workflow** (F-003, `app.py` → `main()`): an operator runs the entry point from a repository tier, the program sums the hard-coded list `[10, 20, 30, 40]`, prints the total and each operand, and terminates with a completion message. There is exactly one human touchpoint — the command-line invocation `python app.py` — and one output channel, standard output. The behavior is deterministic: for the fixed input the program always prints `Total: 100`, the four operands `10`, `20`, `30`, `40`, and `Application completed`, then exits with status code `0` (requirements F-003-RQ-001 through F-003-RQ-003, verified by execution).
 
-### 4.1.1 High-Level System Workflow
+**End-to-end user journey.** A developer or operator on a workstation with CPython 3.6+ (§3.6.1) invokes `python app.py` from one of the repository tiers. At module load, `app.py` imports `calculate_total` from the co-located `service` module (`app.py` L15). The `if __name__ == "__main__"` guard (`app.py` L45) then decides whether the program is being executed directly (run `main()`) or merely imported (do nothing — F-003-RQ-004). When executed directly, `main()` builds the fixed list, delegates the arithmetic to `calculate_total` (F-001), writes six lines to standard output, and returns, at which point the process exits `0`. The journey has no interactive prompts, arguments, files, or network calls.
 
-The system exposes exactly one end-to-end journey: an operator runs `app.py`, which sums a hard-coded list through the `service` module and prints a deterministic report to standard output (feature F-003, requirements F-003-RQ-001 through F-003-RQ-003). The swim-lane diagram below places each step in the lane of the actor or component that owns it, showing the two system boundaries the data crosses (the Python runtime on entry, and stdout on output).
-
-```mermaid
-flowchart TB
-    subgraph LaneOp["Actor: Developer / Operator"]
-        direction TB
-        OpStart(["Invoke command: python app.py"])
-    end
-    subgraph LaneRt["System Boundary: Python 3.12 Runtime and Module Loader"]
-        direction TB
-        Import["Resolve import: from service import calculate_total (app.py:1)"]
-        Guard{"__name__ == '__main__' ? (app.py:15)"}
-    end
-    subgraph LaneApp["Component: app.py - main() workflow (F-003)"]
-        direction TB
-        BuildList["Build fixed list numbers = [10, 20, 30, 40] (app.py:4)"]
-        CallTotal["Request total: calculate_total(numbers) (app.py:6)"]
-        PrintTotal["Emit 'Total: 100' (app.py:8)"]
-        LoopPrint["Emit each element 10,20,30,40 (app.py:10-11)"]
-        PrintDone["Emit 'Application completed' (app.py:13)"]
-    end
-    subgraph LaneSvc["Component: service.py - calculate_total (F-001)"]
-        direction TB
-        Sum["Accumulate sum over iterable (service.py:1-7)"]
-    end
-    subgraph LaneOut["System Boundary: Standard Output (stdout)"]
-        direction TB
-        Sink["Deterministic text lines"]
-    end
-    OpStart --> Import
-    Import --> Guard
-    Guard -->|"No - imported as module"| Skip(["main() not executed"])
-    Guard -->|"Yes - direct execution"| BuildList
-    BuildList --> CallTotal
-    CallTotal -->|"passes numbers"| Sum
-    Sum -->|"returns 100"| PrintTotal
-    PrintTotal --> LoopPrint
-    LoopPrint --> PrintDone
-    PrintTotal -.-> Sink
-    LoopPrint -.-> Sink
-    PrintDone -.-> Sink
-    PrintDone --> ExitOk(["Exit code 0"])
-```
-
-**Observed outcome (verified).** Running the root or `ChildRepo` program prints `Total: 100`, then `10`, `20`, `30`, `40`, then `Application completed`, and exits with code `0`. The only branch in the high-level flow is the `__main__` guard (`app.py:15`): when the module is imported rather than executed directly, `main()` is not called and no output is produced (satisfying F-003-RQ-003). No timing or service-level constraints govern this flow; timing is addressed in Section 4.2.1.
-
-### 4.1.2 Core Business Processes
-
-The repository contains **no documented business processes** — each `README.md` is a one-line title and there is no product, domain, or requirements documentation (see Section 1.2.1). The "core processes" are therefore the technical processes the code actually performs. There are three, corresponding to the catalogued features: the end-to-end workflow (F-003) and the two calculation services it is built on (F-001, F-002).
-
-**Process 1 — Fixed-list summation workflow (F-003).** This is the only process a user observes. `main()` builds the constant list `[10, 20, 30, 40]` (`app.py:4`), delegates summation to `calculate_total` (`app.py:6`), prints the total (`app.py:8`), prints each element in order (`app.py:10-11`), and prints the completion sentinel (`app.py:13`). The diagram makes the decision points and the single (implicit) error path explicit.
+**High-level system workflow.** The following swim-lane flowchart shows the full end-to-end process across the four participating boundaries (Operator, `app.py`, `service.py`, standard output/OS) and captures the two governing decision points — import resolution and the `__main__` guard — plus the one intrinsic error path (the `NestedChild` leaf, whose duplicated `service.py` fails to define `calculate_total`).
 
 ```mermaid
 flowchart TD
-    Start(["Start: python app.py"]) --> G{"__main__ guard true? (app.py:15)"}
-    G -->|"No"| NoRun(["Imported as module; main() not run"])
-    G -->|"Yes"| Init["numbers = [10, 20, 30, 40] (app.py:4)"]
-    Init --> Call["total = calculate_total(numbers) (app.py:6)"]
-    Call --> Numeric{"Do all elements support '+'? (no validation in code)"}
-    Numeric -->|"No - non-numeric element"| TErr[["Unhandled TypeError: no try/except, traceback, exit 1"]]
-    Numeric -->|"Yes"| Ret["Receive total = 100 (service.py:7)"]
-    Ret --> PT["print('Total: 100') (app.py:8)"]
-    PT --> Loop{"More elements to print? (app.py:10)"}
-    Loop -->|"Yes"| PN["print(number) (app.py:11)"]
-    PN --> Loop
-    Loop -->|"No"| PD["print('Application completed') (app.py:13)"]
-    PD --> End(["Exit code 0"])
+    subgraph Operator["Operator / Developer (CLI touchpoint)"]
+        direction TB
+        OpStart(["Start: run python app.py from a repository tier"])
+    end
+    subgraph AppTier["Entry point - app.py (F-003)"]
+        direction TB
+        Load["Module load: from service import calculate_total (L15)"]
+        ImportOK{"service module defines calculate_total?"}
+        Guard{"__main__ guard: direct execution? (L45)"}
+        Build["numbers = [10, 20, 30, 40] (L32)"]
+        Call["total = calculate_total(numbers) (L34)"]
+        PrintT["Emit total line (L36)"]
+        LoopP["Print each number (L39-40)"]
+        PrintC["Print completion line (L42)"]
+        NoOp(["main() not called; import is side-effect free"])
+    end
+    subgraph SvcTier["Calculation - service.py (F-001)"]
+        direction TB
+        Sum["Single-pass accumulate: total += number (L38-39)"]
+        Ret["return total = 100 (L41)"]
+    end
+    subgraph OutTier["Standard output / OS exit"]
+        direction TB
+        L1["Total: 100"]
+        L2["10 / 20 / 30 / 40"]
+        L3["Application completed"]
+        Exit0(["Exit code 0"])
+    end
+    subgraph ErrTier["Error path - NestedChild leaf defect"]
+        direction TB
+        ImpErr["Circular ImportError: service.py is a duplicate of app.py"]
+        Exit1(["Empty stdout, exit code 1"])
+    end
+    OpStart --> Load
+    Load --> ImportOK
+    ImportOK -->|"No (NestedChild)"| ImpErr
+    ImpErr --> Exit1
+    ImportOK -->|"Yes (root, ChildRepo)"| Guard
+    Guard -->|"No (imported as module)"| NoOp
+    Guard -->|"Yes (python app.py)"| Build
+    Build --> Call
+    Call --> Sum
+    Sum --> Ret
+    Ret --> PrintT
+    PrintT --> L1
+    L1 --> LoopP
+    LoopP --> L2
+    L2 --> PrintC
+    PrintC --> L3
+    L3 --> Exit0
 ```
 
-The decision node "Do all elements support `+`?" represents an **implicit runtime outcome, not a coded check** — `app.py` and `service.py` contain no input validation and no `try`/`except` (verified; see Section 2.2). With the hard-coded numeric list the answer is always "yes," so the executed path never reaches the `TypeError` state; the branch is shown because it is the only way the run-to-completion flow could deviate, and it would surface only if the primitive were reused with non-numeric input.
+**Decision points.** The workflow contains a small, fully enumerable set of branch points. Each is a pure control-flow decision on in-memory data or on the interpreter's execution mode — there are no data-driven branches beyond loop termination and the empty-input guard.
 
-**Process 2 — List summation service (F-001; requirements F-001-RQ-001, F-001-RQ-002).** The primitive on which everything depends. It initializes an accumulator to `0` (`service.py:2`), adds each element (`service.py:4-5`), and returns the total (`service.py:7`); an empty iterable naturally returns `0` because the loop body never executes.
+| Decision Point | Location | Branch Outcomes | Related Requirement |
+| --- | --- | --- | --- |
+| Import resolution | `app.py` L15 / `service.py` | `service` defines `calculate_total` → proceed; duplicate module (`NestedChild`) → circular `ImportError` | Defect analysis (§1.2.3) |
+| `__main__` execution guard | `app.py` L45 | Direct run → call `main()`; imported → no side effects | F-003-RQ-004 |
+| Print-loop continuation | `app.py` L39 | More operands → `print(number)`; none left → print completion line | F-003-RQ-002 |
+| Accumulation-loop continuation | `service.py` L38 | More elements → `total += number`; none/empty → `return total` (`0` if empty) | F-001-RQ-001, F-001-RQ-002 |
+| Empty-input guard (mean) | `service.py` L75 | Empty/falsey → `return 0`; otherwise → compute mean | F-002-RQ-002 |
+
+**Detailed process flow — F-003 (fixed-list entry-point workflow).** The entry point is a strictly linear sequence with two decisions: the `__main__` guard and the print loop. The summation itself is delegated (the `Call` step) to F-001.
 
 ```mermaid
 flowchart TD
-    S(["calculate_total(numbers) invoked"]) --> Init["total = 0 (service.py:2)"]
-    Init --> D{"More elements in numbers? (service.py:4)"}
-    D -->|"Yes"| Add["total += number (service.py:5)"]
-    Add --> D
-    D -->|"No - empty or exhausted"| R["return total (service.py:7)"]
-    R --> E(["Return sum (0 for empty input)"])
+    Start(["python app.py"]) --> G{"__name__ == '__main__'? (L45)"}
+    G -->|"No: imported"| Imp(["Return without output"])
+    G -->|"Yes: direct run"| N["numbers = [10, 20, 30, 40] (L32)"]
+    N --> C["total = calculate_total(numbers) (L34, delegates to F-001)"]
+    C --> PT["print Total: 100 (L36)"]
+    PT --> D{"more numbers to print? (L39)"}
+    D -->|"Yes"| P["print(number) (L40)"]
+    P --> D
+    D -->|"No"| AC["print Application completed (L42)"]
+    AC --> E(["Return None; exit code 0"])
 ```
 
-**Process 3 — Arithmetic mean service (F-002; requirements F-002-RQ-001, F-002-RQ-002).** Defined in `service.py` but **not invoked by any entry point** (verified; effectively dead code relative to the workflow — see Sections 2.1.2 and 2.3). It guards falsy/empty input by returning `0` (`service.py:11-12`) and otherwise returns `calculate_total(numbers) / len(numbers)` (`service.py:14`). Its flow is included for completeness because it is a defined capability of the `service` module, though no executed journey reaches it.
+**Detailed process flow — F-001 (list summation).** `calculate_total` is a pure function: it initializes an accumulator to `0`, makes exactly one pass over the iterable adding each element, and returns the accumulated total. An empty iterable simply never enters the loop body, so the natural result is `0` (F-001-RQ-002). It performs no I/O and does not mutate its argument (F-001-RQ-003).
 
 ```mermaid
 flowchart TD
-    S(["calculate_average(numbers) invoked"]) --> G{"not numbers? falsy/empty (service.py:11)"}
-    G -->|"Yes - empty/falsy"| Z["return 0 (division-by-zero guard, service.py:12)"]
-    G -->|"No"| C["calculate_total(numbers) / len(numbers) (service.py:14)"]
-    C --> R(["Return mean (e.g. 25.0)"])
-    Z --> R2(["Return 0"])
+    S(["calculate_total(numbers) - service.py L18"]) --> T["Initialize total = 0 (L35)"]
+    T --> D{"more elements in numbers? (L38)"}
+    D -->|"Yes"| A["total += number (L39)"]
+    A --> D
+    D -->|"No / empty input"| R(["return total: 100 for the fixed list, 0 if empty (L41)"])
 ```
 
-### 4.1.3 Integration Workflows
+**Detailed process flow — F-002 (arithmetic mean).** `calculate_average` is a catalogued feature but is **defined and never invoked** by any entry point (§2.3.4); it is documented here for completeness. It guards against division by zero by returning `0` for empty/falsey input, and otherwise delegates summation to F-001 before dividing by the element count.
 
-There are **no external systems to integrate with**: the repository has zero third-party dependencies, and the only import statement anywhere is the intra-repository `from service import calculate_total` (verified across the tree; see Section 3.3). Consequently the integration categories the prompt enumerates map onto this codebase as follows.
+```mermaid
+flowchart TD
+    S(["calculate_average(numbers) - service.py L44 (never invoked at runtime)"]) --> G{"not numbers? empty or falsey (L75)"}
+    G -->|"Yes"| Z(["return 0 (L76): guards ZeroDivisionError"])
+    G -->|"No"| C["calculate_total(numbers) / len(numbers) (L78, delegates to F-001)"]
+    C --> R(["return mean: 25.0 for [10, 20, 30, 40]"])
+```
 
-| Integration Category | Presence in This Repository | Evidence |
-| --- | --- | --- |
-| Data flow between systems | None across processes/hosts; a single in-process call passes the list to `calculate_total` and receives an integer back | `app.py:6`, `service.py:7` |
-| API interactions | None — no HTTP/REST/RPC or CLI-argument surface; the only "API" is the Python function `calculate_total` consumed via module import | `app.py:1`, `service.py:1` |
-| Event processing flows | None — no message queue, event loop, callbacks, or async constructs anywhere in the tree | whole tree (no such imports) |
-| Batch processing sequences | The whole program is one run-to-completion batch over the fixed 4-element list; no scheduler or job framework | `app.py:3-13` |
+**Error-handling paths.** Only one error path is intrinsic to the shipped code: the `ChildRepo/NestedChild` leaf raises a circular `ImportError` at module load because its `service.py` is a byte-for-byte duplicate of its `app.py` and therefore never defines `calculate_total` (empty stdout, exit code `1`). Additional, input-dependent error conditions (`TypeError` for non-numeric or non-iterable input) exist in the pure functions but cannot be triggered by the fixed workflow, which always supplies a valid four-integer list. All error handling — including the complete error-state catalog, propagation model, and (absent) recovery mechanisms — is detailed in §4.3.2.
 
-**Runtime integration (module import + call).** The one runtime interaction worth sequencing is the binding and invocation of the summation primitive across the module boundary (F-003 → F-001, per Section 2.3.2). The sequence diagram traces it from shell invocation to process exit.
+### 4.1.2 Integration Workflows
+
+This system has **no runtime integration** with any external system: it has zero third-party dependencies, opens no sockets, performs no database or file I/O, and its only import statement anywhere is the intra-repository `from service import calculate_total` (§1.2.1, §2.3.2). The only cross-system interaction expressed in the repository is at the **source-composition (build) level**, where Git fetches submodule content from GitHub during a recursive clone (F-004). Each template concern is addressed below, with absences stated explicitly.
+
+**Data flow between systems.** At runtime the entire data flow is intra-process and in-memory: the hard-coded list `[10, 20, 30, 40]` flows from `main()` into `calculate_total`, the returned scalar `100` flows back to `main()`, and six text lines flow out to standard output. No data crosses a process, host, or network boundary at runtime. The only inter-system data movement is **build-time**: `git clone --recursive` (or `git submodule update --init --recursive`) transfers the pinned submodule working trees from the GitHub remotes into the local checkout (§3.6.4).
+
+**API interactions.** The sole "API" is the **intra-process Python function-call contract** between the entry point and the calculation module: the import `from service import calculate_total` (`app.py` L15; `ChildRepo/app.py` L14) followed by the call `calculate_total(numbers)` (`app.py` L34). There is no REST, HTTP, gRPC, GraphQL, or command-line-argument interface; the program accepts no external request of any kind.
+
+**Event processing flows.** None. The program is fully synchronous and imperative — there is no event loop, callback, signal handler, message consumer, `async`/`await` coroutine, thread, or publish/subscribe mechanism anywhere in the codebase. `service.py` explicitly has "no imports, no classes, and no module-level state," and no such constructs appear in any tier.
+
+**Batch processing sequences.** The concept applies in two limited senses. (1) **Runtime batch job:** the program is itself a single run-to-completion batch — it processes one fixed dataset in a single pass and exits, with no scheduler, cron, queue, or trigger driving it. (2) **Build-time batch acquisition:** the recursive submodule clone is a batch sequence that fetches all three tiers in dependency order (F-004).
+
+The runtime intra-process interaction is shown as an integration sequence diagram across the participating boundaries:
 
 ```mermaid
 sequenceDiagram
-    actor Dev as Developer / Operator
-    participant PY as Python 3.12 Runtime
-    participant App as app.py (main)
-    participant Svc as service.py
-    participant Out as stdout
-    Dev->>PY: python app.py
-    PY->>App: Load module and resolve import (app.py:1)
-    App->>Svc: from service import calculate_total
-    Svc-->>App: Bind calculate_total symbol
-    PY->>App: __main__ guard true, call main() (app.py:15-16)
-    App->>App: numbers = [10, 20, 30, 40] (app.py:4)
-    App->>Svc: calculate_total(numbers) (app.py:6)
-    Svc->>Svc: Accumulate total over loop (service.py:2-5)
-    Svc-->>App: return 100 (service.py:7)
-    App->>Out: print "Total: 100" (app.py:8)
-    App->>Out: print 10, 20, 30, 40 (app.py:10-11)
-    App->>Out: print "Application completed" (app.py:13)
-    App-->>PY: return None, process exit code 0
+    actor Operator
+    participant Runtime as CPython Interpreter
+    participant App as app.py entry point F-003
+    participant Svc as service.py helper F-001
+    participant Out as Standard Output
+    Operator->>Runtime: python app.py
+    Runtime->>App: from service import calculate_total (L15)
+    Runtime->>App: __main__ guard true, call main() (L45-46)
+    App->>App: build numbers = [10, 20, 30, 40] (L32)
+    App->>Svc: calculate_total(numbers) (L34)
+    Svc->>Svc: single-pass accumulate total += number (L38-39)
+    Svc-->>App: return 100 (L41)
+    App->>Out: print "Total: 100" (L36)
+    App->>Out: print 10, 20, 30, 40 (L39-40)
+    App->>Out: print "Application completed" (L42)
+    App-->>Runtime: return None, process exits 0
 ```
 
-**Build-time composition (F-004; requirements F-004-RQ-001, F-004-RQ-002, F-004-RQ-003).** The only inter-repository relationship is source composition through native Git submodules, declared in `.gitmodules` at the root and `ChildRepo` levels. This is a checkout/build-time flow, not a runtime data flow — there is no runtime coupling between levels. The diagram also captures the verified `NestedChild` defect: its `service.py` is a byte-for-byte copy of `app.py`, so that level cannot run (see Section 2.2.4).
+The build-time submodule acquisition (F-004) is the only integration that reaches outside the local host; it contacts the GitHub remotes declared in `.gitmodules` and `ChildRepo/.gitmodules`, fetching each submodule at its pinned commit:
 
 ```mermaid
-flowchart TD
-    Clone(["git clone parent repository"]) --> Init["git submodule update --init --recursive"]
-    Init --> C1["Fetch ChildRepo at pinned commit (root .gitmodules, F-004-RQ-001)"]
-    C1 --> C2["Fetch NestedChild at pinned commit (ChildRepo/.gitmodules, F-004-RQ-002)"]
-    C2 --> Chk{"Does that level's service.py define calculate_total?"}
-    Chk -->|"Root and ChildRepo: Yes"| Ok(["Level runnable: python app.py, exit 0"])
-    Chk -->|"NestedChild: No - service.py is a copy of app.py"| Broken[["NestedChild/app.py raises circular-import ImportError, exit 1"]]
+sequenceDiagram
+    actor Dev as Developer
+    participant Git as Local Git
+    participant P as GitHub ParentRepo remote
+    participant C as GitHub ChildRepo remote
+    participant N as GitHub NestedChild remote
+    Dev->>Git: git clone --recursive <repository-url>
+    Git->>P: fetch parent working tree
+    P-->>Git: parent files + .gitmodules (declares ChildRepo)
+    Git->>C: fetch ChildRepo pinned at 63b3f43
+    C-->>Git: ChildRepo files + .gitmodules (declares NestedChild)
+    Git->>N: fetch NestedChild pinned at d57c9dd
+    N-->>Git: NestedChild working tree (leaf, no .gitmodules)
+    Git-->>Dev: populated tree ParentRepo -> ChildRepo -> NestedChild
 ```
 
 ## 4.2 Flowchart Requirements and Validation Rules
 
-This section catalogs, for the workflows in Section 4.1, the standard flowchart elements the prompt enumerates and the validation rules that govern each step. Because the program performs no input handling, network access, or persistence, the *validation*, *authorization*, and *compliance* dimensions are largely records of **verified absence** rather than implemented controls. That absence is consistent with Sections 1.2.3 (no SLAs/KPIs), 2.2 (no validation/security/compliance controls), and 3.4/3.5 (no third-party services, databases, or storage).
+This section applies the standard flowchart-requirement checklist — start/end points, process steps, decision diamonds, system boundaries, user touchpoints, error states, recovery paths, and timing/SLA — to each major workflow identified in §4.1, and then consolidates the validation rules that govern each step. Because the system is a fixed-input, standard-library-only program with no external I/O, several checklist items resolve to "not present"; those are recorded explicitly so the mapping is complete rather than implied.
 
-### 4.2.1 Workflow Elements, Timing, and SLA Considerations
+### 4.2.1 Workflow Elements and Timing Considerations
 
-The table maps each flowchart element required by the prompt to its concrete location in the Section 4.1 diagrams and the source evidence for it.
+The table below maps every required flowchart element onto the three major workflows: the runtime entry-point workflow (F-003), the pure calculation functions it drives (F-001 summation and the defined-but-unused F-002 mean), and the build-time submodule composition (F-004).
 
-| Flowchart Element | Where It Appears in the Flows | Evidence |
+| Flowchart Element | Runtime Workflow (F-003) | Calculation Functions (F-001 / F-002) | Build-Time Composition (F-004) |
+| --- | --- | --- | --- |
+| Start point | `python app.py` invocation (`app.py` L45–L46) | Call to `calculate_total` / `calculate_average` (`service.py` L18 / L44) | `git clone --recursive` (root `README.md`, §3.6.4) |
+| End point(s) | Print `Application completed` → exit `0`; or import-time `ImportError` → exit `1` on the `NestedChild` leaf | `return total` (L41) / `return mean` or `return 0` (L76, L78) | Populated three-tier working tree at pinned SHAs |
+| Key process steps | Build list (L32) → delegate sum (L34) → print total (L36) → print-loop (L39–40) → print completion (L42) | Init accumulator (L35) → single-pass add (L38–39) / empty-guard (L75) then divide (L78) | Fetch parent → fetch `ChildRepo` @ 63b3f43 → fetch `NestedChild` @ d57c9dd |
+| Decision diamonds | `__main__` guard (L45); print-loop continuation (L39) | Accumulation-loop continuation (L38); empty-input guard (L75) | `--recursive` supplied? (populate vs. empty submodule dirs) |
+| System boundaries | Operator CLI ↔ CPython process ↔ standard output/OS | In-process function-call boundary only | Local Git ↔ GitHub remotes over HTTPS |
+| User touchpoints | Single CLI invocation; no prompts/args/stdin | None — internal API consumed only by `main()` | Single clone/init command |
+| Error states | `NestedChild` circular `ImportError` (empty stdout, exit `1`) | `TypeError` for non-numeric/non-iterable/unsized input (uncaught) | Failed/omitted fetch → empty submodule directories |
+| Recovery paths | None automated; operator re-runs after fixing co-located `service.py` | None; exception propagates to interpreter | Manual `git submodule update --init --recursive` |
+| Timing / SLA | None defined; sub-second run-to-completion | None; O(n) single pass, O(1) extra space | None; bounded by network + Git operations |
+
+**Timing and SLA considerations.** The repository defines **no** service-level agreement, latency budget, timeout, deadline, retry interval, or scheduled-execution window anywhere in the code or documentation (§1.2.3, §2.2). What can be stated is the observed and structural behavior: the root and `ChildRepo` programs complete effectively instantaneously — a single O(n) pass over four integers plus six standard-output writes, exiting `0`; `calculate_total` runs in O(n) time and O(1) extra space (one accumulator, per §2.2 F-001 performance criteria). The only time-variable step is the build-time submodule acquisition (F-004), whose duration is bounded solely by network latency and Git operations, with "no formal budget defined" (§2.2 F-004). No component contains a timer, backoff, or deadline construct.
+
+### 4.2.2 Validation Rules
+
+Because the runtime workflow operates on hard-coded input and performs no external I/O, its validation surface is intentionally minimal. The rules below consolidate the four per-feature **Validation Rules** tables from §2.2 (Business Rules, Data Validation, Security/Authorization, Compliance) and map them onto the workflow steps.
+
+| Validation Category | Rule as Implemented | Evidence / Requirement |
 | --- | --- | --- |
-| Start point | The `python app.py` invocation node that opens every flow | `app.py:15-16` |
-| End point(s) | `Exit code 0` (success); `main() not executed` (imported); failure exits via `ImportError`/`TypeError` | `app.py:13`, `app.py:15`; runtime |
-| Process steps | Build list → request total → accumulate → print total → print each element → print sentinel | `app.py:4`,`6`,`8`,`10-13`; `service.py:2-7` |
-| Decision diamonds | `__main__` guard; loop-continuation; empty/exhausted check; falsy-input guard | `app.py:10`,`15`; `service.py:4`,`11` |
-| System boundaries | Python runtime (entry/import) and stdout (output) — the two swim lanes the data crosses | `app.py:1`,`8` |
-| User touchpoints | A single touchpoint: the shell command (no arguments, no stdin); the operator reads results from stdout | `app.py:15-16` |
-| Error states & recovery paths | `TypeError` (if the primitive is reused with non-numeric input) and `ImportError` (the `NestedChild` level); **no recovery path is coded** | `service.py:5`; `NestedChild` runtime |
-| Timing / SLA | None documented (see below) | Sections 1.2.3, 2.2 |
+| Business rule (F-001) | Summing zero elements yields `0` (arithmetic identity for the empty sum) | `service.py` L35–L41; F-001-RQ-002 |
+| Business rule (F-002) | Empty/falsey input yields `0`, avoiding a `ZeroDivisionError` | `service.py` L75–L76; F-002-RQ-002 |
+| Business rule (F-003) | Output is deterministic for the fixed input; the printed total is always `100` | `app.py` L32–L42; F-003-RQ-001 |
+| Business rule (F-004) | Each tier mirrors the two-file structure; submodule entries pin specific commits; `NestedChild` is a leaf with no `.gitmodules` | `.gitmodules`, `ChildRepo/.gitmodules`; F-004-RQ-001/002 |
+| Data validation (F-001/F-002) | No explicit validation; non-numeric element → `TypeError`; non-iterable argument → `TypeError`; unsized iterable → `TypeError` at `len()` (all uncaught) | `service.py`; §2.2 F-001/F-002 validation tables |
+| Data validation (F-003) | None — the input is a constant, so there is no user input to validate | `app.py` L32; F-003 validation table |
+| Data validation (F-004) | Submodule pins specific commits; omitting `--recursive` leaves submodule directories empty | `.gitmodules`; F-004-RQ-003 |
+| Authorization checkpoints | None — no authentication, authorization, access control, or secret handling at any step; the workflow reads no credentials and writes only to standard output | §2.2 (Security Requirements: "None applicable") |
+| Regulatory compliance checks | None defined in the repository at any step | §2.2 (Compliance Requirements: "None defined") |
 
-**Timing and SLA considerations.** The repository defines **no** service-level agreements, latency or throughput budgets, timeouts, benchmarks, or monitoring hooks — this was verified across the tree and is consistent with Section 1.2.3 (which asserts no SLAs/KPIs) and Section 2.2 (which records no performance budgets). The only timing-relevant properties evidenced in code are algorithmic:
+**Authorization and compliance posture.** No workflow step performs an authorization check or a regulatory-compliance check, because the program handles no user, no external input, no secrets, and no regulated data (§2.2). The single security-adjacent rule in the repository is documentation-level guidance attached to F-004: use clean public URLs and never embed access tokens or credentials in a shared clone URL (root `README.md` security note). This is advisory guidance, not an enforced checkpoint in code.
 
-- `calculate_total` is a single `O(n)` accumulation pass over the input (`service.py:4-5`), and `calculate_average` is `O(n)` because it delegates to it (`service.py:14`).
-- The executed workflow operates on a constant four-element list (`app.py:4`), so its computational cost is fixed and trivial; wall-clock time is dominated by interpreter startup, not the calculation.
-- The workflow is single-process, synchronous, and run-to-completion, with no waits, sleeps, retries, or blocking I/O. Because no timeout or deadline exists anywhere, **no flow contains a timing-based branch** — every branch documented in Section 4.1 is a logical guard, not a time-based one.
-
-### 4.2.2 Validation Rules and Authorization Checkpoints
-
-The diagram below depicts the *control-checkpoint reality* of the program: the three checkpoint categories an enterprise workflow would typically enforce are shown as explicitly **not implemented** (verified), and the single gate that the code actually enforces — the `__main__` execution guard — is highlighted, followed by the only coded business rules.
+**Data-validation posture (implicit).** Validation in the calculation functions is not performed by an explicit guard; it is delegated to Python's runtime type system. `calculate_total` feeds each element directly into `total += number`, so a non-numeric element raises `TypeError` at the `+` operator and a non-iterable argument raises `TypeError` at the `for` statement — both propagate uncaught. The fixed workflow (F-003) never triggers these paths because it always supplies a valid four-integer list. The implicit validation behavior is shown below.
 
 ```mermaid
 flowchart TD
-    In(["Invocation: python app.py (no args, no stdin)"]) --> G1{"AuthN / AuthZ checkpoint"}
-    G1 -->|"Not implemented (verified)"| G2{"Input data validation"}
-    G2 -->|"Not implemented (verified)"| G3{"Regulatory / compliance check"}
-    G3 -->|"Not implemented (verified)"| G4{"__main__ execution guard (app.py:15)"}
-    G4 -->|"False - imported"| NoOp(["main() not executed; no output"])
-    G4 -->|"True - direct run"| Run["Execute workflow F-003 (only coded business rules apply)"]
-    Run --> BR["Coded business rules: empty list -> 0 (F-001-RQ-002); falsy -> 0 (F-002-RQ-002)"]
-    BR --> Done(["stdout report, exit code 0"])
+    Start(["numbers passed to calculate_total (no explicit validation gate)"]) --> Loop{"iterate elements (L38)"}
+    Loop -->|"element is numeric"| Add["total += number (L39)"]
+    Add --> Loop
+    Loop -->|"element non-numeric"| TErr(["TypeError from '+'; propagates uncaught, exit 1"])
+    Loop -->|"argument not iterable"| TErr2(["TypeError from 'for'; propagates uncaught, exit 1"])
+    Loop -->|"no more elements / empty"| Ret(["return total, 0 if empty (L41)"])
 ```
 
-**Business rules at each step.** The following rules are the *only* logic-level rules the code enforces; each is traced to the corresponding requirement in Section 2.2.
+## 4.3 Technical Implementation
 
-| Workflow Step | Business Rule (as coded) | Evidence / Requirement |
-| --- | --- | --- |
-| Execution gate | `main()` runs only under direct execution (`__name__ == "__main__"`); importing the module produces no output | `app.py:15-16` (F-003-RQ-003) |
-| Fixed input | Operates exclusively on the hard-coded list `[10, 20, 30, 40]`; no external input is accepted | `app.py:4` (F-003-RQ-001) |
-| Summation empty-input rule | An empty iterable returns `0` (accumulator initialized to `0`, loop body skipped) | `service.py:2-5` (F-001-RQ-002) |
-| Average empty-input rule | Falsy/empty input returns `0` *before* any division (division-by-zero guard) | `service.py:11-12` (F-002-RQ-002) |
-| Output contract | Print `Total: <n>`, then each element on its own line, then `Application completed`; exit `0` | `app.py:8`,`10-13` (F-003-RQ-001/002/003) |
-
-**Data validation requirements.** None are implemented. Neither `app.py` nor `service.py` performs type checks, range checks, null checks (beyond the falsy guard in `calculate_average`), or schema validation — this was verified. A non-numeric element passed to `calculate_total` would raise an unhandled `TypeError` at `service.py:5` (see Section 2.2.1). Because the workflow's input is a hard-coded numeric list, no invalid data can reach the code through the executed path.
-
-**Authorization checkpoints.** None exist. There is no authentication, authorization, session, role, or permission logic anywhere in the tree (verified). The only gate in the code is the `__main__` guard, which is an *execution-mode* check, not a security control; the program reads no credentials and accesses no protected resource.
-
-**Regulatory / compliance checks.** None exist. There is no compliance control, audit logging, data-retention policy, or PII handling (verified) — the program processes a constant in-memory integer list and writes only to stdout. The `.blitzyignore` files exclude `*.csv` from tooling scope, but the code itself performs no file or data-governance operations of any kind.
-
-## 4.3 Technical Implementation Flows
-
-This section documents the state-management and error-handling implementation behind the workflows in Section 4.1. As in the preceding sections, most of the technical-implementation dimensions the prompt enumerates — durable persistence, application caching, transactions, retries, fallbacks, and notifications — are recorded as **verified absences**, because the program is a stateless, in-memory, standard-library-only computation with no external resources.
+This section documents the state-management and error-handling implementation behind the workflows in §4.1. The program is built from pure functions with only ephemeral, in-memory state and no persistence, caching, or transaction layer, and it contains no explicit error-handling constructs (no `try`/`except`, retry, or fallback logic). Each template item is therefore either mapped to the concrete mechanism that exists or explicitly recorded as absent.
 
 ### 4.3.1 State Management
 
-The program holds only **ephemeral, in-process state**; there is no durable state, session, or shared store. The state-transition diagram traces the process lifecycle from invocation through its success/idle terminal states and its two failure terminal states (one of which is reachable only at the defective `NestedChild` level).
+**State transitions.** Two kinds of state are meaningful in this system: the **process lifecycle** and the **accumulator** inside `calculate_total`. The process lifecycle proceeds from interpreter start, through import resolution and the `__main__` guard, to a terminal exit; the `NestedChild` leaf diverges into a failed terminal state at import time. This lifecycle is shown as a state-transition diagram.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Importing: python app.py
-    Importing --> ModuleLoaded: service defines calculate_total (root and ChildRepo, app.py L1)
-    Importing --> ImportFailed: NestedChild - service.py is a copy of app.py
-    ImportFailed --> [*]: circular-import ImportError, exit 1
-    ModuleLoaded --> Idle: imported as module, guard False (app.py L15)
-    Idle --> [*]: no output produced
-    ModuleLoaded --> Running: direct run, guard True (app.py L15-16)
-    Running --> Computing: calculate_total(numbers) (app.py L6)
-    Computing --> Printing: total = 100 returned (service.py L7)
-    Printing --> Completed: print Application completed (app.py L13)
-    Completed --> [*]: exit code 0
-    Computing --> Aborted: unhandled TypeError on non-numeric reuse
-    Aborted --> [*]: exit code 1
+    [*] --> Loading: interpreter starts, executes app.py
+    Loading --> ImportResolved: from service import calculate_total succeeds (root, ChildRepo)
+    Loading --> Failed: circular ImportError (NestedChild duplicate service.py)
+    ImportResolved --> Running: __main__ guard true (L45)
+    ImportResolved --> Imported: guard false (imported as module)
+    Running --> Computed: calculate_total(numbers) returns 100 (L34)
+    Computed --> Printed: six stdout lines written (L36-L42)
+    Printed --> Exited0: return None
+    Imported --> Exited0: no side effects
+    Failed --> Exited1: empty stdout
+    Exited0 --> [*]: exit code 0
+    Exited1 --> [*]: exit code 1
 ```
 
-**State transitions.** The only mutable state anywhere is the local accumulator `total` (`service.py:2-5`) and the loop variable `number` (`app.py:10`, `service.py:4`); both are function-local and are discarded when the call returns or the process exits. No state is shared between the three submodule levels, and nothing survives a run.
+The second state machine is the running total accumulated in a single pass over the fixed list. It starts at `0` and advances deterministically with each element, ending at `100` (F-001-RQ-001):
 
-**Persistence, caching, and transaction boundaries.** The table records the status of each dimension the prompt calls for, all verified against the source.
+```mermaid
+stateDiagram-v2
+    [*] --> t0: total = 0 (L35)
+    t0 --> t10: add 10
+    t10 --> t30: add 20
+    t30 --> t60: add 30
+    t60 --> t100: add 40
+    t100 --> [*]: return total = 100 (L41)
+```
 
-| Dimension | Status in This Repository | Evidence |
-| --- | --- | --- |
-| Data persistence points | None — results are written to the transient stdout stream only; no file, database, or network writes occur | `app.py:8`,`11`,`13` |
-| On-disk artifacts | The only artifact written to disk is CPython's compiled-bytecode cache, produced by the *interpreter* (not the application) as an import optimization | `__pycache__/service.cpython-312.pyc` |
-| Caching requirements | No application caching or memoization; `calculate_total` recomputes on every call | `service.py:1-7` |
-| Transaction boundaries | None — no database, atomic unit, or rollback; the process is all-or-nothing in the trivial sense that a crash simply stops further output, with lines already flushed to stdout left in place | `app.py:3-13` |
+**Data persistence points.** The workflow persists **no application data**. It writes only to standard output (transient), reads no files or databases, and holds all data in memory for the lifetime of the process. The single persistence-like artifact anywhere in the system is the interpreter's **implicit bytecode cache** — `__pycache__/*.cpython-312.pyc` — written the first time a module is imported (§3.6.2). That cache is an interpreter optimization, not application state, and is regenerated automatically; it never carries workflow data between runs.
+
+**Caching requirements.** None. There is no application-level cache, memoization, or result store — `calculate_total` recomputes the sum on every call, and each program run recomputes from scratch. The only cache present is the bytecode cache noted above, which belongs to the interpreter toolchain rather than the workflow.
+
+**Transaction boundaries.** None. The system has no database, no atomic multi-step unit of work, and no rollback/commit semantics. Each execution is an **independent, idempotent** process: because `calculate_total` and `calculate_average` are pure and share no mutable module-level state (§2.3.4), re-running `python app.py` any number of times yields byte-identical output with no accumulated or partial state to reconcile.
 
 ### 4.3.2 Error Handling
 
-The codebase contains **no error-handling constructs** — there is not a single `try`, `except`, `finally`, `raise`, `with`, or logging call anywhere in the tree (verified; consistent with Section 2.4). Errors therefore propagate as the Python interpreter's default uncaught-exception behavior: a full traceback written to stderr and a non-zero process exit. The flowchart shows the two error conditions that actually exist and the shared, empty recovery path.
+The program contains **no explicit error-handling code** — there are no `try`/`except` blocks, no retry loops, and no custom exception types. Errors therefore surface through Python's default uncaught-exception mechanism: a traceback printed to standard error and a non-zero exit code. The error catalog below enumerates every failure mode evidenced in the code.
+
+| Error State | Trigger | Handling / Notification | Recovery |
+| --- | --- | --- | --- |
+| Circular `ImportError` | `NestedChild/service.py` duplicates `app.py`, so `service` never defines `calculate_total` and imports itself | Uncaught; traceback to stderr; exit `1`; empty stdout | Manual — provide a real `service.py` defining `calculate_total` (preserved as-is, not fixed) |
+| `TypeError` (non-numeric element) | A non-numeric element reaches `total += number` | Uncaught; traceback to stderr; exit `1` | Manual — supply numeric input; not reachable via the fixed list |
+| `TypeError` (non-iterable argument) | A non-iterable argument reaches the `for` loop | Uncaught; traceback to stderr; exit `1` | Manual — supply an iterable |
+| `TypeError` (unsized iterable) | An unsized iterable reaches `len()` in `calculate_average` | Uncaught; traceback to stderr; exit `1` | Manual — supply a sized collection; `calculate_average` is never invoked (§2.3.4) |
+| `ZeroDivisionError` | Would occur on empty input to `calculate_average` | **Guarded** — `if not numbers: return 0` (L75–L76) returns before dividing | Not raised; defensive fallback value |
+
+The runtime error-handling control flow — import failure vs. success, and the implicit type check on the summation path — is shown below.
 
 ```mermaid
 flowchart TD
-    Start(["Process start: python app.py"]) --> ImpChk{"Does co-located service.py define calculate_total? (import time)"}
-    ImpChk -->|"No - NestedChild (service.py copies app.py)"| ImpErr[["ImportError: circular import; traceback to stderr; exit 1"]]
-    ImpChk -->|"Yes - root and ChildRepo"| Run["Run main() workflow (F-003)"]
-    Run --> TypeChk{"Do all elements support '+'? (runtime, no guard)"}
-    TypeChk -->|"No - non-numeric"| TErr[["Unhandled TypeError; traceback to stderr; exit 1"]]
-    TypeChk -->|"Yes - hard-coded numeric list"| Ok(["Success: deterministic stdout, exit 0"])
-    ImpErr --> NoRecovery["No retry / no fallback / no notification / no recovery (none coded)"]
-    TErr --> NoRecovery
+    Run(["Run python app.py"]) --> Imp{"import calculate_total from service (L15)"}
+    Imp -->|"fails: NestedChild duplicate"| IE["Circular ImportError raised"]
+    IE --> Notify1["Python default handler prints traceback to stderr"]
+    Notify1 --> X1(["exit code 1, empty stdout"])
+    Imp -->|"succeeds"| Exec["main() runs; calculate_total(numbers) (L34)"]
+    Exec --> TypeChk{"input numeric and iterable? (implicit)"}
+    TypeChk -->|"No: not reachable on fixed input"| TE["Uncaught TypeError"]
+    TE --> Notify2["Python default handler prints traceback to stderr"]
+    Notify2 --> X1b(["exit code 1"])
+    TypeChk -->|"Yes: fixed-input path"| OK(["Total: 100 ... Application completed, exit 0"])
 ```
 
-**Retry mechanisms, fallback processes, notification, and recovery.** Each of these is a verified absence:
+**Retry mechanisms.** None. No component retries a failed operation; there is no backoff, attempt counter, or circuit breaker anywhere in the code.
 
-- **Retry mechanisms** — none. There is no loop, backoff, or re-invocation on failure; a failed run simply terminates.
-- **Fallback processes** — none. There is no alternative code path or degraded mode; if `calculate_total` cannot be imported or applied, execution stops.
-- **Error notification flows** — the only "notification" is the interpreter's default traceback to stderr. There is no logging framework, alerting, metrics emission, or webhook/email notification anywhere in the tree.
-- **Recovery procedures** — none are coded at runtime. For the `NestedChild` `ImportError`, the corrective action is a *source-level fix* (replacing `NestedChild/service.py` with a real `service` module that defines `calculate_total`) — a maintenance action, not automated recovery (see Section 2.2.4, requirement F-004-RQ-003).
+**Fallback processes.** None at the workflow level. The only defensive fallback is a **value**, not a process: `calculate_average` returns `0` for empty/falsey input (L75–L76) to avoid division by zero (F-002-RQ-002). `calculate_total` has no fallback because returning `0` for an empty iterable is the natural result of the accumulation, not a special case.
 
-**Enumerated error conditions (verified).** Exactly two error conditions exist across the tree; the executed root/`ChildRepo` workflow encounters neither and therefore always exits `0`.
+**Error notification flows.** The sole notification channel is Python's default uncaught-exception handler, which writes a traceback to standard error and sets the process exit code to `1`. There is no logging framework, no structured log, no metrics emission, and no alerting or monitoring hook — consistent with the repository's absence of any observability tooling. For the `NestedChild` defect the canonical stderr message is `ImportError: cannot import name 'calculate_total' from partially initialized module 'service' (most likely due to a circular import)`.
 
-| Error Condition | Trigger | Observed Effect | Recovery (as Coded) |
-| --- | --- | --- | --- |
-| Circular-import `ImportError` | Running `NestedChild/app.py`, whose co-located `service.py` is a byte-copy of `app.py` and lacks `calculate_total` | Traceback to stderr; exit code `1`; no workflow output | None — requires a source-level fix |
-| Unhandled `TypeError` | `calculate_total` reused with a non-numeric element (not reachable through the hard-coded workflow) | Traceback originating at `service.py:5`; exit code `1` | None |
+**Recovery procedures.** Recovery is entirely manual and, because each run is stateless and idempotent (§4.3.1), requires no cleanup. For an input-driven `TypeError` the caller simply supplies valid input and re-invokes. For the `NestedChild` circular-import defect, recovery requires replacing the duplicated `service.py` with a proper calculation module; this is intentionally documented as-is and left unrepaired (§1.2.3). There is no automated recovery, self-healing, or compensating action in the system.
 
 ## 4.4 References
 
-The following repository files and folders were inspected (and, where noted, executed) to ground every flow, diagram, and claim in this section. All statements are traced to these sources; no web sources were used.
+The following repository files, folders, cross-referenced specification sections, and observations were used as evidence for the workflows, diagrams, and validation rules in this chapter.
 
-**Files examined**
+**Repository files examined**
 
-- `app.py` — Root entry point; established the F-003 workflow flow: import (`L1`), fixed list `[10, 20, 30, 40]` (`L4`), `calculate_total` call (`L6`), `Total:` output (`L8`), element loop (`L10-11`), completion sentinel (`L13`), and the `__main__` guard (`L15-16`).
-- `service.py` — Calculation module; established the F-001 summation flow (`calculate_total`, `L1-7`) and the F-002 average flow with its falsy-input guard (`calculate_average`, `L10-14`), including the empty-input business rules.
-- `.gitmodules` — Root submodule declaration for `ChildRepo`; established the build-time composition flow (F-004-RQ-001).
-- `ChildRepo/.gitmodules` — Submodule declaration for `NestedChild`; established the second level of the composition flow (F-004-RQ-002).
-- `ChildRepo/app.py`, `ChildRepo/service.py` — Confirmed the root workflow is faithfully mirrored at the `ChildRepo` level (identical behavior, exit `0`).
-- `ChildRepo/NestedChild/app.py` — Confirmed the entry point is byte-identical to the root.
-- `ChildRepo/NestedChild/service.py` — Established the verified defect used in the state and error-handling flows: it is a copy of `app.py` (no `calculate_total`), causing the circular-import `ImportError`.
-- `README.md` — Confirmed the absence of any business, process, or requirements documentation (one-line title only), supporting the "no documented business processes" finding.
-- `.blitzyignore` — Established that `*.csv` files are excluded from scope (they are not read by the code); referenced in the compliance discussion.
-- `__pycache__/service.cpython-312.pyc` — Established the CPython 3.12 runtime and the only on-disk artifact relevant to the caching/persistence discussion (interpreter bytecode cache).
+- `app.py` — Root entry point; established the F-003 workflow steps and decision points: import (L15), `main()` (L17), fixed list `[10, 20, 30, 40]` (L32), delegation to `calculate_total` (L34), the total/number/completion prints (L36, L39–L40, L42), and the `__main__` guard (L45–L46).
+- `service.py` — Root calculation module; established F-001 `calculate_total` (accumulator L35, single-pass loop L38–L39, `return` L41) and F-002 `calculate_average` (empty-input guard L75–L76, delegation-and-divide L78, defined-but-never-invoked).
+- `README.md` — Root documentation; established the run model, expected standard output, verified exit behavior, the F-004 security note (no credentials in clone URLs), and the documented `NestedChild` circular-import defect.
+- `ChildRepo/app.py` — Mirrored entry point; established the equivalent workflow with import at L14 and `main()` at L16.
+- `ChildRepo/service.py` — Mirrored calculation module (`calculate_total` L18, `calculate_average` L44).
+- `ChildRepo/README.md` — Mirrored documentation confirming the same run model and defect note at the middle tier.
+- `ChildRepo/NestedChild/app.py` — Leaf entry point (16 lines); established the self-import that triggers the error path (`from service import calculate_total` at L1).
+- `ChildRepo/NestedChild/service.py` — Byte-for-byte duplicate of the leaf `app.py`; established the root cause of the circular `ImportError` (it defines `main()` instead of `calculate_total`).
+- `.gitmodules` — Root submodule declaration; established the build-time F-004 edge parent → `ChildRepo`.
+- `ChildRepo/.gitmodules` — Established the F-004 edge `ChildRepo` → `NestedChild` (leaf has no `.gitmodules`).
 
-**Folders examined**
+**Repository folders examined**
 
-- `` (repository root) — Established the top-level structure (`app.py`, `service.py`, `README.md`, `.gitmodules`, `ChildRepo/`) and the absence of any build/CI/config/manifest files.
-- `ChildRepo/` — The first submodule level; mirrors the root two-file application used in the integration/composition flows.
-- `ChildRepo/NestedChild/` — The leaf submodule level; source of the defective-variant error path.
+- `ChildRepo/` — First-level submodule tier; confirmed the replicated two-file `app.py`/`service.py` structure that runs correctly (exit 0).
+- `ChildRepo/NestedChild/` — Leaf submodule tier; confirmed the broken duplicate arrangement that fails at import (exit 1).
 
-**Runtime behavior verified by execution (Python 3.12.3)**
+**Runtime verification (direct execution)**
 
-- Root and `ChildRepo` `python app.py` → `Total: 100`, then `10`/`20`/`30`/`40`, then `Application completed`; exit code `0`.
-- `ChildRepo/NestedChild/app.py` → circular-import `ImportError`; exit code `1`.
-- Direct calls: `calculate_total([10,20,30,40]) = 100`, `calculate_total([]) = 0`, `calculate_average([10,20,30,40]) = 25.0`, `calculate_average([]) = 0`.
+- Executed `python3 app.py` at the root and `ChildRepo` tiers — confirmed the six-line output (`Total: 100`, `10`, `20`, `30`, `40`, `Application completed`) and exit code `0`.
+- Executed `python3 app.py` at the `ChildRepo/NestedChild` tier — confirmed empty standard output, exit code `1`, and the circular `ImportError` on standard error.
 
-**Cross-referenced Technical Specification sections**
+**Specification cross-references**
 
-- `1.2 System Overview` — Project context and the explicit absence of SLAs/KPIs (Section 1.2.3), and the component/relationship model.
-- `2.1 Feature Catalog` — Feature identifiers F-001 through F-004 and the note that F-002 is defined but not invoked (Section 2.1.2).
-- `2.2 Functional Requirements Table` — Requirement identifiers (F-XXX-RQ-YYY) and the verified absence of input validation, error handling, security, and compliance controls.
-- `2.3 Feature Relationships` — Integration points and the finding that there is no cross-level runtime coupling (Section 2.3.2).
-- `2.4 Implementation Considerations` — Confirmation that execution is single-process, synchronous, deterministic, with no logging or error handling.
-- `3.3 Open Source Dependencies` — Confirmation of zero third-party dependencies (standard library only).
-- `3.4 Third-Party Services` and `3.5 Databases and Storage` — Confirmation of the absence of external services, databases, and storage, underpinning the "no external systems" integration findings.
+- §1.2 System Overview — integration absence (§1.2.1) and de-facto success criteria / absence of SLAs and KPIs (§1.2.3).
+- §2.2 Functional Requirements — feature and requirement identifiers (F-001…F-004, `F-XXX-RQ-YYY`) and the per-feature Business Rules / Data Validation / Security / Compliance tables cited throughout §4.2.
+- §2.3 Feature Relationships — dependency edges (F-003→F-001, F-002→F-001, F-004→F-003), integration-point inventory, shared components, and common services.
+- §3.6 Development &amp; Deployment — run/acquisition model, absence of build/CI/CD tooling, and the implicit bytecode-cache artifact referenced in §4.3.1.
+
+**Web sources**
+
+- None. All findings are grounded in direct repository inspection and observed runtime behavior; no external sources were consulted for this section.
 
 # 5. System Architecture
 
 ## 5.1 High-Level Architecture
 
-This section describes the architecture of the repository exactly as implemented and verified by execution under Python 3.12.3. Every architectural statement is grounded in the source files (`app.py`, `service.py`, `.gitmodules`) and observed runtime behavior; where the prompt calls for an architectural construct the system does not contain — persistence tiers, network protocols, message brokers, service meshes — that absence is stated explicitly rather than inferred (consistent with Sections 1.2, 3.5, and 4.1).
+This section documents the architecture of `600K_ParentRepo` exactly as it exists in the repository. The system is a deliberately minimal, standard-library-only Python demonstration whose entire executable behavior is a single fixed-list summation printed to standard output, replicated at each tier of a Git-submodule tree (`600K_ParentRepo → ChildRepo → NestedChild`). Consistent with the evidence-based determinations in §1.2, §2.3, and §3.6, the discussion below records the architecture that is present and explicitly marks as *Not applicable* the architectural concerns (distributed services, persistence, messaging, external runtime integration, formal SLAs) that the codebase does not implement, rather than inventing them.
 
 ### 5.1.1 System Overview
 
-**Overall architectural style and rationale.** The system is a **single-process, synchronous, standard-library-only Python application** built as a **two-module modular monolith**. It is not a client–server, distributed, service-oriented, or event-driven system; it is a run-to-completion batch program that computes the sum of a hard-coded list and writes a deterministic report to standard output. The architecture is intentionally minimal: `app.py` is a thin orchestrator that delegates arithmetic to `service.py`, whose functions are pure. This "orchestrator + computation module" split is the single organizing decision of the codebase, and it is chosen for clarity and testability of the pure computation rather than for scale, concurrency, or fault tolerance (none of which the code addresses). The same two-module shape is **replicated at each of the three levels** of a nested Git-submodule chain (`600K_ParentRepo` → `ChildRepo` → `ChildRepo/NestedChild`), so the composition of the whole repository is a second, coarser-grained architectural concern layered on top of the per-level application.
+**Architectural style.** The system is a single-process, monolithic command-line program built exclusively on the CPython standard library. Within that one process it applies a two-layer *separation-of-concerns* pattern: a thin entry-point/orchestration layer (`app.py`) sits above a pure computation layer (`service.py`), and the orchestrator delegates all arithmetic to the computation module (`from service import calculate_total`, `app.py` L15; `total = calculate_total(numbers)`, L34). This same two-file pattern is reproduced at every tier of a three-repository composition that is wired together at build time by native Git submodules (`.gitmodules`, `ChildRepo/.gitmodules`), forming the tree `600K_ParentRepo → ChildRepo → NestedChild`.
 
-**Key architectural principles and patterns.** The following patterns are directly evidenced in the code:
+**Rationale.** The repository is positioned as a demonstration / teaching scaffold rather than a market-facing product (§1.2.1). The architecture therefore optimizes for simplicity, portability, and a zero-dependency operational surface: there is no framework, dependency-injection container, service boundary, or runtime process split, so a reader can comprehend the whole system end to end. The two-module split still models a real, reusable design — a pure, testable computation core behind a replaceable orchestration shell — at the smallest possible scale.
 
-- **Separation of concerns (two-layer split).** Orchestration/I-O (`app.py` → `main()`, lines 3–13) is separated from computation (`service.py`, lines 1–14). The orchestrator owns input construction and all `print()` output; the service owns arithmetic and returns values only.
-- **Pure-function computation.** `calculate_total` (`service.py:1-7`) and `calculate_average` (`service.py:10-14`) have no I/O, no shared mutable state, and no side effects beyond their return values, making them deterministic and referentially transparent.
-- **Layered dependency direction.** The dependency arrow points one way only — the orchestration layer imports the computation layer (`app.py:1`, `from service import calculate_total`); the computation layer imports nothing (verified: the only import statement anywhere in the tree is this one line).
-- **Zero-dependency / standard-library-only design.** No third-party packages, frameworks, or runtime services are used; the code relies solely on Python built-ins and is portable across Python 3.6+ (the only version-sensitive feature is f-string formatting in `app.py`).
-- **Build-time composition via native Git submodules.** Repository assembly uses `.gitmodules`-declared submodules pinned at specific commits, replicating the same application at each nesting level (feature F-004).
-- **Convention-based entry point.** Execution is gated by the `if __name__ == "__main__"` guard (`app.py:15-16`), so importing the module is side-effect free while direct invocation runs the workflow.
+**Key architectural principles and patterns (evidenced in code).**
 
-**System boundaries and major interfaces.** The runtime system boundary is a **single operating-system process** launched by `python app.py`. Within that boundary the only interface is the in-process Python module/function call. Crossing the boundary, the interfaces are:
+- **Separation of concerns / layering** — orchestration (`app.py` → `main()`, feature F-003) is cleanly separated from computation (`service.py` → `calculate_total`/`calculate_average`, features F-001/F-002).
+- **Pure functions** — the `service.py` helpers perform no I/O, hold no module-level state, and do not mutate their arguments (module docstring, `service.py` L9–L11), which makes them deterministic and independently testable.
+- **Import safety via the `__main__` guard** — `app.py` invokes `main()` only under `if __name__ == "__main__":` (L45–L46), so importing the module produces no side effects.
+- **Internal composition / delegation** — `calculate_average` reuses `calculate_total` rather than re-implementing summation (`service.py` L78).
+- **Structural replication (mirroring)** — the identical `app.py`/`service.py` pair recurs at each tier; the root and `ChildRepo` copies are functionally equivalent, differing only by docstrings and comments (§2.3.3).
+- **Build-time composition** — repositories are linked as pinned Git submodules (F-004); there is no cross-tier *runtime* coupling of any kind (§2.3).
+- **Standard-library-only / dependency-free** — the only import anywhere in the tree is the intra-repository `from service import calculate_total` (§3.1, §3.3).
 
-| Interface | Direction | Nature |
-| --- | --- | --- |
-| CLI process invocation (`python app.py`) + exit code | Inbound / outbound | Shell → process start; integer exit status back to the shell |
-| Standard output (stdout) | Outbound | Line-oriented plain text (six lines for a successful run) |
-| Python module import API (`from service import calculate_total`) | Internal | Symbol binding across the module boundary (`app.py:1`) |
-| Function-call API (`calculate_total`, `calculate_average`) | Internal | Synchronous call returning a scalar |
-| Git submodule declarations (`.gitmodules`) | Build-time | Source composition against GitHub HTTPS remotes at pinned commits |
+**System boundaries and major interfaces.**
 
-The three submodule levels do **not** interact at runtime — each `app.py` resolves `service` only from its own directory, so there is no cross-level data flow (see Section 2.3 and Section 4.1). The high-level diagram below places the two runtime layers inside the process boundary and shows the separate build-time composition boundary.
-
-```mermaid
-flowchart TB
-    Operator(["Developer / Operator"])
-    subgraph BuildTime["Build / Checkout-Time Composition Boundary"]
-        direction TB
-        Gitmods[".gitmodules (root and ChildRepo)"]
-        GH1["GitHub remote: 600K_ChildRepo.git"]
-        GH2["GitHub remote: 600K_Nested_ChildRepo.git"]
-        Gitmods -->|"git submodule update --init --recursive"| GH1
-        GH1 -->|"declares nested submodule"| GH2
-    end
-    subgraph Process["Runtime Boundary: single OS process (python app.py)"]
-        direction TB
-        subgraph Orchestration["Orchestration Layer"]
-            direction TB
-            Main["app.py -- main() (F-003)"]
-        end
-        subgraph Computation["Computation Layer"]
-            direction TB
-            Svc["service.py -- calculate_total / calculate_average (F-001 / F-002)"]
-        end
-        Main -->|"in-process import + call"| Svc
-    end
-    Stdout(["Standard Output (stdout)"])
-    Operator -->|"python app.py"| Main
-    Main -->|"line-oriented text lines"| Stdout
-    GH1 -.->|"supplies each level's source at pinned commit"| Main
-```
+- **Runtime boundary** — a single operating-system process running one CPython 3.6+ interpreter. The root and `ChildRepo` programs write six lines to standard output and exit with status code `0` (verified by execution; §1.2.3).
+- **Sole runtime output interface** — the process's standard-output stream, plus the integer process exit code. There is no GUI, HTTP endpoint, or API surface.
+- **Sole runtime input** — the hard-coded list literal `[10, 20, 30, 40]` (`app.py` L32). The program accepts no command-line arguments, environment variables, files, or interactive/network input.
+- **Intra-process interface** — a Python module import followed by a direct function call (`from service import calculate_total`; `calculate_total(numbers)`), the only integration in the runtime path (§2.3.2).
+- **Build-time / acquisition boundary** — Git and the GitHub-hosted submodule remotes reached over HTTPS during a recursive clone or `git submodule update --init --recursive` (§3.4, §3.6.4).
+- **Explicit non-boundaries** — no network sockets, database connections, message queues, or application file I/O are opened at runtime. The only file the runtime writes is the implicit CPython bytecode cache `__pycache__/*.cpython-312.pyc`, produced as a side effect of import (§4.3.1).
 
 ### 5.1.2 Core Components
 
-The architecture comprises three core components, the first two of which form the per-level application and the third of which composes the repository. (`README.md` is one line of documentation and `__pycache__/service.cpython-312.pyc` is an interpreter-produced bytecode cache; neither is an architectural component.) Because the section-wide formatting rule caps tables at four columns, the component profile is presented as two complementary tables.
+The architecturally significant components are the two source modules replicated at each tier (`app.py`, `service.py`), the submodule-declaration manifest (`.gitmodules`), and the two submodule tiers themselves (`ChildRepo`, `ChildRepo/NestedChild`). Because the output-format standard limits any table to four columns, the requested "Core Components" attributes are presented as two paired tables: the first covers responsibility, dependencies, and integration points; the second covers critical considerations. Terminology (F-001–F-004) is carried forward verbatim from §2.1 for traceability.
 
-**Component responsibilities and dependencies:**
+*Table 1 — Responsibilities, dependencies, and integration points*
 
-| Component | Primary Responsibility | Key Dependencies |
-| --- | --- | --- |
-| Application Entry Point — `app.py` → `main()` (F-003) | Orchestrate the workflow: build the fixed list `[10, 20, 30, 40]`, request the total, and write the report to stdout (`app.py:3-13`) | `service.calculate_total` via import (`app.py:1`); Python built-in `print`; Python module loader |
-| Computation Service Module — `service.py` (F-001, F-002) | Provide pure arithmetic: `calculate_total` (sum reduction, lines 1–7) and `calculate_average` (mean with empty-input guard, lines 10–14) | None external; `calculate_average` calls `calculate_total` internally (`service.py:14`) |
-| Repository Composition — `.gitmodules` + nested submodules (F-004) | Declare and pin the nested submodule chain (root → `ChildRepo` → `NestedChild`), replicating the two-module application at each level | Git submodule tooling; public GitHub HTTPS remotes |
+| Component | Primary Responsibility | Key Dependencies | Integration Points |
+| --- | --- | --- | --- |
+| `app.py` — entry-point orchestrator (F-003) | Define `main()` under the `__main__` guard; build the fixed list, delegate summation, and write the results and exit status to stdout | Co-located `service.py` (`calculate_total`); CPython 3.6+ standard library | Imports `service` (L15); calls `calculate_total(numbers)` (L34); writes to standard output (L36, L39–L40, L42) |
+| `service.py` — pure computation module (F-001/F-002) | Provide `calculate_total` (single-pass sum) and `calculate_average` (mean) as pure, side-effect-free helpers | None — no imports, classes, or module-level state | Consumed by `app.py` via import + call; `calculate_average` delegates internally to `calculate_total` (L78) |
+| `.gitmodules` — submodule manifest (F-004) | Declare the child submodule path and its pinned remote URL at build time | Git | Links root → `ChildRepo`; the nested `ChildRepo/.gitmodules` links `ChildRepo` → `NestedChild` |
+| `ChildRepo` — first-level submodule | Independently runnable mirror of the two-file pattern (middle tier) | Git; its own co-located `service.py` | Pinned at commit `63b3f43`; embeds `NestedChild`; runs standalone (exit 0) |
+| `ChildRepo/NestedChild` — leaf submodule | Leaf mirror of the pattern; non-functional at runtime (preserved defect) | Git | Pinned at commit `d57c9dd`; its `app.py` and `service.py` are byte-identical → circular `ImportError` |
 
-**Component integration points:**
-
-| Component | Integration Points |
-| --- | --- |
-| Application Entry Point — `app.py` | Inbound: shell invocation via `__main__` guard (`app.py:15-16`). Internal: `service` module. Outbound: stdout (`app.py:8`, `11`, `13`) |
-| Computation Service Module — `service.py` | Consumed only through Python import by the co-located `app.py`; exposes no network, CLI, or file interface |
-| Repository Composition — `.gitmodules` | `git submodule update --init --recursive` against `600K_ChildRepo.git` (root) and `600K_Nested_ChildRepo.git` (`ChildRepo` level); a build-time relationship only |
-
-**Critical considerations per component:**
+*Table 2 — Critical considerations*
 
 | Component | Critical Considerations |
 | --- | --- |
-| Application Entry Point — `app.py` | Input is hard-coded, not parameterized; there is no input validation and no error handling (no `try`/`except`); correct execution requires a co-located `service.py` that actually defines `calculate_total` |
-| Computation Service Module — `service.py` | Functions are stateless, deterministic, and O(n) over the input; `calculate_average` is defined but never invoked by any entry point (effectively dead relative to the workflow); no type checking, so non-numeric input would raise an unhandled `TypeError` |
-| Repository Composition — `.gitmodules` | Composition is build/checkout-time only with no runtime coupling; the `NestedChild` instance is **defective** — its `service.py` is a byte-for-byte copy of `app.py`, so `NestedChild/app.py` fails with a circular-import `ImportError`; populating the tree needs network access to GitHub |
+| `app.py` | Requires a co-located `service.py` that actually defines `calculate_total`; requires Python 3.6+ (f-string at L36); operates only on the hard-coded list, with no external input path |
+| `service.py` | Deterministic and reusable; `calculate_average` is defined but never invoked (dormant API, F-002); non-numeric elements or unsized iterables surface as an uncaught `TypeError` (§2.4) |
+| `.gitmodules` | Absent at the `NestedChild` leaf; pins exact commit SHAs; requires a recursive clone/init to populate all tiers (§3.6.4) |
+| `ChildRepo` | Functionally equivalent to the root (differs only by docstrings/comments, not byte-identical); execution verified to exit 0 |
+| `ChildRepo/NestedChild` | Broken at import time by construction; documented and preserved as-is, not repaired (§2.4.4); the leaf has no `.gitmodules` and only a one-line README |
 
 ### 5.1.3 Data Flow Description
 
-**Primary data flow.** The system has exactly one data flow, and it is entirely in-process. `main()` constructs an in-memory list literal `[10, 20, 30, 40]` (`app.py:4`) and passes it by reference to `calculate_total` (`app.py:6`). `calculate_total` folds the iterable into a function-local accumulator — initializing `total = 0` (`service.py:2`), adding each element (`service.py:4-5`) — and returns the scalar `100` (`service.py:7`). `main()` interpolates that integer into an f-string and writes `Total: 100` to standard output (`app.py:8`), then iterates the same list writing each element on its own line (`app.py:10-11`), and finally writes the completion sentinel `Application completed` (`app.py:13`). Control then returns from `main()` and the process exits with status `0`.
+**Primary runtime data flow.** All runtime data movement is in-memory and confined to a single process. When the root or `ChildRepo` program runs, `main()` constructs the list literal `[10, 20, 30, 40]` (`app.py` L32) and passes it by reference to `calculate_total` (L34). `calculate_total` walks the list once, accumulating a running total, and returns the scalar `100` (`service.py` L35, L38–L39, L41). `main()` then formats that scalar into the string `Total: 100` via an f-string and writes it to standard output (L36), iterates the same list to write each element on its own line (L39–L40), and finally writes `Application completed` (L42). No datum leaves the process except as bytes on the stdout stream, and the process exits with status `0`.
 
-**Data transformation points.** There are two, both trivial and in-memory:
+**Integration patterns and protocols.** At runtime the only integration mechanism is an intra-process Python module import followed by a direct, synchronous function call (§2.3.2); arguments are passed in memory with no serialization, marshaling, or network protocol. There is no request/response, publish/subscribe, message-queue, or batch-transfer pattern anywhere in the runtime path. The only cross-repository integration is *build-time*: Git resolves the pinned submodule commits and fetches them from the GitHub remotes over HTTPS during a recursive clone or init (§3.4, §3.6.4).
 
-- **Reduction:** the list of integers is transformed into a single scalar sum inside `calculate_total` (`service.py:2-7`). (The defined-but-unused `calculate_average` would additionally divide that sum by `len(numbers)` — `service.py:14` — but no executed path reaches it.)
-- **Formatting:** the integer result and each element are converted to text for output via f-string interpolation and `print()` (`app.py:8`, `11`, `13`).
+**Data transformation points.** There is exactly one computational transformation — the accumulation loop in `calculate_total`, which reduces an ordered collection of numbers to a single scalar sum (`service.py` L38–L39). A second, presentational transformation converts that integer to text through f-string interpolation for stdout (`app.py` L36). The dormant `calculate_average` would introduce a divide-by-count transformation (`service.py` L78) but is never invoked (F-002).
 
-No parsing, deserialization, schema mapping, encoding negotiation, or serialization occurs anywhere; the program neither reads external input nor produces structured output formats.
+**Key data stores and caches.** The system has no application data store, database, or cache; it performs no persistence and no file or network I/O at runtime (§3.5, §1.2). The list and the running accumulator exist only in process memory for the duration of `main()`. The single persisted artifact is the CPython bytecode cache (`__pycache__/*.cpython-312.pyc`) that the interpreter writes as a side effect of importing `service` on first run — a compilation cache, not an application data store (§3.6.2, §4.3.1).
 
-**Integration patterns and protocols.** The only integration pattern at runtime is a **single synchronous in-process function call** across the Python module boundary — the import binds the `calculate_total` symbol (`app.py:1`) and `main()` invokes it directly (`app.py:6`). There is no network, HTTP/REST, RPC, message queue, event bus, or inter-process communication anywhere in the tree (verified; see Section 4.1.3). The sole output "protocol" is line-oriented plain text on stdout. The only inter-repository pattern is **build-time source composition** via Git submodules (Section 4.1.3), which is not a runtime data flow.
+The end-to-end runtime data flow for the working (root / `ChildRepo`) tiers is:
 
-**Key data stores and caches.** There are **none**. All state is ephemeral and in-memory: the list literal and the function-local accumulator and loop variables, all discarded when the call returns or the process exits (see Section 4.3.1). There is no database, file store, object store, or application cache (consistent with Section 3.5). The only artifact written to disk is `__pycache__/service.cpython-312.pyc`, a CPython bytecode **import** cache produced by the interpreter as an optimization — not an application data store. The `large.csv` files present at each level are excluded by `.blitzyignore` and are never opened by any code (there is no `csv` import or file-open call anywhere), so they form no part of the data architecture.
+```mermaid
+flowchart TD
+    Lit["List literal [10, 20, 30, 40]<br/>built in-memory by main()"]
+    Calc["service.calculate_total(numbers)<br/>single-pass accumulation"]
+    Total["Scalar total = 100"]
+    FmtT["f-string format: 'Total: 100'"]
+    Loop["Iterate list: print each number"]
+    Done["Literal string: 'Application completed'"]
+    Stdout(["Standard output / console (exit 0)"])
+
+    Lit -->|"pass by reference (app.py L34)"| Calc
+    Calc -->|"return int (service.py L41)"| Total
+    Total --> FmtT
+    FmtT -->|"app.py L36"| Stdout
+    Lit --> Loop
+    Loop -->|"app.py L39-L40"| Stdout
+    Done -->|"app.py L42"| Stdout
+```
 
 ### 5.1.4 External Integration Points
 
-At **runtime the system integrates with nothing external** — it has zero third-party dependencies and performs no network, database, or file I/O (verified; see Sections 1.2.1, 3.3, and 3.4). The only relationships that cross the repository boundary are (a) the Git submodule remotes, consulted at checkout/build time to assemble the source tree, and (b) the operating-environment interfaces (the invoking shell and the stdout stream) exercised at runtime. No component defines or references any service-level agreement, performance budget, or uptime target (see Section 1.2.3), so the SLA column below records those verified absences.
+At runtime the system integrates with no external systems: it opens no sockets, connects to no database or message broker, and calls no third-party API or service (§1.2.1, §1.3.2). The only integrations expressed anywhere in the repository are build-time Git-submodule links to GitHub-hosted remotes, exercised once during a recursive clone/initialization (F-004, §3.4). The table below adapts the requested five attributes to the four-column standard by combining "Data Exchange Pattern" and "Protocol/Format" into a single column.
 
-| System / Endpoint | Integration Type | Data Exchange Pattern / Protocol | SLA Requirements |
+| System Name | Integration Type | Exchange Pattern / Protocol | SLA Requirements |
 | --- | --- | --- | --- |
-| GitHub remote `600K_ChildRepo.git` (root `.gitmodules`) | Build/checkout-time Git submodule source | One-way fetch/clone of a pinned commit over Git-over-HTTPS | None defined in the repository |
-| GitHub remote `600K_Nested_ChildRepo.git` (`ChildRepo/.gitmodules`) | Build/checkout-time Git submodule source (nested) | One-way fetch/clone of a pinned commit over Git-over-HTTPS | None defined in the repository |
-| Standard output (stdout) | Runtime output stream to the OS/shell | One-way, line-oriented plain-text writes (`app.py:8`, `11`, `13`) | None defined in the repository |
-| Invoking shell + Python 3.x runtime | Runtime process invocation and exit-code contract | CLI `python app.py`; integer exit status returned to the shell | None defined in the repository |
+| GitHub — `600K_ChildRepo.git` | Build-time Git submodule remote (F-004) | One-time recursive fetch/clone; Git over HTTPS | None defined in repository |
+| GitHub — `600K_Nested_ChildRepo.git` | Build-time Git submodule remote (F-004) | One-time recursive fetch/clone; Git over HTTPS | None defined in repository |
+| Standard output / console | Runtime output stream (process-local; not an external system) | Line-oriented text via `print()` | None defined in repository |
+| Runtime external services (DB, API, queue, cache) | None present | Not applicable — no network/DB/file I/O | Not applicable |
 
-The GitHub remotes are referenced only through the committed, credential-free HTTPS URLs in `.gitmodules`; they participate in composing the source tree (`git submodule update --init --recursive`) and have no role during program execution. Because there are no runtime external integrations, there are correspondingly no runtime failure modes tied to external systems — the only externally influenced failure is a checkout-time inability to reach a submodule remote, which is orthogonal to the in-process computation.
+No service-level agreements, uptime targets, latency budgets, or throughput guarantees are defined anywhere in the codebase or documentation (§1.2.3); the "SLA Requirements" column therefore records the factual absence rather than asserting invented figures. The GitHub remotes are third-party infrastructure whose availability affects clone-time success only — once the working tree is populated, the program runs entirely offline with no external runtime dependency.
 
 ## 5.2 Component Details
 
-This section details each of the three core components identified in Section 5.1.2 along the dimensions the prompt enumerates — purpose and responsibilities, technologies and frameworks, key interfaces and APIs, data-persistence requirements, and scaling considerations — followed by the component-interaction, state-transition, and sequence diagrams for the system's single key flow. The per-level application components (`app.py`, `service.py`) exist identically at the root and `ChildRepo` levels; the `NestedChild` level reproduces `app.py` but ships a defective `service.py` (see 5.2.3).
+This section details each architecturally significant component along five dimensions — purpose and responsibilities, technologies and frameworks, key interfaces and APIs, data-persistence requirements, and scaling considerations — followed by the required component-interaction, state-transition, and sequence diagrams. The three runtime/build components are the pure computation module (`service.py`), the entry-point orchestrator (`app.py`), and the Git-submodule composition (`.gitmodules` and the two submodule tiers). All facts are grounded in the source; where a dimension has no implementation, the absence is stated explicitly rather than inferred.
 
-### 5.2.1 Application Entry Point — `app.py`
+### 5.2.1 Computation Module — `service.py` (F-001, F-002)
 
-- **Purpose and responsibilities.** `app.py` is the sole executable entry point and the workflow orchestrator (feature F-003). Its `main()` function (`app.py:3-13`) constructs the fixed input list `[10, 20, 30, 40]`, delegates summation to the service layer, formats the result, prints the total and each element, and prints the completion sentinel. It owns **all** input construction and output; it performs **no** arithmetic itself.
-- **Technologies and frameworks.** Pure Python with **no framework**. It uses only language built-ins — a list literal, a `for` loop, `print()`, and f-string formatting (`app.py:8`). The f-string sets the minimum language floor at Python 3.6+; the observed toolchain is CPython 3.12 (per the compiled bytecode caches). There is no CLI-argument parser (`argparse`/`click`), no configuration loader, and no logging library.
-- **Key interfaces and APIs.** Inbound: the CLI invocation contract gated by `if __name__ == "__main__": main()` (`app.py:15-16`), so importing the module is side-effect free. Internal consumer: it imports exactly one symbol, `from service import calculate_total` (`app.py:1`), and calls it once (`app.py:6`). Outbound: the stdout contract — six deterministic text lines for a successful run (`Total: 100`, `10`, `20`, `30`, `40`, `Application completed`). `main()` itself is a zero-argument function returning `None`.
-- **Data persistence requirements.** None. `app.py` opens no files, database connections, or sockets; the only state is the local `numbers` list, which is discarded when `main()` returns and the process exits.
-- **Scaling considerations.** Single-process, single-threaded, and fully synchronous. Work is O(n) in the input size for both the delegated summation and the print loop (`app.py:10-11`); with the hard-coded four-element list the runtime is effectively constant. There are no concurrency, parallelism, back-pressure, or horizontal-scaling constructs, and — because the input is hard-coded rather than parameterized — the component cannot process larger or variable workloads without a source change.
+**Purpose and responsibilities.** `service.py` is the system's only common service (§2.3.4): it supplies the reusable arithmetic primitives and contains no orchestration or I/O. `calculate_total` reduces a numeric iterable to its sum; `calculate_average` computes the arithmetic mean by delegating summation to `calculate_total`. The module has no imports, no classes, and no module-level state, and every function is side-effect-free (module docstring, `service.py` L9–L11).
 
-### 5.2.2 Computation Service Module — `service.py`
+**Technologies and frameworks.** Pure Python targeting 3.6+ with **no imports at all** — the code uses only language built-ins (`for`, `+`, `/`, `len`). No third-party library, framework, or standard-library module is used (§3.1, §3.3).
 
-- **Purpose and responsibilities.** `service.py` is the reusable computation library and the dependency target of the orchestrator. It provides two pure functions: `calculate_total` (feature F-001) reduces an iterable to its sum (`service.py:1-7`), and `calculate_average` (feature F-002) returns the arithmetic mean with an empty-input guard (`service.py:10-14`). Neither function performs I/O or mutates shared state.
-- **Technologies and frameworks.** Pure Python standard library with **zero imports** at the root and `ChildRepo` levels — the module relies solely on built-ins (`for`, `+=`, `len`, `/`). No numeric or scientific library (e.g., NumPy, `statistics`) is used; the summation is a hand-written accumulator loop.
-- **Key interfaces and APIs.** `calculate_total(numbers)` accepts any iterable of addable values and returns their sum (returns `0` for empty input because the loop body never executes). `calculate_average(numbers)` returns `0` for falsy/empty input (a division-by-zero guard, `service.py:11-12`) and otherwise returns `calculate_total(numbers) / len(numbers)` (`service.py:14`). The module is consumed purely through Python import; it declares no explicit `__all__` and exposes no network, CLI, or file interface.
-- **Data persistence requirements.** None. The module is stateless; the only mutable state is the function-local accumulator `total` (`service.py:2-5`), discarded on return. Nothing is cached or persisted between calls.
-- **Scaling considerations.** `calculate_total` is O(n) time and O(1) additional space; `calculate_average` is O(n) as well (one `calculate_total` pass plus `len`). Because the functions are pure and hold no shared state, they are inherently re-entrant and thread-safe and could be invoked concurrently without contention — though nothing in the repository exercises concurrency. There is no memoization, so repeated calls recompute from scratch. Note that `calculate_average` is defined but **never invoked** by any entry point (dead relative to the workflow), and that non-numeric input would raise an unhandled `TypeError` at `service.py:5`.
+**Key interfaces and APIs.**
 
-### 5.2.3 Repository Composition — Nested Git Submodules
+```python
+def calculate_total(numbers): ...    # F-001: single-pass sum; returns 0 for empty
+def calculate_average(numbers): ...  # F-002: mean; returns 0 for falsey; delegates to calculate_total
+```
 
-- **Purpose and responsibilities.** This component assembles the repository as a two-level-deep nested Git-submodule chain (feature F-004). The root `.gitmodules` declares the `ChildRepo` submodule, and `ChildRepo/.gitmodules` declares the `NestedChild` submodule, each pinned to a specific commit; every level is intended to reproduce the same two-module application.
-- **Technologies and frameworks.** Native **Git submodules** configured through INI-style `.gitmodules` files, backed by public **GitHub HTTPS remotes** (`600K_ChildRepo.git` and `600K_Nested_ChildRepo.git`). No package manager, build tool, or dependency manifest participates; the compiled `__pycache__/service.cpython-312.pyc` caches indicate a CPython 3.12 toolchain (see Section 3.6).
-- **Key interfaces and APIs.** The interface is declarative: each `.gitmodules` entry specifies a submodule name, checkout path, and remote URL. Populating the tree uses `git submodule update --init --recursive`, which fetches each child at its pinned commit (for example, `ChildRepo` is pinned at commit `a1c6294…`). There is no runtime API — composition is a checkout/build-time concern with no runtime coupling between levels (see Section 4.1.3).
-- **Data persistence requirements.** The only "persistence" is source-tree state recorded in Git — the committed submodule pointers (gitlinks) and `.gitmodules` metadata. This is version-control state, not application runtime data.
-- **Scaling considerations.** Nesting depth is fixed at two levels; each additional level would simply replicate the same two-file structure and add another network fetch. Composition requires network access to GitHub to populate the submodules. The **`NestedChild` level is non-functional**: its `service.py` is a byte-for-byte copy of `app.py`, so `NestedChild/app.py` raises a circular-import `ImportError` and exits `1` (see Sections 4.3.2 and 5.4.3). Because composition is build-time only, it imposes no runtime scaling constraint.
+- `calculate_total(numbers) -> int | float` — initializes an accumulator to `0`, adds each element in one pass, and returns the total; empty input returns `0` (`service.py` L35, L38–L39, L41).
+- `calculate_average(numbers) -> int | float` — returns `0` for empty/falsey input, otherwise `calculate_total(numbers) / len(numbers)`; requires a *sized* collection (unsized iterables raise `TypeError`), and is **defined but never invoked** by any entry point (`service.py` L44, L75–L76, L78).
+- Consumption interface: `from service import calculate_total` (imported by `app.py` L15).
+
+**Data-persistence requirements.** None. The functions are stateless and persist nothing; they hold no cache and touch no store. The only on-disk artifact associated with the module is the interpreter-written bytecode cache `__pycache__/service.cpython-312.pyc`, a compilation side effect, not application state (§4.3.1).
+
+**Scaling considerations.** `calculate_total` is **O(n)** time in the number of elements and **O(1)** additional space (a single scalar accumulator); it is iterative, so it incurs no recursion-depth limit. Purity and the absence of shared state make the helper inherently thread-/reentrancy-safe, though the system never runs it concurrently. Because there is no service runtime, horizontal/vertical scaling, load balancing, and pooling are **Not applicable**; "scale" here is bounded solely by the algorithmic complexity of the helper and the (fixed, four-element) input.
+
+### 5.2.2 Entry-Point Orchestrator — `app.py` (F-003)
+
+**Purpose and responsibilities.** `app.py` is the thin orchestration shell for a tier. Its `main()` builds the fixed list, delegates summation to the computation module, renders the results to standard output, and returns — writing only to stdout and holding no state (`app.py` L17–L46). The `if __name__ == "__main__":` guard (L45–L46) ensures that importing the module has no side effects.
+
+**Technologies and frameworks.** Pure Python 3.6+ (the f-string at L36 sets the minimum version), standard library only, with a single intra-repository import (`from service import calculate_total`, L15). There is no CLI-parsing framework (no `argparse`), configuration loader, or logging framework.
+
+**Key interfaces and APIs.**
+
+- `main() -> None` — the direct-execution entry point; takes no arguments and writes results to stdout (`app.py` L17, L36, L39–L40, L42).
+- Command-line interface: `python app.py`, which runs `main()` via the `__main__` guard and exits `0` on success.
+- Inbound dependency: the `calculate_total` symbol imported from the co-located `service` module (L15) and called at L34.
+
+**Data-persistence requirements.** None at runtime; output is transient stdout. As with the service module, importing produces a bytecode cache (`__pycache__/app.cpython-312.pyc`) as a side effect only (§3.6.2).
+
+**Scaling considerations.** Execution is a single synchronous pass: an **O(n)** delegation to `calculate_total` plus an **O(n)** print loop over the same fixed list, then process exit. There is no server loop, concurrency, or long-lived state, so runtime scaling has no dimension — the only "scaling" action is re-invoking the script. Because the input is hard-coded (`app.py` L32), throughput is fixed and independent of environment.
+
+### 5.2.3 Git-Submodule Composition — `.gitmodules` and the Submodule Tiers (F-004)
+
+**Purpose and responsibilities.** This build-time component composes three independent repositories into a nested tree using native Git submodules. The root `.gitmodules` declares the `ChildRepo` submodule, and `ChildRepo/.gitmodules` declares the `NestedChild` submodule, producing `600K_ParentRepo → ChildRepo → NestedChild`; each edge is pinned to a specific commit. There is no runtime coupling between tiers (§2.3) — composition is purely a source-structure concern.
+
+**Technologies and frameworks.** Git submodules described by INI-style `.gitmodules` manifests, resolved against GitHub-hosted HTTPS remotes. This is not a Python component and executes no application code.
+
+**Key interfaces and APIs.**
+
+- Root `.gitmodules` — maps path `ChildRepo` → `https://github.com/lakshya-blitzy/600K_ChildRepo.git`.
+- `ChildRepo/.gitmodules` — maps path `NestedChild` → `https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`.
+- Acquisition interface: `git clone --recursive <url>` or `git submodule update --init --recursive` (§3.6.4).
+- Pinned commits (gitlinks): `ChildRepo` at `63b3f43`, `NestedChild` at `d57c9dd`.
+
+**Data-persistence requirements.** The pinned submodule reference (gitlink SHA) is persisted in the superproject's tree/index alongside `.gitmodules`; each submodule's own contents and history persist in its own `.git`. No *application* data is persisted.
+
+**Scaling considerations.** The composition scales structurally by adding submodule edges/levels (the repository already demonstrates two edges across three tiers), and each tier evolves independently with its own history. Acquisition cost grows roughly linearly with the number of submodules fetched over HTTPS at clone time; there is no runtime scaling implication because submodules impose no runtime dependency. A structural caveat is preserved at the leaf: `ChildRepo/NestedChild` is composed at build time but **non-functional at runtime** because its `app.py` and `service.py` are byte-identical, yielding a circular `ImportError` (§2.4.4).
 
 ### 5.2.4 Component Interaction, State, and Sequence Diagrams
 
-**Component interaction.** The diagram below shows the runtime relationships among the components: the Python module loader binds `calculate_total` into the orchestrator, the `__main__` guard invokes `main()`, `main()` calls `calculate_total` and receives the scalar result, and `main()` writes text lines to stdout. `calculate_average` is drawn with its internal call to `calculate_total` but has no inbound caller, reflecting that it is unexercised.
+**Component interaction.** The diagram below shows the intra-tier runtime interaction (orchestrator → computation module → stdout) that succeeds at the root and `ChildRepo` tiers, the broken leaf interaction at `NestedChild`, and the build-time submodule composition edges (dashed) that link the tiers.
 
 ```mermaid
-flowchart LR
-    Loader["Python module loader"]
-    subgraph AppComp["Component: app.py (Orchestrator, F-003)"]
+flowchart TD
+    RGit[".gitmodules root:<br/>declares + pins ChildRepo @ 63b3f43"]
+    CGit[".gitmodules ChildRepo:<br/>declares + pins NestedChild @ d57c9dd"]
+    Console(["stdout / console"])
+
+    subgraph Root["Tier 1 - 600K_ParentRepo (runs, exit 0)"]
         direction TB
-        Guard["__main__ guard -- app.py:15-16"]
-        MainFn["main() -- app.py:3-13"]
+        RApp["app.py: main() orchestrator (F-003)"]
+        RSvc["service.py: calculate_total / calculate_average (F-001/F-002)"]
+        RApp -->|"import + call"| RSvc
     end
-    subgraph SvcComp["Component: service.py (Computation, F-001 / F-002)"]
+
+    subgraph Child["Tier 2 - ChildRepo (runs, exit 0)"]
         direction TB
-        Total["calculate_total(numbers) -- service.py:1-7"]
-        Avg["calculate_average(numbers) -- service.py:10-14 (unused)"]
+        CApp["app.py: main() orchestrator (F-003)"]
+        CSvc["service.py: calculate_total / calculate_average (F-001/F-002)"]
+        CApp -->|"import + call"| CSvc
     end
-    StdoutNode["Standard output (stdout)"]
-    Loader -->|"import binding (app.py:1)"| Total
-    Guard -->|"invokes on direct run"| MainFn
-    MainFn -->|"calculate_total(numbers) (app.py:6)"| Total
-    Total -->|"returns 100 (service.py:7)"| MainFn
-    Avg -.->|"internally calls (service.py:14)"| Total
-    MainFn -->|"print() text lines (app.py:8,11,13)"| StdoutNode
+
+    subgraph Nested["Tier 3 - ChildRepo/NestedChild (leaf, exit 1)"]
+        direction TB
+        NApp["app.py: main()"]
+        NSvc["service.py: byte-identical duplicate; no calculate_total"]
+        NApp -.->|"circular ImportError"| NSvc
+    end
+
+    RApp -->|"print()"| Console
+    CApp -->|"print()"| Console
+    RGit -.->|"build-time submodule"| Child
+    CGit -.->|"build-time submodule"| Nested
 ```
 
-**State transitions.** From an architectural viewpoint, the application component moves through a short, linear lifecycle from module load to a terminal exit state. The diagram includes the two failure terminals — the `NestedChild` import failure and the (unreachable-in-workflow) idle path where the module is imported rather than run. This complements the process-lifecycle view in Section 4.3.1.
+**State transition.** At the component (process) level, an application tier moves through interpreter start-up, service import, and the summation/print sequence. The success path (root / `ChildRepo`) ends in `Completed` (exit 0); the leaf's failed import ends in `ImportFailed` (exit 1).
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Loaded: python app.py, import service (app.py:1)
-    Loaded --> ImportFailed: service.py lacks calculate_total (NestedChild)
-    ImportFailed --> [*]: circular-import ImportError, exit 1
-    Loaded --> Dormant: imported as module, guard False (app.py:15)
-    Dormant --> [*]: main() not called, no output
-    Loaded --> Orchestrating: direct run, guard True (app.py:15-16)
-    Orchestrating --> Delegating: calculate_total(numbers) (app.py:6)
-    Delegating --> Emitting: return 100 (service.py:7)
-    Emitting --> Completed: print Application completed (app.py:13)
-    Completed --> [*]: exit code 0
+    [*] --> Interpreting: python app.py
+    Interpreting --> ImportingService: run "from service import calculate_total"
+    ImportingService --> Ready: calculate_total resolved
+    ImportingService --> ImportFailed: name unresolved (NestedChild leaf)
+    Ready --> Summing: main() calls calculate_total([10,20,30,40])
+    Summing --> Printing: total = 100 returned
+    Printing --> Completed: print Total, each number, Application completed
+    Completed --> [*]: exit 0
+    ImportFailed --> [*]: uncaught ImportError, exit 1
 ```
 
-**Sequence for the key flow.** The single key flow is the import-bind-call-emit interaction between the two components and stdout. The sequence below focuses on the component interfaces (the operator/runtime-lane view of the same flow appears in Section 4.1.3).
+**Sequence — successful summation flow (root / `ChildRepo`).** This is the system's single key runtime flow. The build-time recursive-acquisition sequence is documented in §3.6.4 and §4.1.2 and is not duplicated here.
 
 ```mermaid
 sequenceDiagram
+    autonumber
+    actor User as User (shell)
+    participant Py as CPython interpreter
     participant App as app.py (main)
-    participant Svc as service.py
+    participant Svc as service.py (calculate_total)
     participant Out as stdout
-    App->>Svc: from service import calculate_total (app.py:1)
-    Svc-->>App: bind calculate_total symbol
-    App->>App: numbers = [10, 20, 30, 40] (app.py:4)
-    App->>Svc: calculate_total(numbers) (app.py:6)
-    Svc->>Svc: iterate and accumulate into total (service.py:2-5)
-    Svc-->>App: return 100 (service.py:7)
-    App->>Out: print "Total: 100" (app.py:8)
-    App->>Out: print 10, 20, 30, 40 (app.py:10-11)
-    App->>Out: print "Application completed" (app.py:13)
+
+    User->>Py: python app.py
+    Py->>App: execute module#59; run main() via __main__ guard
+    App->>App: numbers = [10, 20, 30, 40]
+    App->>Svc: calculate_total(numbers)
+    Svc->>Svc: single-pass accumulation (0+10+20+30+40)
+    Svc-->>App: return 100
+    App->>Out: print("Total: 100")
+    loop each number in list
+        App->>Out: print(number)
+    end
+    App->>Out: print("Application completed")
+    App-->>Py: return None
+    Py-->>User: exit code 0
 ```
 
 ## 5.3 Technical Decisions
 
-This section documents the architectural decisions that the implementation embodies and the tradeoffs each entails. Because the repository contains no design documents, the decisions below are **inferred from the artifacts and observed behavior** and are presented as reverse-engineered Architecture Decision Records; each is tied to concrete evidence. Several decisions are effectively decisions *not* to include a capability (persistence, networking, security), which is appropriate for a fixed-input arithmetic demonstration but is stated explicitly so the boundaries are unambiguous.
+The decisions recorded here are the ones actually expressed by the repository's code, manifests, and documentation. Because the project is a deliberately minimal demonstration (§1.1, §1.2.1), many decisions are decisions *not* to adopt a mechanism (persistence, networking, concurrency, authentication); these are documented as intentional, scope-driven choices consistent with the out-of-scope list in §1.3.2, together with their rationale and accepted tradeoffs — not as omissions to be inferred around.
 
 ### 5.3.1 Architecture Style Decisions and Tradeoffs
 
-The system realizes a **two-module modular monolith** running as a single synchronous process. The table contrasts the realized style with the plausible alternatives a system of this shape could have adopted, and states why the evidence points to the chosen style.
+The overarching decision is a single-process, monolithic, standard-library-only Python program with an internal two-module separation of concerns, whose structure is replicated across pinned Git submodules. Each sub-decision and its accepted tradeoff:
 
-| Candidate Style | Fit for This System | Decision |
+| Decision | Rationale | Accepted Tradeoff |
 | --- | --- | --- |
-| Two-module modular monolith (orchestrator + pure service) | Matches the observed `app.py` / `service.py` split with a one-way import dependency | **Chosen** — keeps computation pure/testable while isolating I/O |
-| Single-file script | Would collapse `main()` and `calculate_total` into one file | Rejected — loses the separation of concerns that the two files deliberately establish |
-| Layered web/framework app (e.g., Flask/Django) | Requires HTTP, routing, templating, and usually persistence — none present | Rejected — no network, UI, or request surface exists |
-| Microservices / distributed system | Requires service boundaries, transport, and orchestration | Rejected — there is a single process, no scale or availability driver, and no external interfaces |
+| Monolithic single-process script (not a service/microservice) | Scope is a single fixed-list summation; nothing to distribute; easiest to read and run | No independently deployable/scalable units — none are needed |
+| Two-module split: `app.py` orchestrator over pure `service.py` | Keeps computation pure and testable and the orchestration shell replaceable | Minor indirection for a one-line sum, accepted for clarity and reuse |
+| Standard-library-only, zero dependencies | Runs on stock CPython 3.6+ with no build or supply-chain burden (§3.3) | Cannot leverage third-party libraries; any helper must be hand-rolled (trivial here) |
+| Structural replication (mirror `app.py`/`service.py` per tier) | A reader moving between tiers meets an identical shape (§2.3.3) | Duplication and drift risk — realized as the `NestedChild` leaf defect |
+| Native Git submodules for composition (not a monorepo or package dependency) | Demonstrates composition of independent repos with pinned reproducibility (F-004) | Requires recursive clone; leaf tiers can break independently (§2.4.4) |
 
-**Tradeoffs of the chosen style.** The modular-monolith choice yields maximum simplicity, determinism, and zero operational surface, and it makes the arithmetic independently reusable and easy to reason about. The cost is that the design provides **no** extensibility affordances: input is hard-coded rather than parameterized, there is no test harness, no error handling, and no logging, so the system cannot adapt to variable input, failure conditions, or observability needs without code changes (consistent with Sections 2.4 and 4.3). These are acceptable tradeoffs for a demonstration but would be limiting for any production use.
+The dominant theme is *radical simplicity*: every choice trades capability the project does not need for transparency and portability it does.
 
-### 5.3.2 Communication, Storage, Caching, and Security Decisions
+### 5.3.2 Communication Pattern Choices
 
-The four cross-cutting design choices the prompt calls out are summarized below, each with its evidence and the tradeoff it implies. All four reflect the same underlying driver: a single-process computation over trusted, hard-coded data.
+The only communication in the runtime path is an intra-process, synchronous, in-memory Python function call reached through a module import (§2.3.2). No network, RPC, event, or message-broker pattern is used anywhere.
 
-| Decision Area | Choice Made (Evidence) | Rationale and Tradeoff |
+| Concern | Decision | Rationale |
 | --- | --- | --- |
-| Communication pattern | In-process synchronous function call via Python import (`app.py:1`, `app.py:6`); no IPC/RPC/HTTP anywhere | Rationale: everything runs in one process, so a direct call is the simplest and fastest mechanism. Tradeoff: the computation cannot be reached remotely or scaled across processes |
-| Data storage | None — data lives only as an in-memory list and is written to stdout (`app.py:4`, `8`); no database, file, or object store (Section 3.5) | Rationale: results need not outlive the run. Tradeoff: no history, audit trail, or reprocessing is possible |
-| Caching strategy | None at the application level; the only cache is CPython's `__pycache__` bytecode (an import optimization, not app data) | Rationale: the pure computation is trivial and deterministic, so memoization would add complexity for no benefit. Tradeoff: each call recomputes (negligible at n=4) |
-| Security mechanism | None — no authentication, authorization, secrets, input validation, or network exposure | Rationale: the only actor is a local operator running the program over hard-coded data, so there is no attack surface. Tradeoff: the primitive is unsafe if later fed untrusted or non-numeric input (unhandled `TypeError`, Section 4.3.2) |
+| Inter-component communication | Direct synchronous function call (`import` + call) | One process, one call path — zero latency and no serialization |
+| Program output | Line-oriented text to stdout via `print()` | Human-observable demonstration output; no machine consumer contract |
+| Cross-tier communication | None at runtime (build-time submodule pins only) | Tiers are independent by design; no runtime coupling (§2.3) |
+| Asynchrony / messaging / events | Not adopted | No concurrency or external actors; would add complexity for no benefit |
 
-### 5.3.3 Design Decision Tree
+### 5.3.3 Data Storage and Caching Decisions
 
-The decision tree traces the reasoning that the observed architecture reflects: at each design question the "No/Yes" branch that the code actually took leads to the realized minimal design, while the alternative branches (marked "not chosen") show the capabilities that were deliberately omitted.
+**Data storage.** The system stores nothing. It uses no database, no files, and no external storage; the list and accumulator live only in process memory, and the sole output is transient stdout (§3.5). This is appropriate because there is no data domain to persist — the input is hard-coded and the output is a demonstration with no downstream consumer or audit requirement.
+
+**Caching.** There is no application-level cache. The only cache present is the interpreter's own bytecode cache (`__pycache__/*.cpython-312.pyc`), which CPython writes automatically on first import; it is a compilation optimization, not an architectural decision (§3.6.2, §4.3.1). Application caching is unjustified because the computation is O(n) over four elements and effectively free to recompute.
+
+| Concern | Decision | Rationale |
+| --- | --- | --- |
+| Primary data store | None (stateless; in-memory only) | No data domain to persist; hard-coded input, transient output |
+| Durable output | None (stdout only) | Demonstration output; no consumer, retention, or audit need |
+| Application cache | None | Recomputing an O(n)/4-element sum is negligible |
+| Bytecode cache | Implicit `__pycache__/*.cpython-312.pyc` | Interpreter default that speeds re-import; not an application concern |
+
+### 5.3.4 Security Mechanism Selection
+
+Security decisions follow from the minimal attack surface established in §2.4: with no network, file, or interactive input at runtime, and no `eval`/`exec` or deserialization, there is nothing to authenticate, authorize, or validate against an untrusted source.
+
+| Concern | Decision / Mechanism | Rationale / Note |
+| --- | --- | --- |
+| Authentication / authorization | None | No users, sessions, network endpoints, or protected resources — Not applicable |
+| Input validation | None; fail-fast on bad types | Input is trusted and hard-coded; non-numeric or unsized inputs raise an uncaught `TypeError` (§2.4) |
+| Runtime attack surface | Minimized: no I/O, no `eval`/deserialization | Pure computation plus stdout; nothing exploitable at runtime |
+| Supply-chain integrity | Submodule commit pinning (`63b3f43` / `d57c9dd`) over HTTPS | Reproducible checkout; no signature verification; keep credentials out of clone URLs (root `README.md` security note) |
+
+### 5.3.5 Architecture Decision Records and Decision Tree
+
+The following Architecture Decision Records (ADRs) capture the load-bearing choices in a durable form. All are **Accepted** and reflect the current codebase.
+
+**ADR-01 — Standard-library-only, zero-dependency runtime.**
+*Context:* a tiny demonstration that must run anywhere with minimal setup. *Decision:* depend on nothing beyond CPython 3.6+; the only import is the intra-repository `from service import calculate_total`. *Consequences:* trivial portability and no supply-chain/build burden, at the cost of forgoing third-party functionality (none required).
+
+**ADR-02 — Two-module separation of concerns.**
+*Context:* even a one-line sum benefits from a clean seam. *Decision:* isolate pure computation in `service.py` behind a thin `app.py` orchestrator invoked under an `__main__` guard. *Consequences:* computation is reusable and side-effect-free and orchestration is replaceable; a small amount of indirection is accepted.
+
+**ADR-03 — Intra-process synchronous call as the only communication.**
+*Context:* single process, single call path. *Decision:* communicate by direct function call; emit results as text to stdout. *Consequences:* no serialization, latency, or protocol surface; no support for remote consumers (not needed).
+
+**ADR-04 — Stateless design with no persistence or application cache.**
+*Context:* no data domain; input hard-coded. *Decision:* keep all state in memory and write only to stdout; rely on the interpreter's bytecode cache alone. *Consequences:* nothing survives the process; recomputation is negligible; no storage/caching operational burden.
+
+**ADR-05 — Native Git submodules with pinned commits for composition.**
+*Context:* demonstrate composing independent repositories. *Decision:* declare submodules in `.gitmodules`, pinned to exact commits, populated by recursive clone. *Consequences:* reproducible multi-tier checkout with independent histories; recursive acquisition is required and a leaf tier can break independently (the preserved `NestedChild` defect).
+
+**ADR-06 — No authentication/authorization or input validation (fail-fast).**
+*Context:* no untrusted input or protected resource. *Decision:* implement no auth and no validation; allow invalid input types to raise an uncaught `TypeError`. *Consequences:* minimal attack surface and simple code; robustness against malformed input is intentionally not provided (§2.4).
+
+The decision tree below traces how the minimal architecture is reached; the branch labelled "(this system)" marks the path the repository actually takes at each decision point.
 
 ```mermaid
 flowchart TD
-    Start(["Design driver: sum a fixed list and report the result"])
-    Start --> Q1{"External or variable input required?"}
-    Q1 -->|"No -- input is hard-coded [10,20,30,40]"| D1["No config / argument-parsing layer"]
-    Q1 -->|"Yes"| A1["(not chosen) input/config layer"]
-    D1 --> Q2{"Must results outlive the process?"}
-    Q2 -->|"No"| D2["No database/file persistence; write to stdout only"]
-    Q2 -->|"Yes"| A2["(not chosen) storage/persistence tier"]
-    D2 --> Q3{"Cross-process or network interaction needed?"}
-    Q3 -->|"No"| D3["Single in-process function call; no network protocol"]
-    Q3 -->|"Yes"| A3["(not chosen) IPC / RPC / HTTP"]
-    D3 --> Q4{"Concurrency or high throughput needed?"}
-    Q4 -->|"No"| D4["Single-threaded synchronous run-to-completion"]
-    Q4 -->|"Yes"| A4["(not chosen) threads / async / workers"]
-    D4 --> Q5{"Separate computation from orchestration for reuse/testability?"}
-    Q5 -->|"Yes"| D5["Two modules: app.py orchestrator + service.py pure functions"]
-    Q5 -->|"No"| A5["(not chosen) single-file script"]
-    D5 --> Q6{"Reuse the same app at multiple nesting levels?"}
-    Q6 -->|"Yes"| D6["Compose via nested Git submodules"]
-    Q6 -->|"No"| A6["(not chosen) single flat repository"]
-    D6 --> End(["Resulting architecture: minimal two-module modular monolith"])
+    Start{{"Design decision for 600K_ParentRepo"}}
+    Q1{"Persistent or shared<br/>state required?"}
+    Q2{"Network / API / external<br/>service required?"}
+    Q3{"Concurrency or high<br/>throughput required?"}
+    Q4{"Compose multiple<br/>independent repositories?"}
+
+    A1["Would add DB / cache / files"]
+    A2["Would add sockets / RPC / broker"]
+    A3["Would add threads / async / workers"]
+
+    NoStore["Chosen: in-memory only,<br/>output to stdout"]
+    NoNet["Chosen: direct in-process<br/>function call"]
+    NoConc["Chosen: synchronous<br/>single pass"]
+    Mono["Chosen: single-process, stdlib-only,<br/>two-module split"]
+    Sub["Chosen: native Git submodules,<br/>pinned commits"]
+    Single["Single repository"]
+
+    Start --> Q1
+    Q1 -->|Yes| A1
+    Q1 -->|"No (this system)"| NoStore
+    NoStore --> Q2
+    Q2 -->|Yes| A2
+    Q2 -->|"No (this system)"| NoNet
+    NoNet --> Q3
+    Q3 -->|Yes| A3
+    Q3 -->|"No (this system)"| NoConc
+    NoConc --> Mono
+    Mono --> Q4
+    Q4 -->|"Yes (this system)"| Sub
+    Q4 -->|No| Single
 ```
-
-### 5.3.4 Architecture Decision Records (ADRs)
-
-The following reverse-engineered ADRs capture the load-bearing decisions. All are recorded as **Accepted** because they are realized in the shipped code; the "Consequences" note the tradeoffs and, where relevant, the defect they interact with.
-
-| ADR | Decision | Status |
-| --- | --- | --- |
-| ADR-001 | Separate orchestration (`app.py`) from pure computation (`service.py`) | Accepted |
-| ADR-002 | Depend only on the Python standard library (zero third-party dependencies) | Accepted |
-| ADR-003 | Hard-code input and emit results to stdout (no config, arguments, or persistence) | Accepted |
-| ADR-004 | Gate execution behind the `__main__` guard (importable, side-effect-free module) | Accepted |
-| ADR-005 | Compose the repository via nested Git submodules | Accepted |
-| ADR-006 | Omit error handling, input validation, and logging (rely on interpreter defaults) | Accepted (with caveats) |
-
-**ADR-001 — Separate orchestration from computation.** *Context:* the program must both drive a workflow and perform arithmetic. *Decision:* place orchestration and I/O in `app.py` and pure arithmetic in `service.py`, with a one-way import dependency (`app.py:1`). *Consequences:* the arithmetic is reusable and trivially testable in isolation, and the orchestrator can evolve independently; however, correct execution now depends on the two files being co-located — the single point of failure that the `NestedChild` defect exploits.
-
-**ADR-002 — Standard library only.** *Context:* the task is elementary arithmetic and printing. *Decision:* use only Python built-ins; introduce no third-party packages and no dependency manifest (verified: the only import anywhere is intra-repository). *Consequences:* the program is maximally portable (Python 3.6+), reproducible, and free of supply-chain risk, at the cost of forgoing any library conveniences (argument parsing, logging, numeric libraries).
-
-**ADR-003 — Hard-coded input, stdout output.** *Context:* the demonstration needs a concrete, repeatable result. *Decision:* embed `[10, 20, 30, 40]` in `main()` (`app.py:4`) and print the report (`app.py:8`, `11`, `13`). *Consequences:* the run is deterministic and dependency-free, but the system cannot process external or variable input and retains nothing after exit.
-
-**ADR-004 — `__main__` guard entry point.** *Context:* `service`-style reuse and direct execution should coexist. *Decision:* invoke `main()` only under `if __name__ == "__main__"` (`app.py:15-16`). *Consequences:* the module can be imported without side effects while still being runnable as a script; this is the idiomatic Python choice and imposes no cost.
-
-**ADR-005 — Nested Git submodule composition.** *Context:* the same application is to appear at multiple nesting levels. *Decision:* declare submodules in `.gitmodules` at the root and `ChildRepo` levels, each pinned to a commit (feature F-004). *Consequences:* levels are independently versioned and composable at checkout time with no runtime coupling; however, populating the tree requires network access to GitHub, and there is no verification of submodule contents — which is how the defective `NestedChild` `service.py` went unnoticed.
-
-**ADR-006 — Omit error handling, validation, and logging.** *Context:* the workflow runs over trusted, hard-coded numeric data. *Decision:* include no `try`/`except`/`finally`/`raise`, no input validation, and no logging framework (verified across the tree). *Consequences:* the happy path is minimal and clear, but any deviation (non-numeric reuse of `calculate_total`, or the `NestedChild` import failure) surfaces only as an uncaught interpreter traceback with a non-zero exit and no diagnostic context (see Section 5.4). This decision is reasonable for a demo but would be unacceptable for production use, hence the "with caveats" status.
 
 ## 5.4 Cross-Cutting Concerns
 
-Cross-cutting concerns for this system are dominated by **verified absences**: the codebase is a stateless, single-process, standard-library-only computation with no monitoring, logging, error handling, authentication, SLAs, or runtime external resources anywhere in the tree (consistent with Sections 2.4, 4.2, and 4.3). Rather than assert capabilities the repository does not have, each concern below is reported with its actual status and the evidence for it; the one concern with substantive behavior — error propagation — is diagrammed.
-
-| Cross-Cutting Concern | Status | Evidence |
-| --- | --- | --- |
-| Monitoring / observability | Absent — no metrics, health checks, or traces | whole tree (no such imports or endpoints) |
-| Logging / tracing | Absent — `print()` to stdout is the only output mechanism | `app.py:8`, `11`, `13` |
-| Error handling | Absent (implicit) — no `try`/`except`/`finally`/`raise`; interpreter default applies | whole tree (verified) |
-| Authentication / authorization | Not applicable — local CLI over hard-coded data; no network or secrets | whole tree |
-| Performance requirements / SLAs | None defined — O(n) computation over a fixed n=4 | `service.py:1-7` |
-| Disaster recovery | Not applicable at runtime — recoverability is via Git; the `NestedChild` defect needs a source fix | `.gitmodules`, Section 4.3.2 |
+Cross-cutting concerns are documented here as they actually exist. For a standard-library-only script with no network surface, no persistence, and no service runtime, most operational concerns (monitoring frameworks, distributed tracing, authentication, formal SLAs, disaster recovery tooling) are genuinely absent; each is reported with the evidence for that determination rather than described aspirationally. Error handling is the one concern with substantive, observable behavior and is treated in the most depth, including the required error-handling flow diagram.
 
 ### 5.4.1 Monitoring, Observability, Logging, and Tracing
 
-The system has **no monitoring or observability instrumentation** of any kind: there are no metrics counters, no health-check or readiness endpoints, no distributed-tracing spans, and no APM or exporter integrations anywhere in the tree. There is likewise **no logging or tracing strategy** — the codebase contains no use of the `logging` module, no structured-log emitter, and no correlation/trace identifiers. The **only** output mechanism is the standard-library `print()` function writing plain text to stdout (`app.py:8`, `11`, `13`), and the only error output is the Python interpreter's default traceback to stderr (see 5.4.2). Consequently, observability is limited to whatever the invoking operator can read on the console for a single run; nothing is captured, aggregated, timestamped, or retained. The only artifact written to disk during operation is CPython's `__pycache__` bytecode cache, which is an import optimization rather than an observability signal.
+The system contains no monitoring, metrics, health-check, or telemetry instrumentation, and no logging or tracing framework — there is no `import logging`, no counters, and no correlation/span identifiers anywhere in the code (§1.2.3). Its entire observable surface consists of three interpreter-level signals: the lines written to **standard output** (six lines on a successful run), any Python traceback written to **standard error** on failure, and the **process exit code** (`0` on success, `1` at the broken leaf). Observability is therefore achieved by direct human inspection of that output, which is also the project's de-facto quality gate (§1.2.3, §3.6.3).
+
+| Concern | Mechanism present | Note |
+| --- | --- | --- |
+| Metrics / monitoring | None | No instrumentation, counters, or health checks |
+| Logging | None (framework); `print()` to stdout | No `logging` module; success output is six plain lines |
+| Distributed tracing | None | Single process; no spans or correlation IDs |
+| Observable signals | stdout + stderr + exit code | The only signals; inspected manually |
 
 ### 5.4.2 Error Handling Patterns
 
-The codebase implements **no error-handling constructs** — there is not a single `try`, `except`, `finally`, `raise`, `with`, or logging call anywhere (verified; consistent with Section 4.3.2). The de-facto pattern is therefore *fail-fast with default propagation*: any exception propagates uncaught, the interpreter prints a full traceback to stderr, and the process exits with a non-zero status. Exactly two error conditions exist across the tree, and the executed root/`ChildRepo` workflow encounters **neither**, so those runs always exit `0`:
+The code contains **no `try`/`except` blocks**; it follows a *fail-fast, fail-loud* pattern in which any error propagates to the interpreter's default handler, which prints a traceback to standard error and exits non-zero (§4.3.2). There are no retries, no fallback paths, and no notification mechanism beyond that default stderr traceback; recovery is manual. Three behaviors are relevant:
 
-- **Circular-import `ImportError`** — occurs when running `ChildRepo/NestedChild/app.py`, because that level's `service.py` is a byte-for-byte copy of `app.py` and never defines `calculate_total`; the import at `app.py:1` fails and the process exits `1`.
-- **Unhandled `TypeError`** — would occur if `calculate_total` were reused with a non-numeric element (`service.py:5`); it is unreachable through the hard-coded numeric workflow.
+- **Circular import at the `NestedChild` leaf (realized).** Because `ChildRepo/NestedChild/app.py` and `service.py` are byte-identical, importing `service` re-enters a partially initialized module and `calculate_total` never resolves, raising `ImportError` **before `main()` runs** — empty stdout, traceback to stderr, exit `1` (verified; §2.4.4).
+- **Invalid input types (latent).** A non-numeric element makes the `+=` accumulation raise an uncaught `TypeError`; passing an unsized iterable to `calculate_average` raises `TypeError` at `len()`. These propagate uncaught (§2.4). The `TypeError` in `calculate_average` is latent because that function is never invoked (F-002).
+- **The single defensive guard (explicit).** `calculate_average` returns `0` for empty/falsey input, deliberately avoiding a `ZeroDivisionError` (`service.py` L75–L76) — the only explicit error-avoidance logic in the codebase.
 
-There are **no** retry mechanisms, fallback paths, degraded modes, or error-notification flows (no alerting, metrics, or webhooks). Recovery is not automated: correcting the `NestedChild` failure is a source-level maintenance action (restore a real `service` module defining `calculate_total`), and any failing run must simply be re-invoked after the fix. The diagram traces this propagation architecture and the single, empty recovery path.
+The runtime error-handling flow for an application tier is:
 
 ```mermaid
 flowchart TD
-    Start(["Any run: python app.py"])
-    subgraph Sources["The only two error conditions that exist"]
-        direction TB
-        E1{{"NestedChild: co-located service.py lacks calculate_total (import time)"}}
-        E2{{"calculate_total reused with a non-numeric element (runtime)"}}
-    end
-    Start --> E1
-    Start --> E2
-    E1 -->|"raises"| Imp["circular-import ImportError"]
-    E2 -->|"raises"| Typ["unhandled TypeError (service.py:5)"]
-    Imp --> Prop["No try / except / finally anywhere -- exception propagates uncaught"]
-    Typ --> Prop
-    Prop --> Trace["Default handler: full traceback written to stderr"]
-    Trace --> ExitN["Process exits non-zero (exit code 1)"]
-    ExitN --> Recov{"Automated recovery coded?"}
-    Recov -->|"No retry / fallback / notification"| Manual["Manual source-level fix required (e.g., restore NestedChild/service.py)"]
-    Manual --> Rerun(["Re-run needed for a successful exit 0"])
-    Start -.->|"root and ChildRepo: neither condition occurs"| Happy(["Deterministic stdout, exit 0"])
+    Start(["python app.py"]) --> Imp{"Import 'service':<br/>does calculate_total resolve?"}
+    Imp -->|"No - NestedChild<br/>self/circular import"| Err["Uncaught ImportError<br/>traceback to stderr"]
+    Err --> Exit1(["Exit code 1<br/>empty stdout"])
+    Imp -->|Yes| Run["main() builds [10,20,30,40]"]
+    Run --> Sum{"calculate_total:<br/>all elements numeric?"}
+    Sum -->|No| TErr["Uncaught TypeError<br/>traceback to stderr"]
+    TErr --> Exit1
+    Sum -->|Yes| Print["print Total, each number,<br/>Application completed"]
+    Print --> Exit0(["Exit code 0"])
 ```
 
 ### 5.4.3 Authentication and Authorization
 
-There is **no authentication or authorization framework**, and none is applicable to the system as built. The program is a local command-line executable that operates on data hard-coded in its own source; it opens no network sockets, exposes no API or UI, reads no credentials or secrets, and integrates with no identity provider. The only trust boundary is the operating-system permission of whoever can execute `python app.py`, which is governed entirely by the host OS and is outside the application. The build-time submodule remotes are referenced through committed, credential-free HTTPS URLs in `.gitmodules` (any access control there is GitHub's, not the application's). No identity, role, scope, token, or policy construct exists anywhere in the repository.
+There is no authentication or authorization framework, and none is applicable: the runtime has no users, sessions, roles, tokens, or protected resources, and exposes no network endpoint to guard (§2.4, §1.3.2). The only security-relevant control anywhere in the project is build-time — submodules are pinned to exact commits and fetched over HTTPS, and the root `README.md` cautions against embedding credentials in clone URLs (detailed as ADR-06 and in §5.3.4). No runtime access control exists or is required.
 
 ### 5.4.4 Performance Requirements and SLAs
 
-The repository defines **no performance requirements, service-level agreements, latency/throughput targets, or benchmarks** (consistent with Sections 1.2.3 and 4.2.1). What can be characterized is the intrinsic performance profile:
+No performance requirements, service-level agreements, latency or throughput budgets, benchmarks, or KPIs are defined anywhere in the codebase or documentation (§1.2.3). The values below are therefore **observed intrinsic characteristics**, not commitments.
 
-- **Algorithmic cost.** `calculate_total` is O(n) time and O(1) additional space (a single accumulator loop, `service.py:2-5`); the orchestrator's print loop is O(n) (`app.py:10-11`). With the fixed four-element input, the work is effectively constant and negligible.
-- **Dominant cost.** End-to-end wall-clock time is dominated by Python interpreter startup and import, not by the computation itself.
-- **No large-data path.** The `large.csv` files present at each level are never opened by any code (no `csv` import, no file-open) and are excluded by `.blitzyignore`, so there is no bulk-processing performance concern.
+| Aspect | Defined requirement | Observed characteristic |
+| --- | --- | --- |
+| Latency / response time | None | Runtime is dominated by interpreter start-up, not computation |
+| Throughput | None | A single synchronous run; not a serving workload |
+| Time complexity | None | `calculate_total` is O(n) single pass (n = 4, fixed) |
+| Space complexity | None | O(1) extra memory (a single accumulator) |
 
-Because there is no monitoring (5.4.1), no performance metric is measured or enforced at runtime; the "acceptance" bar is purely functional (the verified stdout output and exit code documented in Section 1.2.3).
+The first execution additionally pays a one-time bytecode-compilation cost that is cached in `__pycache__` and amortized on subsequent runs (§3.6.2).
 
-### 5.4.5 Disaster Recovery and Resilience
+### 5.4.5 Disaster Recovery
 
-At **runtime there is nothing to recover**: the process is stateless, holds no session or durable data, and writes only to stdout, so a failed run leaves no partial or corrupt state — re-invocation reproduces identical, deterministic output. There is no redundancy, failover, replication, or backup because there is a single process and no data store (none is warranted for this scope).
+No disaster-recovery procedures, backups, replication, failover, or RTO/RPO targets are defined — a direct consequence of the system holding no data and provisioning no infrastructure (§3.6, §1.3.2). Because the runtime is stateless, "recovery" reduces to re-running the program or re-acquiring the source; the authoritative source of truth is the set of Git repositories, restorable by a recursive clone from the pinned GitHub remotes (§3.4).
 
-At the **repository/source level**, recoverability is provided by Git: the application source and the pinned submodule pointers are version-controlled, so a working tree can be reconstituted in a fresh environment with `git clone` followed by `git submodule update --init --recursive` (feature F-004; see Section 4.1.3), assuming network access to the GitHub remotes. The one standing "disaster" already present in the tree is the **`NestedChild` defect**, which is **not** self-healing: because there is no submodule content verification, the corrupt `service.py` must be corrected by a deliberate source-level fix before that level can run. In short, the system's resilience story is determinism plus version control, not any runtime recovery mechanism.
+| Scenario | Recovery approach |
+| --- | --- |
+| Failed or aborted run | Re-run `python app.py`; stateless, nothing to restore |
+| Lost working tree | Re-clone recursively from the pinned GitHub remotes (`git clone --recursive`) |
+| Corrupt bytecode cache | Regenerated automatically by the interpreter on the next import |
+| `NestedChild` leaf failure | Not auto-recoverable; requires a source fix and is preserved as-is (§2.4.4) |
 
 ## 5.5 References
 
-The following repository artifacts, verification activities, and specification sections were examined as evidence for Section 5. All statements above are grounded in these sources; no external web sources were required.
+The following files, folders, runtime observations, and specification sections were examined as evidence for Section 5.
 
-**Repository files examined:**
+**Repository files**
 
-- `app.py` — Root application entry point / orchestrator; established `main()`, the hard-coded input list (`app.py:4`), the `from service import calculate_total` dependency (`app.py:1`), the delegated call (`app.py:6`), the stdout output lines (`app.py:8`, `11`, `13`), and the `__main__` guard (`app.py:15-16`).
-- `service.py` — Root computation service module; established the pure `calculate_total` (lines 1–7) and the defined-but-unused `calculate_average` (lines 10–14), and the absence of imports and side effects.
-- `.gitmodules` — Root submodule declaration; established the `ChildRepo` submodule and its credential-free GitHub HTTPS URL (`600K_ChildRepo.git`).
-- `ChildRepo/.gitmodules` — Established the nested `NestedChild` submodule declaration (`600K_Nested_ChildRepo.git`).
-- `ChildRepo/app.py`, `ChildRepo/service.py` — Established that the `ChildRepo` level mirrors the root application byte-for-byte and behaves identically.
-- `ChildRepo/NestedChild/app.py` — Established the mirrored entry point at the deepest level.
-- `ChildRepo/NestedChild/service.py` — Established the **defect**: this file is a byte-for-byte copy of `app.py` (it does not define `calculate_total`), causing the circular-import `ImportError`.
-- `README.md` (all three levels) — Established that documentation is a single title line only (non-architectural).
-- `.blitzyignore` (all three levels) — Established the `*.csv` exclusion policy applied to the `large.csv` files (which are omitted and never read by code).
+- `app.py` — root entry-point orchestrator; established `main()`, the fixed list `[10, 20, 30, 40]` (L32), the `calculate_total` import (L15) and call (L34), the stdout writes (L36, L39–L40, L42), and the `__main__` guard (L45–L46) that make up F-003.
+- `service.py` — root computation module; established the pure `calculate_total` (L18, L35, L38–L39, L41) and the defined-but-uninvoked `calculate_average` with its empty-input guard (L44, L75–L76, L78), plus the "no imports/classes/state" property (L9–L11) — features F-001/F-002.
+- `.gitmodules` — root submodule manifest; established the F-004 build-time link to `ChildRepo` and its remote URL.
+- `README.md` — root documentation; established the two-level submodule topology, Python 3.6+/std-lib-only prerequisites, the "no container/cloud/build step" deployment model, the recursive-clone workflow, and the credentials-in-URL security note.
+- `ChildRepo/app.py`, `ChildRepo/service.py` — established the functionally equivalent middle-tier mirror of the root modules (`main` at L16; `calculate_total` at L18, `calculate_average` at L44).
+- `ChildRepo/.gitmodules` — established the F-004 link from `ChildRepo` to `NestedChild` and its remote URL.
+- `ChildRepo/README.md` — established the middle-tier documentation and the "documented as-is, not repaired" stance on defects.
+- `ChildRepo/NestedChild/app.py`, `ChildRepo/NestedChild/service.py` — established the byte-identical 16-line leaf files that cause the circular `ImportError` (root cause of the leaf defect).
+- `ChildRepo/NestedChild/README.md` — established that the leaf carries only a one-line title.
 
-**Repository folders examined:**
+**Folders**
 
-- Repository root (path `""`) — Established the top-level structure and the two-module application shape.
-- `ChildRepo/` — Git submodule level; contained the mirrored two-module application and its own `.gitmodules`.
-- `ChildRepo/NestedChild/` — Nested Git submodule level; contained the defective instance.
-- `__pycache__/` (all three levels) — Contained CPython 3.12 bytecode caches (`service.cpython-312.pyc`), used to confirm the toolchain and to verify the `NestedChild` defect from compiled symbols.
+- `ChildRepo/` — the first-level submodule tier (pinned at `63b3f43`).
+- `ChildRepo/NestedChild/` — the leaf submodule tier (pinned at `d57c9dd`), non-functional at runtime.
+- `__pycache__/` (root and per tier) — contained the CPython 3.12 bytecode caches (`*.cpython-312.pyc`), the only persisted, compilation-only artifacts.
 
-**Verification evidence (direct inspection):**
+**Runtime verification (observed behavior)**
 
-- Execution under Python 3.12.3 — Confirmed root and `ChildRepo` runs print `Total: 100` / `10` / `20` / `30` / `40` / `Application completed` and exit `0`; confirmed `ChildRepo/NestedChild/app.py` raises a circular-import `ImportError` and exits `1`.
-- Bytecode inspection — Confirmed root and `ChildRepo` `service.cpython-312.pyc` export `calculate_total` and `calculate_average`, whereas the `NestedChild` cache exports `main` (proving `service.py` there is an `app.py` copy).
-- Git metadata — Confirmed the submodule chain and the pinned `ChildRepo` commit; confirmed the only import statement anywhere is the intra-repository `from service import calculate_total`.
+- Executing `python3 app.py` at the root and `ChildRepo` tiers — confirmed the six-line stdout output and exit code `0`.
+- Executing `python3 app.py` at `ChildRepo/NestedChild` — confirmed the circular-import `ImportError`, empty stdout, and exit code `1`.
+- `git submodule status --recursive` and `cmp` — confirmed the submodule pins (`63b3f43`, `d57c9dd`) and the byte-identical leaf files.
 
-**Cross-referenced specification sections:**
+**Cross-referenced specification sections**
 
-- `1.2 System Overview` — Component inventory, separation-of-concerns technical approach, and verifiable-behavior acceptance criteria.
-- `2.1 Feature Catalog` / `2.3 Feature Relationships` — Feature identifiers F-001–F-004 and the absence of cross-level runtime coupling.
-- `2.4 Implementation Considerations` — Verified absence of build/test/CI/logging/error handling.
-- `3.3 Open Source Dependencies` / `3.4 Third-Party Services` / `3.5 Databases and Storage` — Zero dependencies, no external services, and no database/storage/caching.
-- `3.6 Development and Deployment` — Git submodule composition and the CPython 3.12 toolchain.
-- `4.1 System Workflows` — Actors/boundaries, the runtime sequence, and build-time submodule composition.
-- `4.2 Flowchart Requirements and Validation Rules` — Verified absence of timing/SLA constraints and authorization checkpoints.
-- `4.3 Technical Implementation Flows` — State management (ephemeral in-process state) and error-handling behavior (the two error conditions and empty recovery path).
+- §1.1 Executive Summary; §1.2 System Overview (1.2.1 context, 1.2.2 components, 1.2.3 success criteria/absence of SLAs/KPIs); §1.3 Scope (1.3.2 out-of-scope).
+- §2.1 Feature Catalog (F-001–F-004); §2.3 Feature Relationships (2.3.2 integration points, 2.3.3 shared components, 2.3.4 common services); §2.4 Implementation Considerations (2.4.4 NestedChild defect; security/attack-surface findings).
+- §3.1 Programming Languages; §3.3 Open Source Dependencies; §3.4 Third-Party Services; §3.5 Databases & Storage; §3.6 Development & Deployment (3.6.2 build/bytecode, 3.6.3 CI-CD/quality gate, 3.6.4 run model).
+- §4.1 System Workflows (4.1.2 integration/sequence); §4.3 Technical Implementation (4.3.1 state management/persistence, 4.3.2 error handling).
 
 # 6. SYSTEM COMPONENTS DESIGN
 
 ## 6.1 Core Services Architecture
 
-### 6.1.1 Applicability Assessment
+### 6.1.1 Core Services Architecture Applicability Assessment
 
-**Determination: Core Services Architecture is not applicable for this system.**
+**Core Services Architecture is not applicable for this system.**
 
-The repository is a single-process, synchronous, standard-library-only Python program — a two-module modular monolith comprising an orchestrator (`app.py`) and a pure-function computation module (`service.py`) that runs to completion and writes a deterministic report to standard output (see Section 5.1 High-Level Architecture). It contains no microservices, no distributed components, no network-addressable services, and no inter-process or inter-service communication of any kind. The concerns this section is intended to document — service boundaries, inter-service communication, service discovery, load balancing, circuit breakers, retry/fallback, horizontal/vertical scaling, auto-scaling, failover, and data redundancy — presuppose a distributed or service-oriented runtime that this system neither has nor requires.
+`600K_ParentRepo` is a deliberately minimal, standard-library-only Python program whose entire executable behavior is a single fixed-list summation written to standard output (§5.1). It is **not** composed of microservices, distributed services, or independently deployable service components that communicate over a network, and it therefore contains none of the constructs — service registries, load balancers, message brokers, circuit breakers, replica sets, auto-scalers — that a Core Services Architecture exists to describe. This determination is grounded in direct inspection of every source file, the complete absence of service/infrastructure tooling, and runtime behavior verified by execution; it is consistent with the "single-process, monolithic" architecture recorded in §5.1.1 and the explicit "not a service/microservice" decision in §5.3.1 (ADR-01, ADR-03).
 
-This determination is not merely an inference from the small size of the codebase; it is grounded in the verified absence of every runtime primitive on which a core services architecture depends. Across the entire tree (root plus the `ChildRepo` and `ChildRepo/NestedChild` submodules), the only import statement anywhere is a local `from service import calculate_total` (`app.py:1`), and an exhaustive search finds no sockets, no HTTP/RPC clients or servers, no message brokers, no `asyncio`/threading/multiprocessing, no subprocess spawning, no service frameworks, and no server-binding calls. The single unit of deployment is one operating-system process launched by `python app.py`, and the single "interaction" within it is an in-process Python function call.
+**A note on the `service.py` naming.** The repository contains a module named `service.py`, but this is a *source-file / module* name, not a networked service. `service.py` is a pure, in-process function library (`calculate_total`, `calculate_average`) with no imports, no module-level state, and no I/O (Source: `service.py` L9–L11). It is consumed only through an ordinary Python import followed by a direct function call inside the same process (`from service import calculate_total`, Source: `app.py` L15), never over a wire protocol.
 
-The table below records each prerequisite of a core services architecture against its presence in this system.
+The table below evaluates each defining trait of a distributed / service-oriented architecture against the repository evidence.
 
-**Table 6.1-1 — Core-Services Prerequisites vs. This System**
-
-| Distributed-Systems Prerequisite | Present in System | Evidence |
+| Distributed-Services Trait | Present? | Evidence in Repository |
 | --- | --- | --- |
-| Two or more independently deployable services | No | Single OS process, one entry point `app.py` (Section 5.1.1) |
-| Network-addressable service endpoints / APIs | No | No socket / HTTP / RPC / server code anywhere in the tree |
-| Inter-service communication (messaging, RPC, events) | No | Only interaction is the in-process call `app.py:6`; only import `app.py:1` |
-| Service discovery / registry | No | No registry or DNS-based lookup; single co-located module |
-| Load balancing / API gateway | No | No load balancer, gateway, or reverse proxy present |
-| Circuit breaker / retry / fallback | No | No error handling at all (no `try`/`except`); see Section 5.4.2 |
-| Independent horizontal/vertical scaling per service | No | Fixed single-process batch; no scaling mechanism (Section 5.4.4) |
-| Runtime failover / redundancy / replication | No | Stateless single process, no data store; see Section 5.4.5 |
+| Independently deployable service units | No | One process per tier; a single `python app.py` entry point under the `__main__` guard (Source: `app.py` L45–L46); §5.3.1 records "no independently deployable/scalable units — none are needed" |
+| Inter-service network communication | No | Only the intra-process call `from service import calculate_total` (Source: `app.py` L15, L34); no sockets, HTTP, or RPC (§5.3.2, ADR-03) |
+| Service discovery / registry | No | No registry or endpoint configuration exists; modules are resolved by the Python import machinery on `sys.path` |
+| Load balancer / reverse proxy | No | No server, listener, or replicas exist; a run is a single synchronous invocation |
+| Message broker / event bus | No | No queue, topic, or event mechanism anywhere; asynchrony/messaging is "Not adopted" (§5.3.2) |
+| Circuit-breaker / retry / fallback libraries | No | No third-party libraries at all; the only import tree-wide is `from service import calculate_total` |
 
-Because none of these prerequisites is present, the remainder of this section documents the architecture the system actually implements (Section 6.1.2) and then dispositions each distributed-systems capability the prompt enumerates (Section 6.1.3), so that the record is explicit rather than merely asserting non-applicability. This conclusion is consistent with the modular-monolith characterization in Sections 1.2, 5.1, and 5.4.
+**The submodule tree is a build-time composition, not a runtime service topology.** The three-tier hierarchy `600K_ParentRepo → ChildRepo → NestedChild` is wired exclusively by native Git submodules declared in `.gitmodules` (root → `ChildRepo`) and `ChildRepo/.gitmodules` (`ChildRepo` → `NestedChild`), pinned to commits `63b3f43` and `d57c9dd` respectively (feature F-004, §5.1.1). Each tier is an *independent copy of the same program* that runs in its own isolated process; there is no runtime call, data exchange, or coupling across tiers (§5.3.2). The tiers are related only at source-acquisition time via a recursive clone.
 
-### 6.1.2 System Topology and Execution Model
-
-To make the non-applicability determination concrete, this subsection describes the topology the system actually implements. The runtime topology is a **single operating-system process** started by `python app.py`; that process is the entire system. Within it there are two logical modules connected by one synchronous, in-process function call, and there is no second process, host, container, or network participant with which to communicate (Section 5.1.1).
-
-**The module boundary is not a service boundary.** Although the computation module is named `service.py`, it is an in-process Python library module of pure functions — `calculate_total` (feature F-001, `service.py:1-7`) and `calculate_average` (feature F-002, `service.py:10-14`) — not a network-addressable or independently deployable service. The orchestrator obtains it through the language import mechanism (`from service import calculate_total`, `app.py:1`) and invokes it with an ordinary function call (`app.py:6`); the module exposes no endpoint, port, or wire protocol (Section 5.1.2). The boundary crossed at runtime is therefore a Python module boundary within a single address space, resolved by the interpreter's module loader — not a service call over a transport.
-
-**The multi-repository structure is build-time composition, not a distributed runtime.** The same two-module application is replicated at each level of a three-level Git-submodule chain (`600K_ParentRepo` → `ChildRepo` → `ChildRepo/NestedChild`), declared in `.gitmodules` (feature F-004). This is source composition performed at checkout/build time via `git submodule update --init --recursive`; the three levels never interact at runtime, because each `app.py` resolves `service` only from its own directory (Sections 4.1.3 and 5.1.4). Consequently, the submodule chain does not constitute a distributed system, a service mesh, or a deployment topology — it is a packaging arrangement of identical, independent copies.
-
-The diagram below — the **Service Interaction Diagram** for this system — shows the sole runtime interaction (an in-process call) and explicitly enumerates the distributed/service constructs that are absent.
-
-**Diagram 6.1-1 — Service Interaction (Actual In-Process Model)**
-
-```mermaid
-flowchart TB
-    Operator(["Developer / Operator (shell)"])
-    subgraph Proc["Single OS Process -- python app.py (the entire runtime system)"]
-        direction TB
-        Main["app.py :: main() (F-003)<br/>orchestrator + stdout I/O"]
-        Svc["service.py :: calculate_total / calculate_average (F-001 / F-002)<br/>pure functions, no I/O"]
-        Main -->|"in-process import + synchronous call (app.py:1, app.py:6)"| Svc
-        Svc -->|"returns scalar (return value only)"| Main
-    end
-    Stdout(["stdout -- line-oriented text (app.py:8, 11, 13)"])
-    Operator -->|"python app.py"| Main
-    Main --> Stdout
-    subgraph Absent["Distributed / service constructs -- NONE present"]
-        direction TB
-        NA1["No network service endpoints or APIs"]
-        NA2["No service discovery / registry"]
-        NA3["No load balancer / API gateway"]
-        NA4["No inter-service messaging / IPC / RPC"]
-    end
-```
-
-As the diagram indicates, the only runtime "interaction" is the orchestrator-to-computation function call inside a single process, and the only externally visible effects are the lines written to stdout and the integer process exit code (Section 5.1.4). There are no network endpoints, no service registry, no load balancer or gateway, and no inter-service messaging to depict, because none exists in the codebase.
-
-### 6.1.3 Disposition of Distributed-Systems Capabilities
-
-Because the system is a single-process modular monolith (Section 6.1.2), each capability enumerated by the prompt under *Service Components*, *Scalability Design*, and *Resilience Patterns* is dispositioned below with its status and the supporting evidence, so the record is explicit. Every status resolves to "none / not applicable / not implemented," and each is grounded in observed code rather than in generic distributed-systems assumptions.
-
-#### 6.1.3.1 Service Components
-
-The prompt's service-component concerns presuppose multiple cooperating services; this system has one process and a single in-process module boundary. Each concern is mapped below.
-
-**Table 6.1-2 — Service-Component Concerns: Disposition**
-
-| Concern | Disposition | Basis |
-| --- | --- | --- |
-| Service boundaries & responsibilities | One in-process module boundary only: `app.py` orchestrates and performs stdout I/O; `service.py` computes (pure). No service tier exists. | Sections 5.1.1–5.1.2; `app.py:3-13`, `service.py:1-14` |
-| Inter-service communication patterns | None — a single synchronous in-process function call; no network, RPC, or messaging | `app.py:1` (import), `app.py:6` (call) |
-| Service discovery mechanisms | None — the module is resolved by the interpreter's loader from the co-located directory; no registry or DNS | Section 5.1.3; sole import is local |
-| Load balancing strategy | None — no load balancer, gateway, or reverse proxy; a single process serves the single run | Verified absence across the tree |
-| Circuit breaker patterns | None — no failure-isolation constructs; no `try`/`except` anywhere | Section 5.4.2 |
-| Retry & fallback mechanisms | None — fail-fast default propagation; no retry loop or fallback path | Section 5.4.2 |
-
-Because the two modules share one process and one address space, "communication" between them collapses to a language-level call whose failure semantics are exceptions rather than transport errors. Patterns designed to tolerate partial or network failure (circuit breakers, retries, fallbacks) therefore have no failure domain to protect (Section 5.4.2).
-
-#### 6.1.3.2 Scalability Design
-
-No scalability design is implemented. The workload is a fixed O(n) computation over a hard-coded four-element list, and end-to-end cost is dominated by Python interpreter startup rather than by the computation itself (Section 5.4.4). There is no horizontal or vertical scaling, no auto-scaling, no resource-allocation policy, and no capacity plan. Because `calculate_total` and `calculate_average` are pure, stateless, and deterministic (Section 5.1.1), the only scaling model the code even permits is manual replication of independent, share-nothing process invocations — which is neither implemented nor orchestrated.
-
-**Table 6.1-3 — Scalability Concerns: Disposition**
-
-| Concern | Disposition | Basis |
-| --- | --- | --- |
-| Horizontal / vertical scaling approach | Not implemented — single fixed process; share-nothing replication is possible but manual and unmanaged | Section 5.4.4; pure functions `service.py:1-14` |
-| Auto-scaling triggers & rules | None — no metrics, thresholds, or scaler; no orchestrator | Section 5.4.1 (no metrics/monitoring) |
-| Resource allocation strategy | None — no quotas, limits, or reservations; relies on host defaults | No config/infra files present in the tree |
-| Performance optimization techniques | None coded — computation is O(n) with n = 4; cost dominated by interpreter startup | Section 5.4.4 |
-| Capacity planning guidelines | None defined — no SLAs, throughput/latency targets, or benchmarks | Sections 1.2.3 and 5.4.4 |
-
-**Diagram 6.1-2 — Scalability Architecture (Implemented vs. Available)**
-
-```mermaid
-flowchart TB
-    subgraph Current["Implemented model: single invocation"]
-        direction TB
-        P0["1 OS process: python app.py<br/>fixed input [10,20,30,40], O(n) with n=4"]
-    end
-    subgraph Available["Only scaling the code permits (NOT implemented; manual)"]
-        direction TB
-        R1["Independent process run #1"]
-        R2["Independent process run #2"]
-        Rn["Independent process run #N"]
-        Note1["Share-nothing: pure, stateless, deterministic functions --> no shared state, no coordination"]
-    end
-    subgraph NotPresent["Elastic-scaling constructs -- NONE present"]
-        direction TB
-        X1["No horizontal auto-scaling / HPA"]
-        X2["No vertical scaling policy"]
-        X3["No load balancer / scheduler / orchestrator"]
-        X4["No resource quotas / capacity plan"]
-    end
-    P0 -.->|"could be replicated manually"| R1
-    P0 -.->|"could be replicated manually"| R2
-    P0 -.->|"could be replicated manually"| Rn
-```
-
-The diagram distinguishes the implemented single-invocation model from the only scaling approach the code permits — manually launching additional independent, share-nothing process runs — and marks the elastic-scaling constructs (auto-scaling, load balancing/orchestration, resource quotas, capacity plan) that are not present.
-
-#### 6.1.3.3 Resilience Patterns
-
-No runtime resilience patterns are implemented. The process is stateless and follows a fail-fast model in which any uncaught exception propagates to the interpreter's default handler (Section 5.4.2). There is no fault tolerance, disaster-recovery automation, data redundancy, failover, or service-degradation policy. As documented in Section 5.4.5, the system's effective resilience story is *determinism plus version control*: a failed run leaves no partial or durable state, so re-invocation reproduces identical output, and source recoverability is provided by Git. The one standing defect — the `NestedChild` submodule whose `service.py` is a byte-for-byte copy of `app.py`, causing a circular-import `ImportError` — is not self-healing and requires a deliberate source-level fix (Section 5.4.2).
-
-**Table 6.1-4 — Resilience Concerns: Disposition**
-
-| Concern | Disposition | Basis |
-| --- | --- | --- |
-| Fault tolerance mechanisms | None — fail-fast; uncaught exceptions propagate; no isolation | Section 5.4.2 |
-| Disaster recovery procedures | Not applicable at runtime — stateless; source recovery via Git (`git clone` + submodule update) | Section 5.4.5; `.gitmodules` |
-| Data redundancy approach | Not applicable — no data store; only ephemeral in-memory values and stdout | Sections 5.1.3 and 3.5 |
-| Failover configurations | None — a single process with no standby or replica | Section 5.4.5 |
-| Service degradation policies | None — no degraded mode; a run either completes deterministically or fails fast | Sections 5.4.2 and 5.4.5 |
-
-**Diagram 6.1-3 — Resilience Pattern Implementation (Actual)**
+*Diagram 6.1.1 — System Topology and Execution Model: build-time submodule composition (top) versus the isolated single-process runtime of any one tier (bottom). Neither constitutes a networked service topology.*
 
 ```mermaid
 flowchart TD
-    Run(["python app.py (single process)"])
-    Run --> Outcome{"Run outcome"}
-    Outcome -->|"root / ChildRepo: success"| OK(["Deterministic stdout, exit 0"])
-    Outcome -->|"NestedChild: circular-import ImportError"| Fail["Uncaught exception (no try/except anywhere)"]
-    Fail --> FailFast["Fail-fast: traceback to stderr, exit 1"]
-    FailFast --> Recover{"Automated recovery coded?"}
-    Recover -->|"No retry / fallback / failover / circuit breaker"| Manual["Manual: source-level fix and/or re-run<br/>(idempotent -- determinism yields identical output)"]
-    Manual --> Run
-    subgraph NoPatterns["Resilience patterns -- NONE present"]
-        direction TB
-        N1["No redundancy / replication / backup"]
-        N2["No failover / standby instances"]
-        N3["No circuit breaker / bulkhead / timeout"]
-        N4["No graceful-degradation policy"]
+    subgraph BuildTime["Build-time composition via Git submodules (pinned) - source acquisition only"]
+        P["600K_ParentRepo<br/>app.py + service.py"]
+        C["ChildRepo @ 63b3f43<br/>app.py + service.py"]
+        N["NestedChild @ d57c9dd<br/>app.py + service.py (defective)"]
+        P -->|".gitmodules"| C
+        C -->|"ChildRepo/.gitmodules"| N
+    end
+    subgraph Runtime["Runtime of one tier = a single isolated OS process"]
+        Proc["python app.py<br/>one CPython 3.6+ process"]
+        Call["import service, then calculate_total(numbers)<br/>in-process function call"]
+        Out["stdout: 'Total: 100' plus each value, then exit 0"]
+        Proc --> Call --> Out
     end
 ```
 
-The diagram shows the fail-fast outcome path and the sole (manual) recovery route — a source-level fix and/or re-run, which is idempotent by determinism — alongside the resilience patterns (redundancy, failover, circuit breaker/bulkhead/timeout, graceful degradation) that are not present. This is consistent with the disaster-recovery and resilience treatment in Section 5.4.5.
+Because the system implements none of the constructs that a Core Services Architecture governs, sub-sections 6.1.2–6.1.4 address each concern within this section's scope (service components, scalability design, resilience patterns) by recording the actual minimal design and marking the specific distributed-systems patterns as *Not applicable*, together with supporting evidence — rather than inventing behavior the codebase does not contain. This mirrors the evidence-based treatment in §5.1, §5.3, and §5.4.
 
-### 6.1.4 References
+### 6.1.2 Service Components
 
-Repository files and folders examined as evidence for this section:
+No networked or independently deployable services exist in this system, so the classic service-component concerns (network boundaries, discovery, load balancing, circuit breaking) have nothing to act upon. The only decomposition present is the intra-process, two-module *separation of concerns* described in §5.1.2 and §5.3.1: a thin orchestrator (`app.py`, feature F-003) delegates all computation to a pure helper module (`service.py`, features F-001/F-002). These two modules are documented here as the system's "components," and each distributed-systems concern is then explicitly resolved against the evidence.
 
-- `app.py` - Root entry-point/orchestrator; established the single in-process import and call (`app.py:1`, `app.py:6`) and the stdout output (`app.py:8,11,13`), confirming the absence of any network or service invocation.
-- `service.py` - Pure computation module (`calculate_total` at lines 1–7, `calculate_average` at lines 10–14); confirmed pure, stateless, deterministic functions with no I/O, network, or service endpoint.
-- `.gitmodules` - Declared the build-time submodule composition (root → `ChildRepo`); established that multi-repo structure is checkout-time, not a distributed runtime.
-- `ChildRepo/` - Git submodule replicating the same two-module application; its `.gitmodules` declares the nested `NestedChild` submodule.
-- `ChildRepo/NestedChild/` - Defective submodule instance whose `service.py` is a byte-for-byte copy of `app.py`, producing a circular-import `ImportError`; cited as the standing resilience defect.
-- `README.md` - One-line documentation at each level; confirmed no architectural or operational service documentation.
-- `.blitzyignore` - Excludes `*.csv`; the `large.csv` files are never opened by any code and are excluded from analysis and documentation.
-- Repository-wide verification (across all `.py` files, excluding `.git` and `*.csv`) - Confirmed no sockets, HTTP/RPC clients or servers, message brokers, `asyncio`/threading/multiprocessing, subprocess spawning, service frameworks, or server-binding calls, and no dependency manifests, Dockerfiles, CI/CD, or infrastructure/config files.
+**Component boundaries and responsibilities.** The two modules form a single logical boundary — one process, one call path — with `app.py` depending on `service.py` and never the reverse.
 
-Technical Specification sections cross-referenced:
+| Module (Component) | Primary Responsibility | Boundary & Coupling |
+| --- | --- | --- |
+| `app.py` — orchestrator (F-003) | Build the fixed list `[10, 20, 30, 40]`, delegate summation, and write the total, each value, and `Application completed` to stdout (Source: `app.py` L32, L34, L36, L39–L42) | Depends on `service.calculate_total` via import (L15) and call (L34); writes only to stdout; invokes `main()` solely under the `__main__` guard (L45–L46) |
+| `service.py` — computation (F-001/F-002) | Provide `calculate_total` (single-pass sum) and `calculate_average` (mean; dormant, never invoked) as pure, side-effect-free helpers (Source: `service.py` L18, L44) | No imports, classes, or module-level state; consumed by `app.py`; `calculate_average` delegates internally to `calculate_total` (L78) |
 
-- `1.2 System Overview` - Overall characterization as a minimal, standard-library-only Python demonstration.
-- `2.1 Feature Catalog` and `2.3 Feature Relationships` - Feature identifiers F-001 (`calculate_total`), F-002 (`calculate_average`, unused), F-003 (`app.py` `main()`), F-004 (nested submodule composition) and their relationships.
-- `3.3 Open Source Dependencies`, `3.4 Third-Party Services`, `3.5 Databases and Storage` - Zero third-party dependencies, no external services, and no data store.
-- `4.1.3 Integration Workflows` - Distinction between runtime interaction and build-time submodule composition.
-- `5.1 High-Level Architecture` - Modular-monolith style, system boundaries, data flow, and external integration points.
-- `5.2 Component Details` - Per-component profiles for `app.py`, `service.py`, and the submodule composition.
-- `5.4 Cross-Cutting Concerns` - Error handling (5.4.2), performance requirements/SLAs (5.4.4), and disaster recovery/resilience (5.4.5).
+**Distributed-systems concerns, resolved against the evidence.** Each concern required by this section maps to an in-process reality or is factually absent — nothing here is asserted that the code does not contain.
 
-## 6.2 Database Design
+| Service-Component Concern | Applicability | Actual Mechanism / Evidence |
+| --- | --- | --- |
+| Service boundaries & responsibilities | Module-level only | Two-module split (`app.py` orchestrator, `service.py` computation); no network/service boundary (§5.1.2) |
+| Inter-service communication patterns | Not applicable | Single intra-process, synchronous, in-memory function call via import (`from service import calculate_total`; `calculate_total(numbers)`, Source: `app.py` L15, L34); no serialization or protocol (ADR-03, §5.3.2) |
+| Service discovery mechanisms | Not applicable | No registry, DNS, or endpoint configuration; the dependency is resolved statically by the Python import system at process start |
+| Load balancing strategy | Not applicable | No server, listener, or replicas; a run is one synchronous pass that then exits |
+| Circuit breaker patterns | Not applicable | No remote or failure-prone dependency to protect; error handling is fail-fast with no `try`/`except` (§5.4.2) |
+| Retry & fallback mechanisms | Not applicable | No retries or fallback paths exist (§5.4.2); the sole defensive behavior is `calculate_average` returning `0` for empty/falsey input (Source: `service.py` L75–L76) |
 
-### 6.2.1 Applicability Assessment
+The only runtime interaction in the entire system is therefore the single in-process delegation illustrated below.
 
-**Database Design is not applicable to this system.**
-
-At the repository root (`app.py`, `service.py`) and across both nested Git submodules (`ChildRepo/`, `ChildRepo/NestedChild/`), the codebase implements a single-process, synchronous, run-to-completion Python program that sums a hard-coded, in-memory list of integers and writes the result to standard output. It defines **no database, no persistent store, no object/file storage, no caching subsystem, and no data-access layer of any kind**. All application state is ephemeral: it exists only in process memory for the duration of a single invocation and is reclaimed when the interpreter exits.
-
-This determination aligns with the technology inventory already recorded elsewhere in this specification. Section 3.5 (Databases and Storage) documents that the system uses no database and no persistent storage, and Section 5.1.3 (Data Flow) documents that there are no data stores or caches. Section 1.2 (System Overview) records that the program performs no network, database, or file I/O and carries zero third-party dependencies — the only `import` statement anywhere in the tree is the intra-repository `from service import calculate_total` (`app.py:1`).
-
-The following table evaluates each prerequisite that a database-design section would normally document against the observed repository evidence.
-
-**Table 6.2-1: Database-Design Prerequisites vs. This System**
-
-| Database-Design Prerequisite | Present? | Evidence in Repository |
-|---|---|---|
-| Database engine or driver (RDBMS / NoSQL / key-value) | No | No `sqlite3`, `sqlalchemy`, `psycopg`, `pymongo`, `redis`, or `boto3` import in any `.py` file; the sole import anywhere is `from service import calculate_total` (`app.py:1`) |
-| Persistence / data-access layer (ORM, repository, DAO) | No | `service.py` and `app.py` contain only pure arithmetic functions; searches for `orm`, `persist`, `Session`, `engine`, `cursor`, `commit` returned zero matches |
-| Connection configuration (DSN, pool, credentials) | No | No configuration manifests of any kind exist (`.env`, `.ini`, `.yaml`, `.yml`, `.json`, `.toml`, `.cfg`); no connection string appears in source |
-| Schema artifacts (DDL, models, migrations) | No | No `.sql` files, no migration directory, no model/entity classes; no `CREATE TABLE`, `INSERT`, or `SELECT` text anywhere in the tree |
-| Durable application state | No | The only application state is the in-memory list literal `[10, 20, 30, 40]` (`app.py:4`) plus function-local variables, discarded at process exit |
-| Cache store (Redis / Memcached / equivalent) | No | No cache-client import exists; the `__pycache__/*.pyc` artifact is Python bytecode for import acceleration, not an application data cache |
-
-Two artifacts warrant explicit clarification so their presence is not mistaken for a storage tier:
-
-- **`large.csv`** (present at each level of the tree) is excluded by the `.blitzyignore` rule `*.csv` and is **never opened or read by the application**. No `csv` module is imported and no file-open call (`open(`) exists in any source file, so this file participates in neither input nor output of the program.
-- **`__pycache__/service.cpython-312.pyc`** is a CPython bytecode-import cache produced by the interpreter. It caches compiled *code*, not application *data*, and therefore does not constitute a data cache or persistence layer (consistent with Sections 3.5 and 5.1.3).
-
-Because no persistence substrate exists, the schema-design, data-management, compliance, and performance-optimization concerns enumerated for this section have nothing to configure or tune at a data layer. Rather than merely asserting the absence, the remaining sub-sections make it explicit and auditable: sub-section 6.2.2 documents the actual **in-memory, transient** data-handling model the code does exhibit (with the required data-flow and entity diagrams), and sub-section 6.2.3 dispositions each individual database-design concern — including all indexes and constraints — against the repository evidence.
-
-### 6.2.2 Actual Data Handling Model
-
-Although there is no database to design, the program does manipulate data — entirely in memory. This sub-section documents that transient model so the "not applicable" determination is transparent about what the code actually does with values at runtime.
-
-The data lifecycle is a straight, non-persistent pipeline confined to a single OS process:
-
-1. **Construction** — `main()` builds a fixed list literal `numbers = [10, 20, 30, 40]` in RAM (`app.py:4`). There is no external source; the input is embedded in the code.
-2. **Reduction** — the list is passed by reference to `calculate_total(numbers)` (`app.py:6`), which initializes a local accumulator `total = 0` (`service.py:2`), iterates the elements adding each to the accumulator (`service.py:4-5`), and returns the scalar sum (`service.py:7`).
-3. **Formatting / emission** — `main()` formats the returned scalar with an f-string and prints it, then loops printing each element, then prints a completion line (`app.py:8`, `app.py:11`, `app.py:13`).
-4. **Disposal** — no value is written back anywhere; all bindings become unreachable and are reclaimed when the process exits. Nothing is serialized, flushed, or persisted.
-
-Consistent with Section 5.1.3, only two data-transformation points exist — a **reduction** (list → scalar sum in `calculate_total`) and a **formatting** step (integer → text via f-string / `print`). No parsing, deserialization, or serialization occurs anywhere in the tree. A second function, `calculate_average` (`service.py:10-14`), computes a mean by delegating to `calculate_total` and dividing by `len(numbers)` (returning `0` for an empty list), but it is never invoked by any `app.py` and therefore contributes no runtime data flow.
-
-The table below enumerates every transient in-memory structure the running program creates. None of these are stored; they exist only within a single invocation.
-
-**Table 6.2-2: Transient In-Memory Data Structures (No Persistence)**
-
-| Structure | Python Type | Lifetime & Scope | Definition Site |
-|---|---|---|---|
-| `numbers` (input list) | `list[int]` | Process lifetime; local to `main()` | `app.py:4` (literal `[10, 20, 30, 40]`) |
-| `number` (element / loop variable) | `int` | Per-iteration; loop-local | `service.py:4-5`; `app.py:10-11` |
-| `total` (accumulator) | `int` | Single function call; local to `calculate_total` | `service.py:2-7` |
-| `total` (result holder) | `int` | Process lifetime; local to `main()` | `app.py:6-8` |
-| `average` (mean; unused path) | `float` | Single function call; local to `calculate_average` | `service.py:14` |
-
-**Diagram 6.2-1: Runtime Data Flow (Ephemeral, In-Memory)** — the pipeline from list construction to standard output, with an explicit tier showing that no persistence store participates.
-
-```mermaid
-flowchart LR
-    Operator(["Developer / Operator (shell)"])
-    subgraph Proc["Single OS Process (python app.py) -- ALL state ephemeral / in-memory"]
-        direction LR
-        Lit["List literal [10,20,30,40]<br/>constructed in RAM (app.py:4)"]
-        Calc["calculate_total(numbers)<br/>local accumulator 'total' (service.py:2-7)"]
-        Fmt["f-string + print() formatting<br/>(app.py:8,11,13)"]
-        Lit -->|"passed by reference (app.py:6)"| Calc
-        Calc -->|"returns scalar 100 (service.py:7)"| Fmt
-    end
-    Stdout(["stdout -- line-oriented text"])
-    Operator -->|"python app.py"| Lit
-    Fmt --> Stdout
-    Calc -.->|"discarded on return"| GC["Garbage-collected at process exit<br/>(no write-back)"]
-    subgraph NoPersist["Persistence tier -- NONE present"]
-        direction TB
-        NP1["No database / table / collection"]
-        NP2["No file or object store (no open(), no csv/json)"]
-        NP3["No cache store (Redis/Memcached absent)"]
-    end
-```
-
-**Diagram 6.2-2: Transient Data-Structure Entity View (ERD)** — an entity-relationship rendering of the in-memory structures above. It is included to satisfy the ERD requirement while honestly showing that these entities are **not persisted** and carry **no primary keys, foreign keys, or indexes**. The relationships are in-memory value associations only, not table joins.
-
-```mermaid
-erDiagram
-    INPUT_LIST ||--o{ INTEGER_ELEMENT : "contains (in memory only)"
-    INPUT_LIST ||--|| SCALAR_TOTAL : "reduced to (return value)"
-    INPUT_LIST {
-        list numbers "TRANSIENT; literal [10,20,30,40]; not persisted"
-    }
-    INTEGER_ELEMENT {
-        int value "TRANSIENT operand; iterated/accumulated; not persisted"
-    }
-    SCALAR_TOTAL {
-        int total "TRANSIENT sum; printed then discarded; not persisted"
-    }
-```
-
-### 6.2.3 Disposition of Database-Design Concerns
-
-This sub-section dispositions every concern enumerated in the section prompt — Schema Design, Data Management, Compliance Considerations, and Performance Optimization — against the repository evidence. Each concern is recorded as **None / Not applicable** with the specific rationale that makes the absence auditable rather than assumed. All tables use three columns.
-
-#### 6.2.3.1 Schema Design
-
-There is no schema: no tables, collections, documents, models, or DDL exist anywhere in the tree. The only data shapes are the transient in-memory structures catalogued in Table 6.2-2. Indexes and constraints are documented explicitly below and are, in every category, absent.
-
-**Table 6.2-3: Schema-Design Concerns**
-
-| Concern | Status | Evidence / Rationale |
-|---|---|---|
-| Entity relationships | None | No entities/tables/collections are defined; only transient in-memory structures exist (Table 6.2-2) |
-| Data models & structures | In-memory only | A single `list[int]` literal plus scalar `int`/`float` locals; no schema, no DDL, no model/entity classes |
-| Indexing strategy | None | No datastore exists, so there are zero indexes of any type (primary, secondary, composite, or full-text) |
-| Partitioning approach | None | No tables or collections exist to partition; no sharding, range, or hash partitioning is present |
-| Replication configuration | None (runtime) | No primary/replica pair or replication stream; see Diagram 6.2-3. The only duplication is build-time Git submodule source composition |
-| Backup architecture | None (data) | No data backup, snapshot, or WAL target; source is recoverable via `git clone` + `git submodule update --init --recursive` |
-| Indexes (all types, explicit) | None | No index objects are declared — there is nothing to index |
-| Constraints (PK / FK / unique / check / not-null) | None | No schema means no declared constraints; the only value guard in code is the empty-input check in `calculate_average` (`service.py:11-12`) |
-
-The prompt requires a replication-architecture diagram. Because no runtime data replication exists, the diagram below contrasts the **absent** data-replication tier against the **build-time Git submodule** composition that does duplicate *source* (never *data*). The nested submodule chain (root → `ChildRepo` → `ChildRepo/NestedChild`) is a source-assembly mechanism resolved at checkout, not a data-replication topology.
-
-**Diagram 6.2-3: Replication Architecture (No Runtime Data Replication)**
-
-```mermaid
-flowchart TB
-    subgraph DataRepl["Runtime DATA replication / high-availability -- NONE present"]
-        direction TB
-        D1["No primary/replica database pair"]
-        D2["No streaming / logical / snapshot replication"]
-        D3["No standby, read replica, or failover node"]
-        D4["No backup or WAL/oplog target"]
-    end
-    subgraph SrcComp["Build-time SOURCE composition (NOT data replication)"]
-        direction TB
-        Root["600K_ParentRepo (root)"]
-        Child["ChildRepo (Git submodule)"]
-        Nested["ChildRepo/NestedChild (Git submodule)"]
-        Root -->|".gitmodules -> git submodule update"| Child
-        Child -->|".gitmodules -> git submodule update"| Nested
-    end
-    SrcComp -.->|"duplicates SOURCE at checkout, never DATA at runtime"| DataRepl
-```
-
-#### 6.2.3.2 Data Management
-
-No data is stored, so the data-management lifecycle collapses to in-memory construction and standard-output emission. The only versioning present is source-control versioning of the code, not schema or data versioning.
-
-**Table 6.2-4: Data-Management Concerns**
-
-| Concern | Status | Evidence / Rationale |
-|---|---|---|
-| Migration procedures | None | No migration tool, migration directory, or versioned DDL; there is no schema to migrate |
-| Versioning strategy | Source-only (Git) | No data or schema versioning; only the code is versioned in Git (branch `2007_01`, HEAD `c77daf2`, six commits) |
-| Archival policies | None | No data is retained, so there is nothing to archive |
-| Data storage & retrieval mechanisms | In-memory literal + stdout | "Storage" is a code literal (`app.py:4`); "retrieval" is a function return value (`service.py:7`); output is `print` to stdout |
-| Caching policies | None | No application-level cache exists; `__pycache__/*.pyc` is interpreter bytecode, not cached application data |
-
-#### 6.2.3.3 Compliance Considerations
-
-The program neither collects nor stores any personal, sensitive, or business data — its input is a hard-coded list of integers. Consequently, no data-layer retention, privacy, audit, or access-control regime is implemented or required. Controls that do exist are limited to the operating system's file and process permissions.
-
-**Table 6.2-5: Compliance Concerns**
-
-| Concern | Status | Evidence / Rationale |
-|---|---|---|
-| Data retention rules | None | No records are stored; the input is a static integer literal discarded at process exit |
-| Backup & fault-tolerance policies | None (data) | No data backup, redundancy, or failover; source is recoverable via Git (see Section 5.4.5) |
-| Privacy controls | Not required at data layer | No personal or sensitive data is collected or stored; the input is hard-coded integers (`app.py:4`) |
-| Audit mechanisms | None (transient stdout only) | No audit log is persisted; the sole record of a run is transient standard output (`app.py:8`, `app.py:11`, `app.py:13`) |
-| Access controls | OS-level only | No data-layer authentication or authorization exists; access is governed solely by OS file and process permissions |
-
-#### 6.2.3.4 Performance Optimization
-
-There is no datastore to tune, so the query-, connection-, and replica-oriented optimizations do not apply. The single meaningful performance characteristic is algorithmic: `calculate_total` performs one linear O(n) pass over the in-memory list (`service.py:4-5`).
-
-**Table 6.2-6: Performance-Optimization Concerns**
-
-| Concern | Status | Evidence / Rationale |
-|---|---|---|
-| Query optimization patterns | None | No query engine, SQL, or query plans; the only computation is an O(n) single-pass accumulation loop (`service.py:4-5`) |
-| Caching strategy | None | No memoization or result cache; each invocation recomputes the sum from the literal |
-| Connection pooling | None | No database or network connections exist to pool |
-| Read/write splitting | None | No primary/replica topology exists, so there is no read or write traffic to route |
-| Batch processing approach | In-memory single pass | The full list is processed synchronously in one pass; there is no batching, chunking, or streaming against any datastore |
-
-### 6.2.4 References
-
-The following repository artifacts were inspected as evidence for the determination and dispositions in this section.
-
-**Files examined:**
-
-- `app.py` — root entry point; established the in-memory list literal `[10, 20, 30, 40]` (`:4`), the `calculate_total` call (`:6`), the standard-output `print` statements (`:8`, `:11`, `:13`), and the sole `import` in the tree (`:1`).
-- `service.py` — established the pure arithmetic functions `calculate_total` (`:1-7`, the O(n) accumulation loop) and `calculate_average` (`:10-14`, including the empty-input guard); confirmed no imports, I/O, persistence, or database access.
-- `README.md` — confirmed the repository carries only a title heading and no data/storage documentation.
-- `.blitzyignore` — established the `*.csv` exclusion rule; confirms `large.csv` is out of scope and never read by the application.
-- `.gitmodules` — established the build-time Git submodule declaration used for source composition (not data replication).
-
-**Folders examined:**
-
-- `ChildRepo/` — first-level Git submodule; confirmed a byte-for-byte mirror of the root `app.py`/`service.py`, with no additional storage or persistence artifacts.
-- `ChildRepo/NestedChild/` — second-level Git submodule; confirmed no configuration, schema, or storage artifacts (its own `.gitmodules` is absent).
-
-**Repository-wide verification:**
-
-- A tree-wide search for database, ORM, persistence, caching, and serialization primitives (`database`, `postgres`, `mysql`, `sqlite`, `mongo`, `redis`, `sqlalchemy`, `orm`, `migrat`, `schema`, `.sql`, `connection pool`, `persist`, `storage`, `cache`, `open(`, `json`, `pickle`, `csv`) returned **zero matches**.
-- A search for configuration/manifest files (`requirements.txt`, `setup.py`, `pyproject.toml`, `package.json`, `Dockerfile`, `.env`, `.ini`, `.yaml`, `.yml`, `.json`, `.toml`, `.sql`, `.db`, `.sqlite`) confirmed **none exist**, establishing that no connection strings, DSNs, or schema artifacts are present.
-
-**Cross-referenced specification sections:**
-
-- Section 1.2 (System Overview) — corroborated zero third-party dependencies and no network, database, or file I/O.
-- Section 3.5 (Databases and Storage) — corroborated "no database and no persistent storage."
-- Section 5.1 (High-Level Architecture), sub-section 5.1.3 (Data Flow) — corroborated "no data stores or caches" and the two transformation points (reduction and formatting).
-- Section 5.4 (Cross-Cutting Concerns), sub-section 5.4.5 — corroborated that source-level recoverability via Git is the only recovery mechanism.
-- Section 6.1 (Core Services Architecture) — sibling "not applicable" section providing the structural template and the shared build-time-submodule clarification.
-
-## 6.3 Integration Architecture
-
-### 6.3.1 Applicability Assessment
-
-**Determination: Integration Architecture is not applicable for this system.**
-
-This repository is a self-contained, single-process command-line computation with no integration surface of any kind. Direct inspection of every non-ignored source file across all three repository levels (parent, `ChildRepo/`, and `ChildRepo/NestedChild/`) confirms that the system neither exposes nor consumes any external interface at runtime. The complete program consists of two Python modules — `app.py` (the entry point, feature F-003) and `service.py` (pure arithmetic functions, features F-001 and F-002) — that communicate exclusively through an in-process function call. The single `main()` routine builds a fixed in-memory list `[10, 20, 30, 40]` (`app.py:4`), invokes `calculate_total(numbers)` (`app.py:6`), and writes six deterministic lines to `stdout` (`app.py:8`, `app.py:10-11`, `app.py:13`) before the process exits. There is no other input and no other output.
-
-The following observations, each verified against the source tree, establish the absence of every prerequisite for an integration architecture:
-
-- **No network or transport code.** An exhaustive keyword scan of all `*.py` files matched no `socket`, `http`, `urllib`, `httpx`, `aiohttp`, `request`, `server`, `listen`, `bind`, `port`, `websocket`, or `grpc` construct. The only `import` statement anywhere in the tree is the repository-local, in-process `from service import calculate_total` (`app.py:1`).
-- **No API framework.** There is no Flask, FastAPI, Django, or any other web/RPC framework; no route, controller, handler, or endpoint is defined; and there is no OpenAPI/Swagger or interface-definition artifact.
-- **No messaging middleware.** There is no Kafka, RabbitMQ, Celery, Redis, SQS, or other broker/queue/stream client, and no event bus, publish-subscribe, callback, or scheduler.
-- **No third-party services or SDKs.** There is no `boto3`, database driver, or cloud SDK; no credentials, API keys, tokens, or secrets; and no environment variables are read.
-- **No configuration or infrastructure manifests.** The tree contains no `requirements.txt`, `package.json`, `pyproject.toml`, `setup.py`, `Dockerfile`, `*.yml`/`*.yaml`, `*.toml`, `*.ini`, `*.cfg`, `*.env`, or `Makefile` — nothing that could declare an external dependency, gateway, or service binding.
-
-This determination is corroborated by four sibling sections of this specification. Section 3.4 (Third-Party Services) records that the system integrates with no third-party services. Section 5.1 (High-Level Architecture, subsection 5.1.4) states that at runtime the system integrates with nothing external. Section 4.1 (System Workflows, subsection 4.1.3) states that there are no external systems to integrate with. Section 6.1 (Core Services Architecture) independently found the same single-process, standard-library-only topology.
-
-#### 6.3.1.1 Integration Prerequisites Versus System Reality
-
-Table 6.3-1 evaluates each capability that a conventional integration architecture would require against what the repository actually contains.
-
-| Integration Prerequisite | Present? | Evidence in Repository |
-|---|---|---|
-| Exposed API (REST/GraphQL/gRPC/WebSocket) | No | No framework, route, controller, or server-bind code in any `*.py` |
-| Consumed external service / SDK client | No | Sole import is local `from service import calculate_total` (`app.py:1`) |
-| Message broker / queue / stream / event bus | No | No broker/queue/stream client or pub-sub primitive anywhere |
-| Authentication / authorization layer | No | No auth middleware, credentials, tokens, or secrets |
-| API gateway / reverse proxy / load balancer | No | No gateway config or infrastructure manifest of any kind |
-| Network or file I/O at runtime | No | Only output is `print()` to `stdout`; no `open()`, socket, or request |
-| Dependency / service-binding manifest | No | No `requirements.txt`, `pyproject.toml`, `Dockerfile`, `*.yml`, `*.env` |
-| Runtime external relationship | None | Only external references are build-time Git submodule remotes (`.gitmodules`) |
-
-#### 6.3.1.2 Integration-Adjacent Artifacts Noted for Completeness
-
-Although no runtime integration exists, three integration-adjacent artifacts are documented in the remaining subsections so that the disposition of every area the section prompt enumerates is complete and evidence-based:
-
-1. **In-process module interface** — the `app.py` → `service.py` function call, treated as the system's only "API" (dispositioned in 6.3.2).
-2. **In-memory data flow** — the fixed integer list reduced to a scalar and rendered to `stdout`, treated as the system's only "message processing" (dispositioned in 6.3.3).
-3. **Build-time source composition** — the nested Git submodule chain declared in `.gitmodules` (parent → `ChildRepo` → `NestedChild`), which is a version-control-time source-assembly relationship resolved by `git submodule update --init --recursive`, not a runtime integration (dispositioned in 6.3.4).
-
-Diagram 6.3-1 depicts the system's true boundaries: a single operator-invoked process performing one in-process call and emitting text to `stdout`, alongside the build-time submodule composition, with the entire catalogue of conventional integration constructs shown explicitly as absent.
-
-```mermaid
-flowchart TB
-    Operator(["Developer / Operator (shell)"])
-    subgraph RuntimeProc["Runtime: single OS process (python app.py) -- the entire system"]
-        direction TB
-        Main["app.py :: main() (F-003)<br/>orchestrator + stdout I/O"]
-        Svc["service.py :: calculate_total / calculate_average (F-001 / F-002)<br/>pure functions"]
-        Main -->|"in-process import + synchronous call (app.py:1, app.py:6)"| Svc
-        Svc -->|"returns scalar by value"| Main
-    end
-    Stdout(["stdout -- line-oriented text (app.py:8, 11, 13)"])
-    Operator -->|"python app.py"| Main
-    Main --> Stdout
-    subgraph BuildComp["Build/checkout-time composition -- NOT a runtime integration"]
-        direction TB
-        Gitmods[".gitmodules (root and ChildRepo)"]
-        GH1["GitHub remote: 600K_ChildRepo.git"]
-        GH2["GitHub remote: 600K_Nested_ChildRepo.git"]
-        Gitmods -->|"git submodule update --init --recursive"| GH1
-        GH1 -->|"declares nested submodule"| GH2
-    end
-    subgraph AbsentBox["External integration constructs -- NONE present"]
-        direction TB
-        NA1["No REST/HTTP/RPC/GraphQL API endpoints"]
-        NA2["No message brokers / queues / streams"]
-        NA3["No API gateway / reverse proxy / load balancer"]
-        NA4["No third-party services / SDKs / credentials"]
-    end
-    GH1 -.->|"supplies each level's source at a pinned commit"| Main
-```
-
-The three subsections that follow (6.3.2 API Design, 6.3.3 Message Processing, and 6.3.4 External Systems) systematically disposition every concern named in the section prompt against this reality, so that the "not applicable" determination is substantiated area-by-area rather than asserted in the abstract.
-
-### 6.3.2 API Design
-
-No network-facing API exists in this system. There is no HTTP/REST, GraphQL, gRPC, or WebSocket surface, no route or controller, no server-bind or listener, and no interface-definition or schema artifact anywhere in the source tree. Consequently, every conventional API-design concern enumerated by the section prompt is dispositioned below as **not applicable**. For completeness, the only interface the system possesses — the in-process Python module boundary between `app.py` and `service.py` — is documented first as the sole "API" surface, because it is the mechanism by which the entry point invokes the computation.
-
-#### 6.3.2.1 In-Process Module Interface (the Only API Surface)
-
-The system's only programmatic contract is the Python module interface exported by `service.py` and bound by `app.py`. The consumer (`app.py :: main()`, feature F-003) binds the provider symbol at import time via `from service import calculate_total` (`app.py:1`) and invokes it synchronously as an ordinary in-language function call at `app.py:6`. Resolution is performed by the CPython module loader against the local working directory; no packaging metadata, entry-point declaration, or explicit `__all__` export list participates. This is a build-and-run-in-one-process coupling — arguments are passed by object reference within a single interpreter, and the result is returned by value on the call stack. There is no serialization, no wire protocol, no marshalling, and no process or network boundary crossed.
-
-Diagram 6.3-2 shows this interface architecture: the consumer, the Python import/binding mechanism, the provider module, and — explicitly labelled as absent — the network API surface that a distributed system would otherwise expose.
-
-```mermaid
-flowchart LR
-    subgraph Consumer["API Consumer (in-process)"]
-        direction TB
-        Caller["app.py :: main() (F-003)"]
-    end
-    subgraph Binding["Interface Binding: Python import mechanism"]
-        direction TB
-        Import["from service import calculate_total (app.py:1)"]
-        Loader["CPython module loader (local-directory resolution)"]
-    end
-    subgraph Provider["API Provider: service.py module"]
-        direction TB
-        FnTotal["calculate_total(numbers) -> scalar (F-001, service.py:1-7)"]
-        FnAvg["calculate_average(numbers) (F-002, service.py:10-14, unused)"]
-    end
-    Caller -->|"binds symbol"| Import
-    Import --> Loader
-    Loader --> FnTotal
-    Caller -->|"synchronous call (app.py:6)"| FnTotal
-    FnAvg -.->|"internally calls (service.py:14)"| FnTotal
-    FnTotal -->|"returns 100 by value"| Caller
-    subgraph NoNet["Network API surface -- NONE present"]
-        direction TB
-        X1["No HTTP/REST route or controller"]
-        X2["No OpenAPI/Swagger or IDL schema"]
-        X3["No auth / rate-limit / versioning layer"]
-    end
-```
-
-Table 6.3-2 specifies the two callable symbols that constitute this interface, their contracts, and their invocation status. Because the interface is in-process, the "protocol" for every operation is the Python function-call convention rather than any transport.
-
-| Operation (Symbol) | Binding & Signature | Contract / Return | Invocation Status |
-|---|---|---|---|
-| `calculate_total` (F-001) | `from service import calculate_total` (`app.py:1`); `calculate_total(numbers)` (`service.py:1`) | Accumulates a running sum over the iterable (`service.py:2-5`); returns the scalar total, `0` for an empty input (`service.py:7`) | Called once by `main()` at `app.py:6` with `[10, 20, 30, 40]`, yielding `100` |
-| `calculate_average` (F-002) | Defined in `service.py:10`; not imported by `app.py` | Returns `0` when input is empty/falsey (`service.py:11-12`); otherwise `calculate_total(numbers) / len(numbers)` (`service.py:14`) | Never invoked anywhere in the tree — dead code |
-
-The end-to-end invocation of this interface — from operator command to process exit — is shown as a sequence in Diagram 6.3-3. It is the single "key flow" of the system.
+*Diagram 6.1.2 — Service Interaction (runtime): the sole interaction is an in-process function call from the `app.py` orchestrator to the `service.py` computation module; there is no network hop, message broker, or remote endpoint.*
 
 ```mermaid
 sequenceDiagram
-    actor Dev as Developer / Operator
-    participant PY as Python 3.12 Runtime
-    participant App as app.py (main)
-    participant Svc as service.py
-    participant Out as stdout
-    Dev->>PY: python app.py
-    PY->>App: Load module, resolve import (app.py:1)
-    App->>Svc: from service import calculate_total
-    Svc-->>App: Bind calculate_total symbol
-    PY->>App: __main__ guard true, call main() (app.py:15-16)
-    App->>Svc: calculate_total([10,20,30,40]) (app.py:6)
-    Svc-->>App: return 100 (service.py:7)
-    App->>Out: print Total: 100 (app.py:8)
-    App->>Out: print 10, 20, 30, 40 (app.py:10-11)
-    App->>Out: print Application completed (app.py:13)
-    App-->>PY: return None, process exit code 0
+    participant Shell as OS / Shell
+    participant App as app.py (orchestrator)
+    participant Svc as service.py (computation)
+    participant Out as Standard output
+    Shell->>App: python app.py invokes main() via __main__ guard (L45-46)
+    App->>App: build fixed list of four numbers (L32)
+    App->>Svc: calculate_total(numbers) in-process call (L34)
+    Svc-->>App: return total 100 (L41)
+    App->>Out: print the total line (L36)
+    App->>Out: print each number (L39-40)
+    App->>Out: print Application completed (L42)
 ```
 
-#### 6.3.2.2 Disposition of API-Design Concerns
+### 6.1.3 Scalability Design
 
-Table 6.3-3 addresses each API-design concern named in the section prompt. Every concern is not applicable because no network API exists; the "Rationale / Evidence" column records the specific reason grounded in the source tree.
+Scalability mechanisms are not applicable to this system. The workload is a single, synchronous, `O(n)` summation over a fixed four-element list executed once per invocation, after which the process exits (§5.4.4). There is no server, no concurrent request load, no shared state, and no elastic infrastructure to scale — a run either completes and exits `0` or fails fast and exits non-zero (§5.4.2). Consistent with §5.3.1, "no independently deployable/scalable units" exist because none are needed.
 
-| API-Design Concern | Status | Rationale / Evidence |
-|---|---|---|
-| Protocol specifications | Not applicable | No transport protocol; the only interface is an in-language Python call convention (`app.py:1`, `app.py:6`). No HTTP/gRPC/GraphQL/WebSocket code exists |
-| Authentication methods | Not applicable | No caller identity is exchanged in an in-process call; no auth library, credential, token, or secret exists in the tree |
-| Authorization framework | Not applicable | No protected resource, role, scope, or permission check; a single trusted process executes with no principals |
-| Rate limiting strategy | Not applicable | No request ingress to throttle; the single call at `app.py:6` runs exactly once per process invocation |
-| Versioning approach | Not applicable | No published contract to version; there is no packaging metadata, API version header, or URI/scheme version — coupling is by direct symbol name only |
-| Documentation standards | Not applicable | No OpenAPI/Swagger, IDL, or docstrings; `README.md` contains only the single line `# app.py` |
+Each concern required by this section is recorded below against the evidence.
 
-In summary, the system's only interface is an in-process function boundary that requires none of the cross-cutting machinery (protocol negotiation, identity, authorization, throttling, versioning, or published documentation) that an integration-oriented API would demand.
+| Scalability Concern | Applicability | Actual Behavior / Evidence |
+| --- | --- | --- |
+| Horizontal scaling approach | Not applicable | No service to replicate; "scaling out" reduces to launching another independent `python app.py` process with no coordination or shared state |
+| Vertical scaling approach | Not applicable (trivial) | Computation is `O(n)` time over n = 4 fixed elements and `O(1)` extra memory; runtime is dominated by interpreter start-up, not the sum (§5.4.4) |
+| Auto-scaling triggers & rules | Not applicable | No orchestrator (no Kubernetes HPA, no cloud auto-scaling group), no metrics, and no thresholds; the repository contains no container or infrastructure manifest (no Dockerfile, Compose file, or YAML) |
+| Resource allocation strategy | Not applicable | The program runs within one stock CPython process; no CPU/memory requests, limits, or quotas are declared anywhere |
+| Performance optimization techniques | Intrinsic only | A single-pass accumulation loop (Source: `service.py` L38–L39); CPython's implicit bytecode cache (`__pycache__/*.cpython-312.pyc`) amortizes recompilation on re-import (§5.3.3), but no application-level optimization, concurrency, or caching is implemented |
+| Capacity planning guidelines | Not applicable | Input is hard-coded and fixed; no throughput target, benchmark, SLA, or KPI is defined anywhere (§5.4.4) |
 
-### 6.3.3 Message Processing
+**The only "scaling" dimension present is compositional, not operational.** Additional tiers are introduced by declaring further Git submodules in a `.gitmodules` manifest (feature F-004, §5.1.1), not by provisioning runtime capacity. This grows the *source tree*, not serving capacity, and introduces no runtime coupling between tiers.
 
-No message-oriented processing infrastructure exists in this system. There is no message queue, topic, or broker; no event bus, publish-subscribe channel, or callback registry; no stream processor or windowing construct; and no asynchronous scheduler or job framework. An exhaustive keyword scan of every `*.py` file returned zero matches for `kafka`, `rabbit`, `celery`, `redis`, `queue`, `stream`, `webhook`, or any comparable primitive. The only data movement in the system is the synchronous, in-memory transformation of a fixed integer list into a scalar and its rendering to `stdout`. That single degenerate flow is documented first, after which every message-processing concern from the section prompt is dispositioned.
-
-#### 6.3.3.1 Batch Model and In-Process Data Flow
-
-The entire program is a single run-to-completion pass over a fixed, in-memory dataset — the closest analogue the system has to "batch processing," and consistent with the characterization in section 4.1 (subsection 4.1.3). The `main()` routine (F-003) constructs the literal list `[10, 20, 30, 40]` (`app.py:4`), passes it by reference to `calculate_total` (`app.py:6`), which accumulates a running sum across the iterable (`service.py:2-5`) and returns the scalar `100` (`service.py:7`). The entry point then formats and emits the result and each element to `stdout` (`app.py:8`, `app.py:10-11`) and prints a terminal completion line (`app.py:13`). No item is enqueued, published, buffered, or scheduled; there is no producer/consumer decoupling and no back-pressure, ordering, delivery-guarantee, or offset concern because there is no channel between components — only a stack-based function call within one interpreter.
-
-Diagram 6.3-4 traces this data flow from the in-memory literal to the reduction to the formatted `stdout` output, and explicitly marks the message-oriented middleware that a distributed system would use as absent.
+*Diagram 6.1.3 — Scalability Model: every invocation is a single, stateless CPython process that performs the O(n) work and exits; the only way to "scale" is to re-invoke independently. There is no load-balancing, auto-scaling, or resource-quota layer (shown as absent by design).*
 
 ```mermaid
-flowchart LR
-    In["In-memory list literal [10, 20, 30, 40] (app.py:4)"]
-    Call["Synchronous call: calculate_total(numbers) (app.py:6)"]
-    Reduce["Reduce: accumulate sum over iterable (service.py:2-5)"]
-    Scalar["Scalar result = 100 (service.py:7)"]
-    Fmt["Format via f-string and print() (app.py:8, 11, 13)"]
-    Out["stdout: six deterministic text lines"]
-    In --> Call --> Reduce --> Scalar --> Fmt --> Out
-    subgraph NoMsg["Message-oriented middleware -- NONE present"]
-        direction TB
-        M1["No message queue / topic / broker"]
-        M2["No event bus / publish-subscribe / callbacks"]
-        M3["No stream processor / windowing"]
-        M4["No async scheduler / job framework"]
-    end
+flowchart TD
+    Start(["Manual trigger: python app.py"])
+    Proc["Single CPython process<br/>(no server, no daemon, no worker pool)"]
+    Work["service.calculate_total - O(n) single pass, O(1) memory<br/>(n = 4, fixed input)"]
+    Exit(["Write stdout, exit 0, process terminates"])
+    Repeat["To 'scale' - re-invoke independently<br/>(embarrassingly parallel, unorchestrated)"]
+    Absent["Not applicable by design: horizontal/vertical auto-scaling,<br/>load balancing, resource quotas, capacity targets"]
+    Start --> Proc --> Work --> Exit
+    Exit -.->|"re-invoke"| Repeat
+    Repeat -.-> Start
 ```
 
-#### 6.3.3.2 Disposition of Message-Processing Concerns
+### 6.1.4 Resilience Patterns
 
-Table 6.3-4 addresses each message-processing concern named in the section prompt against the repository reality.
+The system implements a deliberate *fail-fast, fail-loud* model (§5.4.2) with no built-in fault tolerance, redundancy, or failover — appropriate for a stateless, single-process demonstration that holds no data and provisions no infrastructure. Where recovery is meaningful at all, it is achieved by re-executing the program or re-acquiring the source, as already established in §5.4.5. Each concern required by this section is recorded below against the evidence.
 
-| Message-Processing Concern | Status | Rationale / Evidence |
-|---|---|---|
-| Event processing patterns | Not applicable | No events emitted or consumed; control flow is a straight-line synchronous call (`app.py:6`). No event bus, pub-sub, or callback exists |
-| Message queue architecture | Not applicable | No queue, topic, or broker client; no producer/consumer decoupling. Sole data hand-off is a by-reference argument on the call stack |
-| Stream processing design | Not applicable | No stream source, sink, or windowing; the input is a finite bounded list, fully materialized in memory (`app.py:4`) |
-| Batch processing flows | Degenerate only | The whole program is one run-to-completion pass over a fixed 4-element list; there is no batch scheduler, job orchestrator, partitioning, or checkpointing |
-| Error handling strategy | Fail-fast (no handlers) | No `try`/`except`/`finally` anywhere; any exception propagates to terminate the process (per section 5.4). The only defensive guard is `calculate_average` returning `0` on empty input (`service.py:11-12`) |
+| Resilience Concern | Applicability | Actual Behavior / Evidence |
+| --- | --- | --- |
+| Fault tolerance mechanisms | Not applicable (fail-fast) | No `try`/`except` anywhere; any error propagates to the interpreter, printing a traceback to stderr and exiting `1` (§5.4.2) |
+| Disaster recovery procedures | Not applicable (stateless) | No backups, replication, or RTO/RPO targets; recovery = re-run `python app.py`, or recursively re-clone from the pinned GitHub remotes (§5.4.5) |
+| Data redundancy approach | Not applicable | No data is stored — input is hard-coded and output is transient stdout (§5.3.3); *source* redundancy is provided by the Git remotes and pinned commit SHAs (ADR-05) |
+| Failover configurations | Not applicable | No replicas, standby instances, or health checks; a single process with no orchestrator to fail over to |
+| Service degradation policies | Not applicable | No graceful-degradation path; the one defensive guard is `calculate_average` returning `0` for empty/falsey input (Source: `service.py` L75–L76), while the `NestedChild` leaf fails hard rather than degrading |
 
-In summary, the system performs a single synchronous reduction with no messaging middleware, no asynchrony, and no explicit error-handling layer; its "message processing" is limited to passing one list to one function and printing the result.
+**The one realized failure mode illustrates the fail-fast model.** The deepest tier is preserved with a known defect: `ChildRepo/NestedChild/app.py` and `service.py` are byte-identical, so importing `service` re-enters a partially initialized module and `calculate_total` never resolves, raising `ImportError` *before* `main()` runs — empty stdout, a traceback to stderr, and exit code `1` (verified by execution; §5.4.2, §2.4.4). It is documented and preserved as-is, not auto-recovered.
 
-### 6.3.4 External Systems
+**What resilience the system does exhibit is build-time and stateless.** Because the runtime holds no state, a failed run leaves nothing to roll back and can simply be re-run; the authoritative source of truth is the set of pinned Git repositories, fully restorable by a recursive clone (§5.4.5). The interpreter's bytecode cache regenerates automatically if it is deleted or corrupted (§5.4.5).
 
-The system integrates with no external systems at runtime. Section 3.4 (Third-Party Services) records that the system integrates with no third-party services, and section 5.1 (subsection 5.1.4) records that at runtime the system integrates with nothing external. The only relationships that reach outside the repository are the Git submodule remotes declared in the `.gitmodules` files — a version-control-time source-composition mechanism, not a runtime integration. Those relationships, together with the host execution platform, are documented first, after which each external-systems concern from the prompt is dispositioned.
-
-#### 6.3.4.1 External Dependencies and Build-Time Composition
-
-The repository is a nested Git submodule chain. The parent's `.gitmodules` declares the `ChildRepo` submodule pointing at `https://github.com/lakshya-blitzy/600K_ChildRepo.git`, and `ChildRepo/.gitmodules` declares the `NestedChild` submodule pointing at `https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`. These references are resolved once, at checkout/build time, by `git submodule update --init --recursive` (feature F-004). Each is a one-way fetch of source at a pinned commit over Git-over-HTTPS; no data flows back, no service is invoked, and — as section 5.1.4 notes — no service-level agreement is defined or relied upon. Once the working tree is assembled, the running program (`python app.py`) makes no use of the network, so these dependencies are entirely absent from the runtime picture.
-
-Table 6.3-5 documents all external dependencies of the system, spanning both the build-time submodule remotes and the runtime host platform that a single-process CLI necessarily relies upon.
-
-| Dependency | Binding Time | Protocol / Mechanism | Runtime Coupling |
-|---|---|---|---|
-| `ChildRepo` submodule remote (`600K_ChildRepo.git`) | Build / checkout time | Git-over-HTTPS one-way fetch (`.gitmodules`) | None — source composition only |
-| `NestedChild` submodule remote (`600K_Nested_ChildRepo.git`) | Build / checkout time | Git-over-HTTPS one-way fetch (`ChildRepo/.gitmodules`) | None — source composition only |
-| CPython interpreter + standard library | Runtime | In-process execution (evidenced by `__pycache__/service.cpython-312.pyc`) | Host platform; no third-party libraries |
-| `stdout` stream | Runtime | Line-oriented text via `print()` (`app.py:8`, `10-11`, `13`) | Output sink only |
-| Invoking shell / OS process | Runtime | CLI invocation + integer process exit code | Parent process |
-
-Diagram 6.3-5 sequences the build-time composition: the operator clones the parent and recursively initializes submodules, and Git fetches each level's source from its GitHub remote. The note emphasizes that this is a one-way, checkout-time fetch with no runtime coupling.
+*Diagram 6.1.4 — Resilience / Failure-Handling Flow: errors propagate fail-fast to a non-zero exit; recovery is manual re-execution or recursive re-clone. There is no automatic fault tolerance, failover, or graceful degradation.*
 
 ```mermaid
-sequenceDiagram
-    actor Dev as Developer / Operator
-    participant Git as Git tooling
-    participant Root as Root .gitmodules
-    participant GH as GitHub HTTPS remotes
-    Dev->>Git: git clone parent, then git submodule update --init --recursive
-    Git->>Root: read the ChildRepo submodule declaration
-    Root-->>Git: path = ChildRepo, url = 600K_ChildRepo.git
-    Git->>GH: fetch ChildRepo at pinned commit
-    GH-->>Git: ChildRepo source (includes its own .gitmodules)
-    Git->>GH: fetch NestedChild at pinned commit (600K_Nested_ChildRepo.git)
-    GH-->>Git: NestedChild source
-    Note over Git,GH: One-way fetch over Git-over-HTTPS, no runtime coupling
-    Git-->>Dev: source tree assembled (checkout-time only)
+flowchart TD
+    Run(["python app.py"])
+    Imp{"Import 'service':<br/>does calculate_total resolve?"}
+    Valid{"Inputs valid<br/>(all numeric)?"}
+    OK(["Print results, exit 0"])
+    Fail["Uncaught exception<br/>traceback to stderr, exit 1"]
+    Rec["Recovery: manual re-run, or recursive<br/>re-clone from pinned GitHub remotes"]
+    Run --> Imp
+    Imp -->|"No: NestedChild circular import"| Fail
+    Imp -->|Yes| Valid
+    Valid -->|"No: uncaught TypeError (latent)"| Fail
+    Valid -->|Yes| OK
+    Fail -.->|"stateless: nothing to roll back"| Rec
+    Rec -.-> Run
 ```
 
-For accuracy, the composition carries a known defect documented in sections 4.1 and 6.1: at the `NestedChild` level, `service.py` is a byte-for-byte copy of `app.py` rather than the arithmetic module, so executing that nested copy raises a circular-import `ImportError`. This is a source-composition defect, not an integration behavior, and does not affect the parent program's self-contained execution.
+### 6.1.5 References
 
-#### 6.3.4.2 Disposition of External-Systems Concerns
-
-Table 6.3-6 addresses each external-systems concern named in the section prompt.
-
-| External-Systems Concern | Status | Rationale / Evidence |
-|---|---|---|
-| Third-party integration patterns | Not applicable | No third-party service, SDK, or client; per section 3.4 the system integrates with no third-party services. Only external references are build-time submodule remotes |
-| Legacy system interfaces | Not applicable | No adapter, connector, bridge, or interface to any existing/legacy system; no file, database, or socket I/O of any kind |
-| API gateway configuration | Not applicable | No gateway, reverse proxy, ingress, or load balancer; no configuration or infrastructure manifest exists in the tree |
-| External service contracts | None defined | No service contract, schema, or SLA; the submodule remotes are one-way source fetches with no SLA (section 5.1.4) |
-
-In summary, the system's only outward-facing relationships are checkout-time Git submodule fetches that supply source code; at runtime it depends solely on its host interpreter, the invoking shell, and the `stdout` stream, and it participates in no third-party integration, legacy interface, gateway, or service contract.
-
-### 6.3.5 References
-
-The determinations and evidence in this section were derived from direct inspection of the repository and corroborated against sibling specification sections. All sources cited are listed below.
+The following repository artifacts and specification sections were examined as evidence for this section. All line-number citations reflect the files as currently committed; runtime behavior was confirmed by direct execution of each tier.
 
 **Repository files examined**
 
-- `app.py` — Entry point (F-003); established the sole in-process import (`app.py:1`), the fixed input list (`app.py:4`), the synchronous `calculate_total` call (`app.py:6`), the `stdout` output lines (`app.py:8`, `10-11`, `13`), and the `__main__` guard (`app.py:15-16`)
-- `service.py` — Established the pure functions `calculate_total` (F-001, `service.py:1-7`) and `calculate_average` (F-002, `service.py:10-14`, never invoked), and the empty-input guard (`service.py:11-12`)
-- `README.md` — Confirmed the absence of documentation standards; contains only the single line `# app.py`
-- `.gitmodules` (root) — Established the `ChildRepo` submodule declaration and remote `600K_ChildRepo.git`
-- `ChildRepo/.gitmodules` — Established the nested `NestedChild` submodule declaration and remote `600K_Nested_ChildRepo.git`
-- `ChildRepo/NestedChild/service.py` — Confirmed the known composition defect (a byte-for-byte copy of `app.py` causing a circular-import `ImportError`)
-- `__pycache__/service.cpython-312.pyc` — Evidence of the CPython 3.12 runtime that compiled the module
+- `app.py` — Root entry-point orchestrator (F-003); established the single-process execution model, the `__main__` guard (L45–L46), the fixed input list (L32), the in-process delegation `from service import calculate_total` / `calculate_total(numbers)` (L15, L34), and the stdout writes (L36, L39–L42).
+- `service.py` — Root pure-computation module (F-001/F-002); established the absence of imports/state/I-O (L9–L11), the single-pass `calculate_total` loop (L18, L38–L39, L41), and the sole defensive guard in `calculate_average` (L44, L75–L76, L78).
+- `.gitmodules` — Root submodule manifest; established the build-time link `600K_ParentRepo → ChildRepo` (feature F-004).
+- `ChildRepo/.gitmodules` — Middle-tier submodule manifest; established the build-time link `ChildRepo → NestedChild`.
+- `ChildRepo/app.py`, `ChildRepo/service.py` — Mirror tier; confirmed a functionally equivalent, independently runnable copy (exit 0) with no runtime coupling to the parent.
+- `ChildRepo/NestedChild/app.py`, `ChildRepo/NestedChild/service.py` — Defective leaf tier; confirmed the byte-identical files that cause the circular-import `ImportError` (exit 1, empty stdout) cited as the one realized failure mode.
+- `README.md` — Project documentation; corroborated the standard-library-only, zero-dependency runtime and the recursive-clone acquisition model.
+- `.blitzyignore` (root, `ChildRepo/`, `ChildRepo/NestedChild/`) — Each contains only `*.csv`; honored by excluding all CSV files from inspection and documentation.
+- `__pycache__/*.cpython-312.pyc` — CPython bytecode cache; cited as the only implicit, auto-regenerated persisted artifact (not an application data store).
 
 **Repository folders examined**
 
-- `` (repository root) — Established the complete top-level file inventory and the "no manifest/config/infra" finding
-- `ChildRepo/` — First-level Git submodule; confirmed the same three-file structure and its own submodule declaration
-- `ChildRepo/NestedChild/` — Second-level (nested) Git submodule; confirmed the terminal level of the build-time composition chain
+- `ChildRepo/` — First-level Git submodule tier (pinned at `63b3f43`).
+- `ChildRepo/NestedChild/` — Leaf Git submodule tier (pinned at `d57c9dd`; no `.gitmodules`).
 
 **Cross-referenced specification sections**
 
-- 2.1 Feature Catalog — Source of the feature identifiers F-001 through F-004 used throughout this section
-- 3.4 Third-Party Services — Corroborated that the system integrates with no third-party services and holds no credentials
-- 4.1 System Workflows (subsection 4.1.3) — Corroborated the absence of external systems and the single run-to-completion batch model; documented the F-004 build-time composition
-- 5.1 High-Level Architecture (subsection 5.1.4) — Corroborated that at runtime the system integrates with nothing external; source of the boundary-interface characterization and the "no SLA" finding
-- 5.4 Cross-Cutting Concerns — Source of the fail-fast (no `try`/`except`) error-handling posture
-- 6.1 Core Services Architecture — Corroborated the single-process, standard-library-only topology and the `NestedChild` circular-import defect; basis for the Applicability Assessment structure
+- §5.1 High-Level Architecture (incl. §5.1.1 System Overview, §5.1.2 Core Components) — single-process/monolithic architecture, component boundaries, and runtime interfaces.
+- §5.3 Technical Decisions (incl. §5.3.1 architecture-style tradeoffs, §5.3.2 communication patterns, §5.3.3 storage/caching; ADR-01, ADR-03, ADR-05) — the explicit "not a service/microservice" and stateless decisions.
+- §5.4 Cross-Cutting Concerns (incl. §5.4.2 Error Handling, §5.4.4 Performance/SLAs, §5.4.5 Disaster Recovery) — fail-fast behavior, absence of SLAs/KPIs, and stateless recovery model.
+- §2.4 Implementation Considerations (§2.4.4) — the preserved `NestedChild` circular-import defect.
+- Feature identifiers F-001–F-004 — carried forward verbatim from §2.1 for traceability.
 
-No external (web) sources were required or consulted for this section; every claim is grounded in the repository itself or in the cross-referenced sections above.
+## 6.2 Database Design
+
+### 6.2.1 Database Design Applicability Assessment
+
+**Database Design is not applicable to this system.**
+
+`600K_ParentRepo` is a deliberately minimal, standard-library-only Python program whose entire executable behavior is a single fixed-list summation written to standard output. It defines **no database, no persistent datastore, and no durable file of any kind**, and it neither reads from nor writes to any storage medium at runtime. This determination is grounded in direct inspection of every source file, verification that no dependency or datastore configuration exists anywhere in the tree, and first-hand runtime observation. It is fully consistent with §3.5 ("no database and no persistent storage of any kind") and §5.3.3 / ADR-04 ("the system stores nothing").
+
+**Why there is no database to design.** The program's only data is created, transformed, printed, and discarded within a single synchronous process. The sole import tree-wide is the intra-repository `from service import calculate_total` (`app.py` L15) — there is no database driver, ORM, connection pool, or query builder to import. There is no schema, no DDL, no migration tooling, and no data-access layer. Running `python3 app.py` was verified to create zero files (a before/after file-system comparison showed no new artifacts) and to emit only the lines `Total: 100`, the four input values, and `Application completed` before exiting `0`.
+
+| Database / Persistence Facet | Status | Supporting Evidence |
+| --- | --- | --- |
+| Relational or NoSQL database | None | No driver, ORM, connection string, or query code; only import is `from service import calculate_total` (`app.py` L15) |
+| Persistent datastore or output file | None | No `open`/`read`/`write` calls; `python3 app.py` creates no files and writes only stdout (`app.py` L36–L42) |
+| Schema, DDL, or migrations | None | No `.sql` files and no `migrations/`, `models/`, or `schema/` directory anywhere in the tree |
+| Dependency or datastore configuration | None | No `requirements.txt`, `setup.py`, `pyproject.toml`, `Dockerfile`, or `.env`; standard-library only (§3.5) |
+| In-memory working data | Ephemeral only | Hard-coded list `[10, 20, 30, 40]` (`app.py` L32) and integer accumulator (`service.py` L35), discarded at process exit |
+| `__pycache__/*.cpython-312.pyc` | Not application data | CPython bytecode import cache, auto-regenerated; explicitly not a data store (§3.5, §5.3.3) |
+| CSV files in the tree | Excluded and unused | `large.csv` at each tier is excluded by `.blitzyignore` (`*.csv`) and is read by no code (§3.5) |
+
+The only data path that exists in the entire system is the ephemeral, in-memory lifecycle shown below: values are constructed in source, summed in memory, written to standard output, and destroyed when the process exits. There is no persistence boundary anywhere along this path.
+
+*Diagram 6.2.1 — Data Flow / Data Lifecycle: the complete, ephemeral in-memory data path from a hard-coded literal to transient standard output. No stage reads or writes a database, file, cache, or any other durable store.*
+
+```mermaid
+flowchart LR
+    Src["Hard-coded literal in source<br/>numbers = list of four ints<br/>(app.py L32)"]
+    Mem["In-memory single-pass sum<br/>service.calculate_total<br/>(service.py L35-L41)"]
+    Tot["Transient integer total = 100<br/>returned to caller<br/>(app.py L34)"]
+    Out["stdout: 'Total: 100', each value,<br/>'Application completed'<br/>(app.py L36-L42)"]
+    Exit(["Process exits 0<br/>all in-memory data discarded - nothing persisted"])
+    Src --> Mem --> Tot --> Out --> Exit
+```
+
+Because no datastore exists, sub-sections 6.2.2 through 6.2.5 address each database-design concern required by this template — schema design, data management, compliance, and performance — by recording the actual (minimal, in-memory) reality and marking each specific database mechanism *Not applicable* with its supporting evidence, mirroring the evidence-based approach adopted in §6.1. This keeps the specification complete and explicit rather than silent about mechanisms the code does not contain.
+
+### 6.2.2 Schema Design
+
+There is no database schema in this system: no tables, collections, entities, keys, indexes, or constraints are defined anywhere, because no datastore exists (§3.5, §5.3.3). This sub-section documents (a) the only data the program actually manipulates — a transient in-memory list and a derived integer accumulator — and (b) records each schema-design concern from the specification template as *Not applicable*, with supporting evidence.
+
+**Entity relationships.** There are no persistent entities and therefore no persistent entity relationships. The only data the program handles is an in-memory Python `list` of four integers and a derived integer accumulator, both of which live solely on the process heap for the duration of one run (`app.py` L32, L34; `service.py` L35). For completeness — and to satisfy the ERD requirement — the conceptual, ephemeral shape of this runtime data is depicted below; it is emphatically **not** a database schema, and no such tables or documents are created, keyed, indexed, or persisted anywhere.
+
+*Diagram 6.2.2.A — Conceptual (Ephemeral) Data Model: an ERD-style depiction of the transient in-memory values the program manipulates during a single run. These are runtime Python objects, not persisted tables; there are no primary keys, foreign keys, or indexes.*
+
+```mermaid
+erDiagram
+    INPUT_LIST ||--o{ NUMERIC_ELEMENT : "holds in memory"
+    INPUT_LIST ||--|| ACCUMULATOR : "summed into transient"
+    INPUT_LIST {
+        list numbers "hard-coded 10 20 30 40, app.py L32, ephemeral"
+    }
+    NUMERIC_ELEMENT {
+        number value "int or float, iterated once, never stored"
+    }
+    ACCUMULATOR {
+        number total "running sum 100, app.py L34, discarded at exit"
+    }
+```
+
+**Data models and structures.** The system's complete data model consists of two transient runtime structures and one output stream, none of which are persisted.
+
+| Runtime Structure | Type and Definition | Persistence |
+| --- | --- | --- |
+| `numbers` | Python `list` of four `int` literals `[10, 20, 30, 40]` (`app.py` L32) | In-memory only; discarded at exit |
+| `total` (accumulator) | Scalar `int`/`float`, initialized to `0`, accumulated in a single loop (`service.py` L35–L41) | In-memory only; returned then printed |
+| Program output | Line-oriented text emitted via `print()` (`app.py` L36–L42) | Transient stdout; never stored |
+
+**Indexing strategy (all indexes documented).** No indexes exist because there is no table, collection, or query workload to index. The table below enumerates each index category for completeness.
+
+| Index Category | Status | Evidence |
+| --- | --- | --- |
+| Primary / clustered index | None | No tables or DDL exist |
+| Secondary / non-clustered index | None | No datastore or query workload to optimize |
+| Full-text / spatial / composite | None | No searchable text, geospatial, or multi-column data |
+
+**Constraints (all constraints documented).** No integrity constraints are defined; the sole input-shape expectation is enforced by fail-fast runtime behavior rather than a declared database constraint.
+
+| Constraint Category | Status | Evidence |
+| --- | --- | --- |
+| Primary / foreign key | None | No entities or relations are defined |
+| Unique / check / not-null | None | No schema or DDL; the numeric-element expectation is enforced at runtime, not declaratively (§5.3.4, ADR-06) |
+| Default / trigger | None | No datastore to which defaults or triggers could attach |
+
+**Partitioning approach.** Not applicable. The entire dataset is a fixed four-element in-memory list; there is no table, no data volume, and no storage engine to partition. Horizontal partitioning, vertical partitioning, and sharding are all irrelevant to a single O(n) pass over four elements held on the heap (`service.py` L38–L39).
+
+**Replication configuration.** Not applicable — with no database there is no primary/replica topology, no write-ahead-log or binlog streaming, and no replica set or quorum. The three-tier structure `600K_ParentRepo → ChildRepo → NestedChild` is a **build-time source-code composition** via native Git submodules pinned to commits `63b3f43` and `d57c9dd` (§5.3.1 / ADR-05, §6.1.1), not runtime data replication: each tier is an independent copy of the program that runs in its own process with no shared datastore and no cross-tier data exchange. The diagram below contrasts the absent database-replication topology with the source composition that actually exists.
+
+*Diagram 6.2.2.B — Replication Architecture: database primary/replica replication does not exist (top); the only "replication" present is build-time duplication of source across pinned Git submodule tiers (bottom), which carries no runtime data and no datastore.*
+
+```mermaid
+flowchart TD
+    subgraph DBRepl["Database replication topology - NOT APPLICABLE (no database exists)"]
+        Primary["Primary DB node"]
+        Replica["Replica / standby node"]
+        Primary -.->|"WAL / binlog stream does not exist"| Replica
+    end
+    subgraph SrcComp["What actually exists: build-time SOURCE composition (not data replication)"]
+        Parent["600K_ParentRepo<br/>app.py + service.py"]
+        Child["ChildRepo @ 63b3f43<br/>independent copy"]
+        Nested["NestedChild @ d57c9dd<br/>defective copy"]
+        Parent -->|".gitmodules recursive clone"| Child
+        Child -->|"ChildRepo/.gitmodules"| Nested
+    end
+```
+
+**Backup architecture.** Not applicable. With no datastore and no persisted data, there is nothing to back up: there are no snapshots, dumps, point-in-time-recovery logs, or backup schedules, and no recovery-time or recovery-point objectives (§6.1.4 confirms "no backups, replication, or RTO/RPO targets"). The authoritative source of truth is the set of pinned Git repositories, fully restorable by a recursive clone, and the interpreter's bytecode cache regenerates automatically if it is deleted (§6.1.4, §5.3.3).
+
+| Backup Concern | Status | Evidence |
+| --- | --- | --- |
+| Data backups / snapshots / PITR | None (nothing to back up) | Stateless; no persisted data (§5.3.3, §6.1.4) |
+| Recovery objectives (RTO / RPO) | None defined | No SLAs or recovery targets anywhere (§6.1.4) |
+| Source-of-truth durability | Git remotes + pinned commits | Recursive re-clone restores all tiers (§6.1.1, ADR-05) |
+
+### 6.2.3 Data Management
+
+The system performs no data management because it manages no persistent data. Each concern in this area is recorded below against the repository evidence. The only "storage and retrieval" that occurs is loading a hard-coded literal from source into memory and emitting results to standard output; the only cache present is the interpreter's bytecode cache, which is not application data.
+
+**Migration procedures.** Not applicable. There is no schema to evolve and no data to migrate. The repository contains no migration framework (no Alembic, Django migrations, Flyway, or Liquibase), no `migrations/` directory, and no versioned DDL. This is confirmed by the absence of any such tooling or directory in the tree and by the standard-library-only, zero-dependency runtime (§3.5).
+
+**Versioning strategy.** Data versioning is not applicable — no data records or schema versions exist. What is versioned is the *source code*, via Git, and the multi-tier composition is pinned for reproducibility: the parent pins `ChildRepo` at commit `63b3f43` and `ChildRepo` pins `NestedChild` at `d57c9dd` (`.gitmodules`, `ChildRepo/.gitmodules`; §5.3.1 / ADR-05). This is source/version control, not database schema or data versioning.
+
+**Archival policies.** Not applicable. No data is retained beyond a single process lifetime, so there is nothing to archive, tier, or expire. Output is transient standard output that the program itself does not persist (`app.py` L36–L42; §5.3.3).
+
+**Data storage and retrieval mechanisms.** The only "storage" is process memory and the only "retrieval" is loading a source-level literal into that memory; there is no persistent read/write path.
+
+| Operation | Mechanism | Evidence |
+| --- | --- | --- |
+| Write / store | In-memory only (list + accumulator on the heap) | `numbers` literal and `total` accumulator (`app.py` L32, L34; `service.py` L35) |
+| Read / retrieve | Source-level literal loaded at runtime, iterated once | Hard-coded list summed by `calculate_total` (`service.py` L38–L39) |
+| Output / emit | Line-oriented text to standard output | `print()` calls (`app.py` L36–L42) |
+| Persistent / durable I/O | None | No file/DB/network I/O anywhere; a run creates no files |
+
+**Caching policies.** There is no application-level cache — no in-process memoization and no external cache such as Redis or Memcached — and none is warranted because recomputing a four-element O(n) sum is negligible (§5.3.3 / ADR-04). The only cache-like artifact in the tree is CPython's bytecode import cache (`__pycache__/*.cpython-312.pyc`), which the interpreter writes automatically on first import to speed re-import; it is a compilation optimization, not an application data cache, and it holds no program data (§3.5, §5.3.3).
+
+| Caching Concern | Status | Evidence |
+| --- | --- | --- |
+| Application / query cache | None | No memoization or cache client; recompute is trivial (§5.3.3, ADR-04) |
+| Distributed cache (Redis, etc.) | None | No cache service, client library, or configuration exists |
+| Bytecode import cache | Present (not data) | `__pycache__/*.cpython-312.pyc`, auto-generated by CPython (§3.5, §5.3.3) |
+
+### 6.2.4 Compliance Considerations
+
+Compliance considerations that presuppose stored or personal data do not apply here: the system persists no data, collects no personal or user information, exposes no interface, and enforces no access model. Each concern is recorded below against the evidence, consistent with the security posture in §5.3.4 (ADR-06) and the stateless model in §5.3.3.
+
+**Data retention rules.** Not applicable — nothing is retained. The only data is the hard-coded input and the transient computed total, both discarded when the process exits; there is no persisted record subject to a retention or deletion schedule (`app.py` L32–L42; §5.3.3).
+
+**Backup and fault-tolerance policies.** No data backups exist because there is no data to protect, and the runtime implements a deliberate fail-fast model with no redundancy or failover (§6.1.4). A failed run leaves nothing to roll back and is simply re-executed; the durable source of truth is the set of pinned Git repositories, restorable by a recursive clone (§6.1.1, §6.1.4). The corresponding backup architecture is detailed in 6.2.2.
+
+**Privacy controls.** Not applicable — the system processes no personal, user, or sensitive data. Its only input is a hard-coded list of integer literals; it collects nothing, stores nothing, and transmits nothing over a network. With no data at rest and no data in transit, there is no PII/PHI handling, no encryption requirement, and no consent or data-subject workflow. §3.5 records that there is "no data-at-rest, no credentials or connection secrets to manage."
+
+**Audit mechanisms.** No database or application audit logging exists (no audit tables, change-data-capture, or access logs), because there is no datastore and no protected operation to audit. The only record of program activity is the transient standard output printed during a run (`app.py` L36–L42). Change history for the *source* is provided by the Git commit log, not by an application audit trail.
+
+**Access controls.** Not applicable at the data layer. There are no users, roles, sessions, credentials, or protected resources, and the program has no authentication or authorization mechanism — §5.3.4 / ADR-06 records "None" for authentication/authorization because there are "no users, sessions, network endpoints, or protected resources." Any access control that applies is provided entirely by the host operating system's file permissions on the source files, which is outside the application's scope.
+
+| Compliance Concern | Status | Evidence |
+| --- | --- | --- |
+| Data retention | None (nothing retained) | Transient input/output discarded at exit (§5.3.3) |
+| Backup / fault tolerance | None (fail-fast, stateless) | No redundancy or failover; recover by re-run or re-clone (§6.1.4) |
+| Privacy / PII controls | Not applicable | No personal data collected, stored, or transmitted (§3.5) |
+| Audit logging | None (stdout only) | No audit tables or logs; Git log covers source history (§5.3.4) |
+| Access control / authentication | None | No users, roles, or protected resources (§5.3.4, ADR-06) |
+
+### 6.2.5 Performance Optimization
+
+Database-oriented performance optimization is not applicable because there are no queries, connections, replicas, or datasets to optimize. The only computation is a single synchronous O(n) pass over four elements, whose runtime is dominated by interpreter start-up rather than the work itself (§6.1.3). Each optimization concern is recorded below against the evidence.
+
+**Query optimization patterns.** Not applicable — there are no queries. The workload is a single-pass accumulation loop that visits each of the four elements exactly once (`service.py` L38–L39), an inherently optimal O(n) traversal with O(1) extra memory; there is no query planner, execution plan, or index to tune (§6.1.3).
+
+**Caching strategy.** No caching strategy is implemented and none is warranted: recomputing the O(n) / four-element sum is effectively free, so there is no result cache, memoization, or cache-invalidation policy (§5.3.3 / ADR-04). The interpreter's `__pycache__/*.cpython-312.pyc` bytecode cache is the only cache present, and it accelerates module re-import, not data access (§3.5, §5.3.3). Caching policies are detailed in 6.2.3.
+
+**Connection pooling.** Not applicable. There is no database, network socket, or other poolable resource; the sole "connection" is the in-process Python import `from service import calculate_total` (`app.py` L15), resolved once by the import machinery at start-up. No pool, driver, or connection lifecycle exists (§5.3.2 / ADR-03).
+
+**Read/write splitting.** Not applicable. With no database and no primary/replica topology, there is no read or write path to route or split (see 6.2.2, Replication configuration). All work occurs in a single process against in-memory values.
+
+**Batch processing approach.** Not applicable. The program processes one fixed, hard-coded list per invocation in a single synchronous pass and then exits; there is no batch scheduler, bulk-load path, job queue, or chunking of large datasets (`app.py` L32–L42; §6.1.3). The single loop already handles the entire four-element input in one traversal.
+
+| Optimization Concern | Status | Evidence |
+| --- | --- | --- |
+| Query optimization | Not applicable (no queries) | Optimal single-pass O(n) loop over 4 items (`service.py` L38–L39) |
+| Caching strategy | None (recompute is trivial) | No result cache; bytecode cache only (§5.3.3, ADR-04) |
+| Connection pooling | Not applicable | Only an in-process import; no sockets or drivers (`app.py` L15; ADR-03) |
+| Read/write splitting | Not applicable | No database, no replicas, single process (6.2.2) |
+| Batch processing | Not applicable | One fixed list, one synchronous pass per run (`app.py` L32–L42) |
+
+The only intrinsic performance characteristic worth recording is that the computation is trivial and bounded — O(n) time over a fixed n = 4 with O(1) additional memory — and no throughput target, benchmark, SLA, or KPI is defined anywhere in the repository (§6.1.3).
+
+### 6.2.6 References
+
+The following repository artifacts, runtime observations, and specification sections were examined as evidence for this section. All line-number citations reflect the files as currently committed; runtime behavior was confirmed by direct execution.
+
+**Repository files examined**
+
+- `app.py` — Root entry-point orchestrator; established the hard-coded in-memory list `[10, 20, 30, 40]` (L32), the in-process delegation via `from service import calculate_total` (L15) and `calculate_total(numbers)` (L34), the stdout writes (L36–L42), and the complete absence of any persistence or file I/O.
+- `service.py` — Root computation module; established the pure, side-effect-free single-pass summation (L35–L41) with no imports, classes, module-level state, or I/O, and the transient integer accumulator.
+- `.gitmodules` — Root submodule manifest; established the build-time link `600K_ParentRepo → ChildRepo` (pinned `63b3f43`), used to distinguish source composition from data replication.
+- `ChildRepo/.gitmodules` — Middle-tier submodule manifest; established the build-time link `ChildRepo → NestedChild` (pinned `d57c9dd`).
+- `.blitzyignore` (root, `ChildRepo/`, `ChildRepo/NestedChild/`) — Each contains only `*.csv`; honored by excluding all CSV files (`large.csv` at every tier) from inspection and documentation.
+- `__pycache__/*.cpython-312.pyc` — CPython bytecode import cache; cited as the only cache-like artifact in the tree and confirmed to be a compilation optimization, not an application data store.
+- Runtime verification — Executing `python3 app.py` produced only the expected stdout (`Total: 100`, the four values, `Application completed`, exit 0) and created zero files (verified by a before/after file-system comparison), confirming the stateless, in-memory-only, no-persistence behavior.
+
+**Repository folders examined**
+
+- `ChildRepo/` — First-level Git submodule tier (independent copy of the program; pinned at `63b3f43`); confirmed no shared datastore across tiers.
+- `ChildRepo/NestedChild/` — Leaf Git submodule tier (pinned at `d57c9dd`); the defective copy, confirming that cross-tier relationships are build-time only, not runtime data links.
+
+**Cross-referenced specification sections**
+
+- §3.5 Databases & Storage — Authoritative determination of "no database and no persistent storage of any kind," the storage-concern status table, the clarification that `__pycache__` is a bytecode (not data) cache, and the exclusion of `*.csv`.
+- §5.3 Technical Decisions — §5.3.1 (architecture-style decisions and submodule commit pinning, ADR-05), §5.3.2 (intra-process communication, ADR-03), §5.3.3 (data-storage and caching decisions: "the system stores nothing," ADR-04), and §5.3.4 (security mechanism selection: no authentication/authorization, ADR-06).
+- §6.1 Core Services Architecture — §6.1.1 (three-tier submodule topology as build-time composition), §6.1.3 (scalability/performance: single O(n) pass, no SLAs/KPIs), and §6.1.4 (resilience: "no backups, replication, or RTO/RPO targets," stateless recovery); also the precedent for evidence-based "not applicable" treatment.
+
+No external web sources were used; every claim in this section is grounded in direct repository evidence and the cross-referenced specification sections above.
+
+## 6.3 Integration Architecture
+
+### 6.3.1 Integration Architecture Applicability
+
+**Integration Architecture is not applicable for this system.**
+
+`600K_ParentRepo` is a deliberately minimal, standard-library-only Python program whose entire runtime behavior is a single fixed-list summation written to standard output. It exposes no network interface, consumes no external service, and processes no messages; consequently it contains none of the constructs that an Integration Architecture exists to describe — APIs, protocol endpoints, authentication/authorization layers, rate limiters, message queues, event streams, batch pipelines, API gateways, or third-party service clients.
+
+This determination is grounded in direct inspection of every source file across all three repository tiers, an exhaustive search for networking/API/messaging constructs, and first-hand runtime execution. It is consistent with the single-process, monolithic architecture recorded in §5.1 and §6.1, the "not a service/microservice" and "intra-process synchronous call as the only communication" decisions in §5.3 (ADR-01, ADR-03), and the "no third-party services of any kind" finding in §3.4. The scope statement in §1.3.2 (quoted in §3.4) is explicit: "no external integration points — network or web APIs, databases, message queues, caches, or third-party services — are implemented or declared anywhere in the codebase."
+
+Rather than omit the required content or invent behavior the code does not contain, sub-sections 6.3.2–6.3.4 address each concern in this section's scope (API design, message processing, external systems) by recording the actual minimal design and marking the specific integration patterns as *Not applicable*, together with supporting evidence. This mirrors the evidence-based treatment already used in §3.4, §5.3, and §6.1.
+
+#### 6.3.1.1 Evidence Summary
+
+The table below evaluates every integration dimension named in this section's prompt against the repository evidence. Each is factually absent at runtime; the sole external relationship is a *build-time* Git submodule composition, not a runtime integration.
+
+| Integration Dimension | Present at Runtime? | Evidence in Repository |
+| --- | --- | --- |
+| API / protocol endpoint (HTTP, REST, gRPC, socket) | No | No server or listener; the only import tree-wide is the intra-repository `from service import calculate_total` (Source: `app.py` L15) |
+| Authentication / authorization | No | No users, sessions, tokens, or protected resources (§5.3.4, ADR-06) |
+| Rate limiting / throttling | No | No request path or endpoint exists to throttle |
+| API versioning / published API docs (OpenAPI/Swagger) | No | No API surface; helpers are described only by docstrings and `README.md`, with "no machine consumer contract" (§5.3.2) |
+| Message queue / broker / event bus | No | No queue, topic, or broker; asynchrony/messaging is "Not adopted" (§5.3.2) |
+| Stream processing | No | No streaming runtime, framework, or continuous data source anywhere |
+| Batch processing pipeline | No | No scheduler, job runner, or file/DB batch source; input is a hard-coded list (Source: `app.py` L32) |
+| Third-party service / SDK / cloud client | No | No third-party libraries at all; "the system integrates with no third-party services of any kind" (§3.4) |
+| API gateway / reverse proxy | No | No server to front; a run is one synchronous `python app.py` invocation |
+| External data store / cache | No | Stateless; in-memory only with transient stdout (§5.3.3, ADR-04) |
+| Source composition via Git submodules | Build-time only | `.gitmodules` remotes fetched by recursive clone *before* execution; no runtime coupling (§3.4, ADR-05) |
+
+#### 6.3.1.2 The Single External Touchpoint (Build-Time Only)
+
+The one external service the project touches is **GitHub**, and only during source acquisition — never at application runtime. The submodule remotes declared in `.gitmodules` (root) and `ChildRepo/.gitmodules` are public GitHub HTTPS repositories, pinned to explicit commits; a recursive `git clone --recursive` (or `git submodule update --init --recursive`) fetches them and populates the working tree. Once checked out, executing the program touches nothing external. Because this interaction is a version-control/source-composition concern rather than a service integration, it is documented in full in §6.3.4 and cross-referenced from §3.4 and §5.3.5 (ADR-05).
+
+#### 6.3.1.3 Verification Methodology
+
+The "not applicable" determination rests on four independent, direct observations of the repository (not inference):
+
+- **Exhaustive source read** — all six `.py` files across the three tiers (`app.py`/`service.py` at root, `ChildRepo/`, and `ChildRepo/NestedChild/`) were read in full. The only import statement anywhere is `from service import calculate_total`; `service.py` declares no imports at all.
+- **Construct search** — a case-insensitive search across the codebase for networking, API, messaging, cloud, and database constructs (for example `socket`, `http`, `requests`, `flask`, `fastapi`, `grpc`, `kafka`, `pika`, `celery`, `boto3`, `redis`, `sqlalchemy`, `websocket`, `openapi`, `jwt`, `oauth`) returned **zero matches**, as did a search for I/O and process primitives (`open`, `connect`, `subprocess`, `os.environ`, `sys.argv`, `input`).
+- **Manifest / configuration audit** — the tree contains no dependency manifest (`requirements.txt`, `setup.py`, `pyproject.toml`), no container or CI configuration (`Dockerfile`, Compose, YAML), and no API-description artifact (OpenAPI/Swagger).
+- **Runtime observation** — executing `python app.py` produces deterministic standard output (`Total: 100`, each value, then `Application completed`) and exits `0`, opening no network sockets and reading no external resource.
+
+#### 6.3.1.4 System Boundary
+
+The following diagram shows the closed, single-process runtime boundary. No runtime call crosses into any external system; the only external arrow (from GitHub) is a build-time source-acquisition step that completes before the program runs.
+
+*Diagram 6.3.1 — Integration/System Boundary: a self-contained CPython process performs an in-process function call and writes to stdout. Networked APIs, message brokers, and third-party services are absent by design; the only external relationship (GitHub submodule fetch) occurs at build time, not runtime.*
+
+```mermaid
+flowchart TD
+    subgraph Host["Local host: one CPython 3.6+ process (no sockets opened)"]
+        Entry["python app.py<br/>main() under __main__ guard (L45-L46)"]
+        Svc["service.calculate_total<br/>in-process function call (L34)"]
+        Std["stdout: 'Total: 100' + values + 'Application completed'"]
+        Entry -->|"import + call (L15, L34)"| Svc
+        Svc -->|"return 100 (L41)"| Entry
+        Entry -->|"print() (L36, L39-L42)"| Std
+    end
+    subgraph Absent["Absent at runtime by design (no integration surface)"]
+        NoNet["No HTTP / REST / gRPC / socket endpoint"]
+        NoMq["No message queue / broker / event bus"]
+        NoExt["No third-party service / cloud SDK / database"]
+    end
+    subgraph BuildTime["Build-time only, before execution"]
+        GH["GitHub submodule remotes over HTTPS<br/>git clone --recursive"]
+    end
+    GH -.->|"source acquisition only"| Host
+    Host -.->|"no runtime call crosses this boundary"| Absent
+```
+
+### 6.3.2 API Design Assessment
+
+Networked/web API design is **not applicable** to this system: there is no HTTP, REST, gRPC, GraphQL, or socket endpoint anywhere in the codebase, and therefore no protocol, authentication, authorization, rate-limiting, or versioning surface to design. The only "interface" the program offers is an **in-process Python module API** — the public callables `calculate_total`, `calculate_average`, and `main` — which is reached by an ordinary `import` and a direct function call within the same process (`from service import calculate_total`, Source: `app.py` L15), never over a wire protocol (ADR-03, §5.3.2). Each API-design concern named in this section's prompt is resolved against the evidence below.
+
+#### 6.3.2.1 API-Design Concerns (Resolved Against the Evidence)
+
+| API-Design Concern | Applicability | Actual Mechanism / Evidence |
+| --- | --- | --- |
+| Protocol specification | Not applicable | No wire protocol; the sole invocation is an in-process function call via import (`from service import calculate_total`; `calculate_total(numbers)`, Source: `app.py` L15, L34) — "no serialization, latency, or protocol surface" (ADR-03) |
+| Authentication methods | Not applicable | No users, sessions, tokens, or endpoints to authenticate (§5.3.4, ADR-06) |
+| Authorization framework | Not applicable | No protected resources, roles, or scopes; nothing to authorize (§5.3.4) |
+| Rate-limiting strategy | Not applicable | No request ingress to throttle; a run is one synchronous pass that then exits |
+| Versioning approach | Not applicable | No published API to version; the only versioning present is *source-level* pinning of submodule commits (ADR-05), not an API contract version |
+| Documentation standards | Docstrings + README (no API spec) | No OpenAPI/Swagger artifact; the public callables are documented by Python docstrings and the `README.md` "API Documentation" section (Source: `README.md` L108–L201), which §5.3.2 notes carries "no machine consumer contract" |
+
+#### 6.3.2.2 The In-Process Module API (What Exists in Lieu of a Service API)
+
+The repository does expose a small, pure calculation surface, but it is a *module/library* API consumed inside a single process, not a service API exposed to external clients. Its access mechanism is the Python import system resolving modules on `sys.path`; there is no network hop, no request/response envelope, and no external consumer. The `README.md` documents these three callables consistently across every tier (`calculate_total`, `calculate_average`, `main`).
+
+| Callable (module API) | Access Mechanism | Contract / Behavior |
+| --- | --- | --- |
+| `calculate_total(numbers)` | `from service import calculate_total` (in-process) | Single-pass sum of a numeric iterable; returns `0` for empty input (Source: `service.py` L18, L41) |
+| `calculate_average(numbers)` | `from service import calculate_average` (in-process) | Mean = `calculate_total(numbers) / len(numbers)`; returns `0` for empty/falsey; **defined but never invoked** (Source: `service.py` L44, L75–L76, L78) |
+| `main()` | `python app.py` (`__main__` guard) or `from app import main` | Runs the fixed workflow and writes results to stdout; returns `None` (Source: `app.py` L17, L45–L46) |
+
+This module API is neither versioned by URL/media type nor described by a machine-readable schema; the input contract is trusted and un-validated (non-numeric or unsized inputs raise an uncaught `TypeError`, per §5.3.4/ADR-06), reflecting the demonstration scope.
+
+#### 6.3.2.3 API Architecture
+
+The diagram contrasts the in-process module API (reached by shell invocation or Python import on the same host) with the networked API concerns that are absent by design. No API gateway, authentication layer, protocol endpoint, or versioning scheme sits in front of the code.
+
+*Diagram 6.3.2 — API Architecture: local consumers reach the code either by running `python app.py` or by importing the modules in-process. There is no protocol endpoint, gateway, auth, rate limiter, or versioned contract; the entire "networked API surface" box is absent by design.*
+
+```mermaid
+flowchart TD
+    subgraph Consumers["Consumers (local, same host only)"]
+        Shell["OS shell: python app.py"]
+        Importer["Python code: from app / service import ..."]
+    end
+    subgraph ModuleAPI["In-process module API (Python import surface, no protocol)"]
+        AppMod["app.py : main()"]
+        SvcMod["service.py : calculate_total(), calculate_average()"]
+        AppMod -->|"in-process call (L34)"| SvcMod
+    end
+    subgraph NoNetwork["Networked API surface: absent by design"]
+        NoProto["No HTTP / REST / gRPC / GraphQL endpoint"]
+        NoAuth["No authentication / authorization / rate limiting"]
+        NoVer["No URL/media-type versioning, no OpenAPI spec"]
+    end
+    Shell -->|"invoke via __main__ guard (L45-L46)"| AppMod
+    Importer -.->|"import"| ModuleAPI
+    ModuleAPI -.->|"never exposed over"| NoNetwork
+```
+
+### 6.3.3 Message Processing Assessment
+
+Message processing is **not applicable** to this system. There is no message queue, broker, event bus, stream processor, or batch pipeline anywhere in the codebase — "No network, RPC, event, or message-broker pattern is used anywhere" and asynchrony/messaging is explicitly "Not adopted" (§5.3.2). The only runtime data movement is an in-process, synchronous function call followed by line-oriented writes to standard output; nothing is ever serialized, enqueued, published, or consumed. Each message-processing concern named in this section's prompt is resolved below, and the one concern with genuine substance — error handling — is documented in detail in 6.3.3.2.
+
+#### 6.3.3.1 Message-Processing Concerns (Resolved Against the Evidence)
+
+| Message-Processing Concern | Applicability | Actual Mechanism / Evidence |
+| --- | --- | --- |
+| Event processing patterns | Not applicable | No event source, emitter, handler, or dispatch loop; execution is a single linear pass through `main()` (Source: `app.py` L32–L42) |
+| Message queue architecture | Not applicable | No queue, topic, or broker (RabbitMQ, Kafka, SQS, Redis, etc.); the search for such constructs returned zero matches (§5.3.2) |
+| Stream processing design | Not applicable | No streaming runtime or continuous source; the input is a bounded, fixed list of four integers (Source: `app.py` L32) |
+| Batch processing flows | Not applicable | No scheduler, job runner, or batch source; the summation runs once per manual `python app.py` invocation, then the process exits |
+| Error-handling strategy | Fail-fast (see 6.3.3.2) | No `try`/`except` anywhere; uncaught exceptions propagate to a stderr traceback and a non-zero exit (§5.4.2) |
+
+#### 6.3.3.2 Error-Handling Strategy
+
+Because there is no message pipeline, there is no dead-letter queue, retry policy, redelivery, or poison-message handling to describe. What the system does implement is a deliberate **fail-fast, fail-loud** model (§5.4.2, §6.1.4): the codebase contains no `try`/`except` blocks, so any error propagates uncaught to the interpreter, which prints a traceback to `stderr` and exits with code `1`. Input is trusted and un-validated by design (ADR-06, §5.3.4). The table records the concrete failure and success paths observed.
+
+| Failure / Success Scenario | Handling | Outcome |
+| --- | --- | --- |
+| Non-numeric or unsized input to a helper | None (fail-fast) | Uncaught `TypeError`; traceback to stderr; exit `1` (§5.3.4, ADR-06) |
+| Empty / falsey input to `calculate_average` | Defensive guard | Returns `0` to avoid division by zero — the only defensive branch in the code (Source: `service.py` L75–L76) |
+| `ChildRepo/NestedChild` circular import | None (preserved defect) | `ImportError: cannot import name 'calculate_total' from partially initialized module 'service'` raised before `main()` runs; empty stdout; exit `1` (§6.1.4, §2.4.4) |
+| Successful run (root, `ChildRepo`) | Normal completion | Deterministic stdout (`Total: 100`, values, `Application completed`); exit `0` |
+
+The one *realized* failure mode is the deepest submodule tier: `ChildRepo/NestedChild/service.py` imports `calculate_total` from `service` (itself) and defines `main()` instead of defining the helper, so importing `service` re-enters a partially initialized module and the symbol never resolves. This defect is documented and preserved as-is, not recovered; recovery for any failure is manual re-execution (the runtime is stateless, so there is nothing to roll back), as established in §6.1.4.
+
+#### 6.3.3.3 Message Flow and Key-Flow Sequence
+
+The first diagram reframes the runtime "message flow" as what it actually is — a single-threaded chain of in-process calls terminating at stdout — alongside the message infrastructure that is absent by design. The second diagram is a sequence view of the one key flow.
+
+*Diagram 6.3.3a — Message Flow: the only runtime data movement is an in-process call chain from `main()` through `calculate_total` to stdout. No message ever leaves the process; queues, event buses, and stream processors are absent by design.*
+
+```mermaid
+flowchart LR
+    subgraph InProcess["Runtime data movement = in-process calls (single thread)"]
+        Main["app.py main() (L17)"]
+        Data["numbers = [10,20,30,40] (L32)"]
+        Calc["service.calculate_total(numbers) (L34)"]
+        Total["total = 100 (L41)"]
+        Sink["stdout via print() (L36, L39-L42)"]
+        Main --> Data --> Calc --> Total --> Sink
+    end
+    subgraph AbsentMsg["Message infrastructure: absent by design"]
+        Q["No queue / topic / broker"]
+        E["No event bus / publisher / subscriber"]
+        St["No stream processor / consumer group"]
+    end
+    InProcess -.->|"no message ever leaves the process"| AbsentMsg
+```
+
+*Diagram 6.3.3b — Key-Flow Sequence: the end-to-end interaction for a successful run. Every arrow is a local, synchronous step within one process; there is no network hop or asynchronous handoff.*
+
+```mermaid
+sequenceDiagram
+    participant Shell as OS / Shell
+    participant App as app.py main()
+    participant Svc as service.calculate_total
+    participant Out as stdout
+    Shell->>App: python app.py (invoke via __main__ guard, L45-L46)
+    App->>App: build fixed list [10,20,30,40] (L32)
+    App->>Svc: calculate_total(numbers) in-process call (L34)
+    Svc-->>App: return 100 (L41)
+    App->>Out: print "Total: 100" (L36)
+    App->>Out: print each value (L39-L40)
+    App->>Out: print "Application completed" (L42)
+    App-->>Shell: exit 0
+```
+
+### 6.3.4 External Systems Assessment
+
+Integration with external systems is **not applicable at runtime**. The program calls no third-party service, exposes no gateway, and interfaces with no legacy system; "the system integrates with no third-party services of any kind" (§3.4). The single external relationship in the entire project is a **build-time** one: the source tree is composed from public GitHub repositories via native Git submodules, fetched once at checkout and never touched again while the program runs (ADR-05). That relationship — the only external dependency the repository declares — is documented in full in 6.3.4.2.
+
+#### 6.3.4.1 External-System Concerns (Resolved Against the Evidence)
+
+| External-System Concern | Applicability | Actual Mechanism / Evidence |
+| --- | --- | --- |
+| Third-party integration patterns | Not applicable (runtime) | No third-party service at runtime and zero third-party libraries; the only import tree-wide is `from service import calculate_total` (§3.4, ADR-01) |
+| Legacy system interfaces | Not applicable | No predecessor system, adapter, connector, or migration code; "no legacy references, migration notes, or deprecated modules exist" (§1.2.1) |
+| API gateway configuration | Not applicable | No API to front; no gateway, reverse proxy, ingress, or server of any kind exists |
+| External service contracts | Build-time submodule pins only | No SLAs, wire schemas, or service contracts; the only external "contract" is source-level submodule commit pinning fetched from GitHub before execution (§3.4, ADR-05) |
+
+#### 6.3.4.2 External Dependencies (Build-Time Only)
+
+The project's only external dependencies are two public GitHub repositories referenced as Git submodules and pinned to explicit commits. The integration mechanism is **Git over HTTPS**: a recursive `git clone --recursive` (or `git submodule update --init --recursive`) fetches these remotes and populates the working tree, establishing the topology `600K_ParentRepo → ChildRepo → NestedChild`. Once the tree is checked out, executing any tier touches nothing external.
+
+| External Dependency (build-time) | Remote URL | Pinned Commit |
+| --- | --- | --- |
+| `ChildRepo` submodule (declared in root `.gitmodules`) | `https://github.com/lakshya-blitzy/600K_ChildRepo.git` | `63b3f43` |
+| `NestedChild` submodule (declared in `ChildRepo/.gitmodules`) | `https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git` | `d57c9dd` |
+
+Beyond these submodule remotes, populating and running the tree requires only environmental prerequisites — a Git client and a stock CPython 3.6+ interpreter — with no dependency manifest or package registry involved (§3.6). Two properties of this build-time integration are worth recording:
+
+- **Reproducibility via pinning.** Both remotes are pinned to exact commit SHAs, which fixes the referenced revisions for a reproducible checkout (ADR-05). However, availability and integrity ultimately depend on the external GitHub remotes, and the repository evidences **no submodule signature or commit verification** — a supply-chain consideration noted in §2.4.4 and §5.3.4.
+- **Credential hygiene.** The `README.md` adds an operational security note: use clean, token-free clone URLs and never embed access tokens or credentials in a shared clone URL (Source: `README.md` L80–L83).
+
+#### 6.3.4.3 Integration Flow
+
+The diagram separates the two phases explicitly. The upper region is the build-time source composition (the only place an external system — GitHub — appears); the lower region is the runtime, where each tier executes as an isolated process with no external calls and no cross-tier coupling.
+
+*Diagram 6.3.4 — Integration Flow: GitHub participates only during recursive clone (build time). At runtime each tier is a self-contained process that sums, prints, and exits — no call ever crosses back to GitHub or between tiers.*
+
+```mermaid
+flowchart TD
+    subgraph BuildTime["Build-time: source composition via Git over HTTPS (before execution)"]
+        Dev["Developer / CI: git clone --recursive"]
+        GH["GitHub (github.com/lakshya-blitzy)"]
+        Parent["600K_ParentRepo working tree"]
+        ChildSM["ChildRepo @ 63b3f43 (root .gitmodules)"]
+        NestedSM["NestedChild @ d57c9dd (ChildRepo/.gitmodules)"]
+        Dev --> GH
+        GH -->|"fetch pinned commits"| Parent
+        Parent -->|"submodule"| ChildSM
+        ChildSM -->|"submodule"| NestedSM
+    end
+    subgraph Runtime["Runtime: each tier is an isolated process (no external calls)"]
+        Run["python app.py -> in-process sum -> stdout -> exit 0"]
+        Iso["No runtime call, data exchange, or coupling across tiers or to GitHub"]
+        Run --- Iso
+    end
+    BuildTime -.->|"after checkout, nothing external is touched"| Runtime
+```
+
+### 6.3.5 References
+
+The following repository artifacts and specification sections were examined as evidence for this section. Every claim above is grounded in direct inspection of these files, an exhaustive construct search across the codebase, and first-hand runtime execution; all line-number citations reflect the files as currently committed.
+
+**Repository files examined**
+
+- `app.py` — Root entry point; established the single in-process delegation `from service import calculate_total` (L15) and call (L34), the hard-coded input (L32), the stdout-only writes (L36, L39–L42), and the `__main__` guard (L45–L46). Confirmed the complete absence of any network, API, or messaging surface.
+- `service.py` — Root pure-computation module; established the absence of imports/state/I-O, the single-pass `calculate_total` (L18, L41), and the sole defensive branch in `calculate_average` (L44, L75–L76, L78).
+- `README.md` — Project documentation; established the authoritative "no third-party dependencies / no dependency manifest / standalone standard-library script — no container image, no cloud deployment, no build step" statements, the module-level "API Documentation" section (L108–L201), and the credential-hygiene security note for clone URLs (L80–L83).
+- `.gitmodules` — Root submodule manifest; established the build-time remote for `ChildRepo` (`https://github.com/lakshya-blitzy/600K_ChildRepo.git`) and the first link of the composition topology.
+- `ChildRepo/.gitmodules` — Middle-tier submodule manifest; established the build-time remote for `NestedChild` (`https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`).
+- `ChildRepo/app.py`, `ChildRepo/service.py` — Mirror tier; confirmed a functionally equivalent, independently runnable copy (exit 0) that likewise performs no external integration.
+- `ChildRepo/NestedChild/app.py`, `ChildRepo/NestedChild/service.py` — Defective leaf tier; established the circular-import `ImportError` (exit 1, empty stdout) cited as the one realized failure mode in the error-handling strategy.
+- `ChildRepo/NestedChild/README.md` — One-line title only; confirmed the leaf tier's documentation state.
+- `.blitzyignore` (root, `ChildRepo/`, `ChildRepo/NestedChild/`) — Each contains only `*.csv`; honored by excluding all CSV files from inspection and documentation.
+
+**Repository folders examined**
+
+- `ChildRepo/` — First-level Git submodule tier (pinned at `63b3f43`); an independent copy of the same program with no runtime coupling to the parent.
+- `ChildRepo/NestedChild/` — Leaf Git submodule tier (pinned at `d57c9dd`); the deepest tier carrying the preserved circular-import defect.
+
+**Cross-referenced specification sections**
+
+- §1.2 System Overview (incl. §1.2.1 Project Context) — the "integrates with nothing external" runtime statement and feature/success-criteria framing.
+- §1.3 Scope (§1.3.2 Out-of-Scope) — the canonical "no external integration points — network or web APIs, databases, message queues, caches, or third-party services" statement.
+- §2.4 Implementation Considerations (§2.4.4) — the preserved `NestedChild` circular-import defect and the absence of submodule signature verification.
+- §3.4 Third-Party Services — "no third-party services of any kind"; GitHub as the sole external touchpoint (checkout-time only, Git over HTTPS).
+- §3.6 Development & Deployment — the environmental prerequisites (Git client, stock CPython 3.6+) and the absence of any dependency manifest or build tooling.
+- §5.3 Technical Decisions (§5.3.2 Communication Patterns, §5.3.4 Security; ADR-01, ADR-03, ADR-05, ADR-06) — the "not a service", "intra-process synchronous call as the only communication", "no authentication/authorization", and "native Git submodules with pinned commits" decisions.
+- §6.1 Core Services Architecture (incl. §6.1.4 Resilience Patterns) — the single-process/monolithic determination, the build-time-versus-runtime distinction, and the fail-fast failure-handling model.
 
 ## 6.4 Security Architecture
 
 ### 6.4.1 Security Architecture Applicability
 
-**Determination: Detailed Security Architecture is not applicable for this system.**
+**Detailed Security Architecture is not applicable for this system.**
 
-The repository is a minimal, standard-library-only Python demonstration organized as a three-level Git-submodule chain (`600K_ParentRepo` → `ChildRepo` → `ChildRepo/NestedChild`). At every level it is a single-process, run-to-completion command-line program that sums a hard-coded list and writes the result to standard output (`app.py`, `service.py`). Consequently the system has no security-sensitive surface to protect: it authenticates no users, authorizes no actions, persists no data, transmits nothing over a network, and reads no secrets or configuration.
+`600K_ParentRepo` is a deliberately minimal, standard-library-only Python program whose entire runtime behavior is to sum a hard-coded list `[10, 20, 30, 40]` and write the result to standard output (Source: `app.py` L32–L42). It has no users, no network interface, no persistent data, no secrets, and no third-party dependencies; consequently it contains none of the constructs that a Security Architecture exists to describe — identity providers, authentication flows, session or token stores, role/permission models, policy enforcement points, cryptographic routines, key stores, or transport-security configuration.
 
-This determination is corroborated by already-documented findings. Section 5.4.3 records that there is no authentication or authorization framework and none is applicable to the system as built, and that the only trust boundary is the operating-system permission of whoever can execute `python app.py`. Section 3.4 records that the system integrates with no third-party services and that its tracked source contains no API keys, tokens, secrets, or service credentials.
+This determination is grounded in direct inspection of every source file across all three repository tiers, an exhaustive case-insensitive search for security constructs (which returned zero matches), and first-hand runtime execution. It is fully consistent with the security posture already recorded elsewhere in this specification: the "no authentication/authorization or input validation (fail-fast)" decision in §5.3.5 (ADR-06), the §5.3.4 Security Mechanism Selection table, the §5.4.3 "there is no authentication or authorization framework, and none is applicable" finding, the §6.3 "Integration Architecture is not applicable" determination, and the §1.3.2 out-of-scope statement that no network APIs, databases, or third-party services are implemented anywhere in the codebase.
 
-Rather than assert controls the code does not implement, the remainder of this section (a) presents the applicability assessment and attack-surface analysis below; (b) gives an honest, evidence-based disposition of every authentication, authorization, and data-protection control enumerated by the specification (Sections 6.4.2 through 6.4.4); and (c) documents the standard security practices that do apply to the system as built, with a security control matrix and compliance posture (Section 6.4.5).
+Rather than omit the required content or invent controls the code does not contain, sub-sections 6.4.2–6.4.5 address each area named in this section's prompt — Authentication Framework, Authorization System, Data Protection, and Security Zones — by recording the actual (minimal) design, marking each specific control as *Not applicable*, and supplying the supporting evidence together with the required authentication-flow, authorization-flow, and security-zone diagrams. This mirrors the evidence-based treatment already used in §5.3, §5.4, and §6.3.
 
-#### 6.4.1.1 Security Domain Applicability
+**Standard security practices followed instead.** Because there is nothing to authenticate, authorize, or encrypt at runtime, the project's security posture is expressed through a small set of *standard, hygiene-level* practices that keep its attack surface at essentially zero: a zero-dependency, standard-library-only runtime (ADR-01) that eliminates package supply-chain exposure; pure, side-effect-free functions that perform no I/O, no `eval`/`exec`, and no deserialization; no secrets, credentials, or environment variables anywhere in the tree; build-time supply-chain integrity via Git submodules pinned to exact commit SHAs over HTTPS (ADR-05); and a documented credential-hygiene note instructing users to keep access tokens out of clone URLs (Source: `README.md` L80–L83). These practices are enumerated in 6.4.1.2 and carried through the assessments that follow.
 
-*Table 6.4-1 — Security Domain Applicability*
+#### 6.4.1.1 Evidence Summary
 
-| Security Domain | Applicable? | Basis |
+The table below evaluates each security domain named in this section's prompt against the repository evidence. Every runtime control is factually absent; the only security-relevant control anywhere in the project is the build-time submodule integrity measure.
+
+| Security Domain | Present in System? | Evidence in Repository |
 | --- | --- | --- |
-| Authentication framework | No | No users, sessions, credentials, or identity provider (Section 5.4.3) |
-| Authorization system | No | No roles, permissions, protected resources, or policy engine (Section 5.4.3) |
-| Data protection (encryption / keys) | No | No persisted or transmitted data; no secrets or key material |
-| Secure communication (TLS) | Build-time only | No runtime network I/O; only Git-over-HTTPS at checkout (Section 3.4) |
-| Compliance controls | No | No personal, financial, health, or otherwise regulated data processed |
-| Standard security practices | Yes | Documented with a control matrix in Section 6.4.5 |
+| Authentication (identity, MFA, sessions, tokens, passwords) | No | No login, identity store, session, or token code; no `auth`, `jwt`, `oauth`, `password`, or `session` symbols anywhere (zero search matches) |
+| Authorization (RBAC, permissions, PEPs, audit logs) | No | No roles, permissions, guards, or protected resources; nothing to authorize (§5.3.4, ADR-06) |
+| Data protection at rest | No | Stateless; stores no data — no database, files, or persisted output (§5.3.3, ADR-04) |
+| Data protection in transit | No (runtime) | No network I/O, sockets, or TLS at runtime; the sole external touchpoint is build-time Git-over-HTTPS (§6.3.4) |
+| Cryptography / key management | No | No `hashlib`, `hmac`, `ssl`, or crypto routines and no key material; `service.py` declares no imports at all |
+| Secrets / credentials | No | No secrets, tokens, or environment-variable reads; input is hard-coded (Source: `app.py` L32) |
+| Supply-chain integrity (build-time) | Yes (partial) | Submodules pinned to exact commits over HTTPS; no signature verification (§5.3.4, §2.4.4, ADR-05) |
 
-#### 6.4.1.2 Attack Surface Analysis
+#### 6.4.1.2 Standard Security Practices Followed
 
-The attack surface is effectively empty. A whole-tree inspection found no network entry points, no external input, and no dangerous language primitives that could be abused.
+In the absence of any authentication, authorization, or data-protection surface, the following standard, hygiene-level practices constitute the entirety of the system's security posture. Each is grounded in observed repository evidence.
 
-*Table 6.4-2 — Attack Surface Analysis*
-
-| Potential Attack Vector | Present? | Evidence |
+| Standard Practice | Status | Mechanism / Evidence |
 | --- | --- | --- |
-| Network / remote entry (socket, HTTP, API, UI) | No | No socket/http/urllib/requests code and no listener anywhere (Section 5.4.3) |
-| Untrusted user input | No | Input is the fixed literal `[10, 20, 30, 40]`; no `input()`, `sys.argv`, or stdin reads (`app.py:4`) |
-| Injection / dynamic code execution | No | No `eval`, `exec`, `compile`, `__import__`, `os.system`, or `subprocess` |
-| Insecure deserialization | No | No `pickle`, `marshal`, `yaml.load`, or parsing of external data |
-| Secret / credential exposure | No | No secrets in tracked source; credential-free HTTPS submodule URLs (Section 3.4) |
-| Data at rest / in transit | No | No persistence, no file writes, no network transmission (Sections 5.4.5, 3.5) |
-| Supply chain (Git submodules) | Build-time | Submodules are pinned but not content-verified (Section 6.4.5) |
+| Minimal attack surface | Followed | No network, file, or interactive input; no `eval`/`exec`/deserialization; pure computation to stdout (§5.3.4) |
+| Zero third-party dependencies | Followed | Standard-library only; no `requirements.txt`/`setup.py`/`pyproject.toml`, so no package supply-chain exposure (ADR-01) |
+| No embedded secrets | Followed | No credentials, keys, tokens, or environment-variable reads anywhere in the tree |
+| Supply-chain commit pinning | Followed | Submodules fetched over HTTPS pinned to exact SHAs `63b3f43` / `d57c9dd` (ADR-05) |
+| Credential hygiene guidance | Followed | `README.md` instructs users never to embed tokens/credentials in shared clone URLs (Source: `README.md` L80–L83) |
+| Fail-fast on invalid input | Followed | No `try`/`except`; invalid types raise an uncaught `TypeError` surfaced immediately (§5.4.2, ADR-06) |
+| Commit/submodule signature verification | Not implemented | No submodule signature or commit verification is present — an accepted supply-chain limitation (§2.4.4, §5.3.4) |
 
-The following diagram delineates the system's trust zones. The only runtime zone is a single OS process that reads its own source from the local filesystem and writes text to the console; the network-facing zone is empty, and the sole external relationship — the submodule remotes — is exercised only at checkout time.
+#### 6.4.1.3 Verification Methodology
 
-*Diagram 6.4-1 — Security Zones and Trust Boundaries*
+The "not applicable" determination rests on four independent, direct observations of the repository, not on inference:
 
-```mermaid
-flowchart TB
-    subgraph BUILD["Build-time zone (checkout only, not runtime)"]
-        direction TB
-        REMOTE["GitHub submodule remotes<br/>public HTTPS, credential-free"]
-        FETCH["git submodule update --init --recursive<br/>one-way fetch, NO content verification"]
-        REMOTE --> FETCH
-    end
-    subgraph HOST["Host OS trust zone (outside the application)"]
-        direction TB
-        OPERATOR["Invoking user / shell<br/>OS-authenticated session"]
-        FS["Local filesystem: app.py, service.py, __pycache__<br/>large.csv EXCLUDED via .blitzyignore"]
-        subgraph PROC["Application process zone: python app.py"]
-            direction TB
-            APP["app.py main()<br/>hard-coded list [10,20,30,40]"]
-            SVC["service.py calculate_total<br/>in-process pure-function call"]
-            APP --> SVC
-        end
-        OPERATOR --> APP
-        FS --> APP
-    end
-    STDOUT["stdout console text (only runtime output)"]
-    subgraph NET["Network-facing zone"]
-        direction TB
-        NONEN["NONE present<br/>no sockets, no listener, no API/UI, no inbound requests"]
-    end
-    FETCH -.->|"populates source at checkout"| FS
-    APP --> STDOUT
-    SVC --> STDOUT
-```
+- **Exhaustive source read** — all six `.py` files across the three tiers (`app.py`/`service.py` at root, `ChildRepo/`, and `ChildRepo/NestedChild/`) were read in full. The only import anywhere is the intra-repository `from service import calculate_total`; `service.py` declares no imports at all.
+- **Security construct search** — a case-insensitive search across the codebase for authentication, authorization, cryptographic, secret-handling, and network constructs (for example `auth`, `login`, `session`, `token`, `password`, `jwt`, `oauth`, `rbac`, `permission`, `role`, `encrypt`, `crypto`, `hashlib`, `hmac`, `ssl`, `tls`, `secret`, `credential`, plus `eval`/`exec`/`subprocess`/`os.environ`/`input`/`open`) returned **zero matches**.
+- **Manifest / configuration audit** — the tree contains no dependency manifest, no container or CI configuration, and no environment or secrets file; `*.env`, `*.yml`/`*.yaml`, `Dockerfile`, `*.toml`, `*.json`, `*.cfg`, and `*.ini` are all absent, and there is no `.github/` or `.circleci/` directory.
+- **Runtime observation** — executing `python app.py` produces deterministic standard output and exits `0`, opening no network socket, reading no credential, and touching no external resource.
 
-### 6.4.2 Authentication Framework
+### 6.4.2 Authentication Framework Assessment
 
-The system implements **no authentication framework**, and none is applicable to its architecture. It is a local command-line program that operates on data hard-coded in its own source (`app.py:4`); it establishes no user identity, issues no credentials, and exposes no interface against which a remote or interactive principal could authenticate (Section 5.4.3). The only principal is the operating-system user who runs `python app.py`, and that user is authenticated by the host OS before the program executes — an authentication boundary that is entirely external to the application.
+Authentication is **not applicable** to this system. `600K_ParentRepo` has no concept of a user, principal, or caller identity: it is launched directly from a shell as `python app.py`, immediately runs `main()` under the `__main__` guard (Source: `app.py` L45–L46), and exits. There is no login step, no credential prompt, no identity provider, and no protected resource to place behind an authentication check. A case-insensitive search of the codebase for authentication constructs (`auth`, `login`, `session`, `token`, `jwt`, `oauth`, `password`, and related terms) returned zero matches, confirming the complete absence of an authentication framework (consistent with §5.3.4 and §5.4.3, ADR-06).
 
-Each authentication capability enumerated by the specification is dispositioned below against the observed code.
+The only access control that gates execution at all is the operating system's standard file-system execute permission on the script — a host-level control external to the application, not an application authentication mechanism. Each authentication concern named in this section's prompt is resolved against the evidence below.
 
-#### 6.4.2.1 Authentication Control Disposition
+#### 6.4.2.1 Authentication Control Matrix
 
-*Table 6.4-3 — Authentication Control Disposition*
-
-| Authentication Control | Status | Basis / Evidence |
+| Authentication Concern | Applicability | Actual Mechanism / Evidence |
 | --- | --- | --- |
-| Identity management | Not implemented (N/A) | No user accounts, directory, or identity provider; the sole principal is the external OS user |
-| Multi-factor authentication (MFA) | Not implemented (N/A) | No primary authentication exists, so no first or second factor applies |
-| Session management | Not implemented (N/A) | Single run-to-completion process; no sessions, cookies, tokens, or session store |
-| Token handling | Not implemented (N/A) | No tokens issued or validated; no JWT/OAuth or bearer credentials anywhere in the tree |
-| Password policies | Not implemented (N/A) | No passwords collected, stored, or hashed; no `hashlib`/`bcrypt`/`passlib` and no credential store |
+| Identity management | Not applicable | No user store, directory, account, or registration; the runtime has no concept of an identity (§5.4.3) |
+| Multi-factor authentication | Not applicable | No primary authentication exists, so there is no second factor, OTP, or TOTP to enforce |
+| Session management | Not applicable | Single synchronous process; no session, cookie, or session store — the process runs once and exits (§5.3.2) |
+| Token handling | Not applicable | No token issuance or validation; no JWT, API key, or bearer token anywhere (zero `token`/`jwt`/`oauth` matches) |
+| Password policies | Not applicable | No password entry, storage, hashing, or complexity/rotation policy; no `password`/`hashlib`/`bcrypt` symbols |
 
-The following diagram traces the actual invocation path. There is no credential challenge: control passes directly from invocation to execution, and the "authentication controls" zone is empty.
+#### 6.4.2.2 Authentication Flow
 
-*Diagram 6.4-2 — Authentication Flow (No Authentication Layer)*
+Because no authentication step exists, the "authentication flow" reduces to a direct invocation that reaches `main()` immediately, gated only by the operating system's standard execute permission on the file. The diagram contrasts that actual path with the application-level authentication controls that are absent by design.
+
+*Diagram 6.4.2 — Authentication Flow: invoking `python app.py` runs `main()` immediately with no identity challenge; the only gate is the host OS execute permission. Identity providers, MFA, sessions, tokens, and passwords are absent by design.*
 
 ```mermaid
 flowchart TD
-    START(["Operator runs: python app.py"])
-    Q1{"Credential / identity<br/>challenge issued?"}
-    subgraph AUTHN["Authentication controls"]
-        direction TB
-        NONEA["NONE present<br/>no login, no IdP, no MFA,<br/>no session, no token, no password store"]
+    Dev["Local user / developer"]
+    Invoke["Invoke: python app.py"]
+    OSGate{"Host OS execute<br/>permission on script?"}
+    Denied["OS denies execution<br/>(standard OS control, not app auth)"]
+    Main["main() runs immediately<br/>(no identity challenge) - L45-L46"]
+    Out["stdout: Total: 100, values,<br/>Application completed"]
+
+    subgraph AbsentAuth["Application authentication controls: absent by design"]
+        NoId["No identity provider /<br/>user store / registration"]
+        NoMFA["No MFA / OTP / second factor"]
+        NoSession["No session, cookie, or store"]
+        NoToken["No token issuance / JWT / API key"]
+        NoPwd["No password entry, hashing, or policy"]
     end
-    EXEC["Process executes immediately<br/>as the invoking OS user"]
-    RUN["main() computes sum and writes to stdout"]
-    DONE(["Exit 0"])
-    START --> Q1
-    Q1 -->|"No - no authentication layer exists"| EXEC
-    Q1 -.->|"references"| NONEA
-    EXEC --> RUN
-    RUN --> DONE
+
+    Dev --> Invoke --> OSGate
+    OSGate -->|No| Denied
+    OSGate -->|Yes| Main
+    Main --> Out
+    Main -.->|"never performs any of"| NoId
 ```
 
-Should the system ever be extended to authenticate principals (for example, by exposing a network or interactive interface), the standard practices catalogued in Section 6.4.5 would need to be augmented with a dedicated identity mechanism; no such extension exists in the current codebase.
+### 6.4.3 Authorization System Assessment
 
-### 6.4.3 Authorization System
+Authorization is **not applicable** to this system. With no authenticated principal (6.4.2) and no protected resource, there is nothing to authorize. The single "resource" the program touches is the pure, in-process helper `service.calculate_total`, reached by an ordinary Python function call within the same process (`total = calculate_total(numbers)`, Source: `app.py` L34); that call is unconditional and passes through no guard, decorator, middleware, or policy check. A search for authorization constructs (`rbac`, `permission`, `role`, `acl`, `scope`, `policy`) returned zero matches, and no logging framework exists to record access (`import logging` is absent, §5.4.1). This is consistent with §5.3.4 and ADR-06.
 
-The system implements **no authorization system**. Because there is no authenticated identity (Section 6.4.2) and no protected resource, there is nothing to authorize: the process performs a fixed in-memory computation and writes to stdout, running entirely with the privileges of the invoking OS user. Access control is delegated to the host operating system's file permissions — which govern who may read the source and execute the interpreter — and is therefore outside the application boundary (Section 5.4.3).
+Each authorization concern named in this section's prompt is resolved against the evidence below.
 
-Each authorization capability enumerated by the specification is dispositioned below against the observed code.
+#### 6.4.3.1 Authorization Control Matrix
 
-#### 6.4.3.1 Authorization Control Disposition
-
-*Table 6.4-4 — Authorization Control Disposition*
-
-| Authorization Control | Status | Basis / Evidence |
+| Authorization Concern | Applicability | Actual Mechanism / Evidence |
 | --- | --- | --- |
-| Role-based access control (RBAC) | Not implemented (N/A) | No roles, groups, or role assignments; no identity to which a role could bind |
-| Permission management | Not implemented (N/A) | No permission model, grants, scopes, or ACL definitions anywhere in the tree |
-| Resource authorization | Not implemented (N/A) | No protected resources; only a hard-coded list in memory and console output |
-| Policy enforcement points (PEP / PDP) | Not implemented (N/A) | No policy engine, guard, or middleware; enforcement is host-OS file permissions (external) |
-| Audit logging | Not implemented (N/A) | No audit trail; the only output is transient `print()` to stdout, which is not retained (Section 5.4.1) |
+| Role-based access control (RBAC) | Not applicable | No roles, groups, or RBAC model; there is no principal to which a role could be assigned |
+| Permission management | Not applicable | No permissions, scopes, or ACLs anywhere; zero `permission`/`role`/`scope` matches |
+| Resource authorization | Not applicable | The only "resource" is a pure in-process function reached by a direct call (Source: `app.py` L34); no protected endpoint or object exists |
+| Policy enforcement points | Not applicable | No PEP/PDP, middleware, guard, or decorator; execution is a single linear pass through `main()` (§5.3.2) |
+| Audit logging | Not applicable (absent) | No audit trail or logging framework (no `import logging`); the only observable surface is stdout + stderr + exit code (§5.4.1) |
 
-The following diagram traces the actual execution path. There is no authorization decision point; the process runs with privileges inherited from the OS user, and both the "authorization controls" and "audit logging" zones are empty.
+#### 6.4.3.2 Authorization Flow
 
-*Diagram 6.4-3 — Authorization Flow (No Authorization Layer)*
+Because no authorization layer exists, the "authorization flow" is a straight-through path: once `main()` is running it invokes the computation directly, with no policy enforcement point interposed and no access event recorded. The diagram shows that actual path alongside the authorization controls that are absent by design.
+
+*Diagram 6.4.3 — Authorization Flow: `main()` invokes `service.calculate_total` directly with no permission check and no policy enforcement point; RBAC, permissions, protected-resource registries, policy decision points, and audit logging are all absent by design.*
 
 ```mermaid
 flowchart TD
-    START(["Authenticated OS user invokes python app.py"])
-    Q1{"Application authorization<br/>decision point?"}
-    subgraph AUTHZ["Authorization controls"]
-        direction TB
-        NONEZ["NONE present<br/>no RBAC, no roles/permissions,<br/>no resource ACLs, no policy engine (PEP/PDP)"]
+    Main["main() executing (L17)"]
+    Check["No policy enforcement point:<br/>no permission check before access"]
+    Access["In-process call:<br/>service.calculate_total(numbers) - L34"]
+    Result["return 100 -> printed to stdout - L36-L42"]
+
+    subgraph AbsentAuthz["Authorization controls: absent by design"]
+        NoRBAC["No roles / RBAC model"]
+        NoPerm["No permissions / scopes / ACLs"]
+        NoResource["No protected-resource registry"]
+        NoPDP["No policy decision point / engine"]
+        NoAudit["No audit log or access trail<br/>(stdout only)"]
     end
-    PRIV["Actions run with privileges<br/>inherited from the OS user only"]
-    OPS["Read source/bytecode from local FS, then write stdout"]
-    AUDITN["Audit logging: NONE present<br/>only transient stdout, not retained"]
-    DONE(["Exit 0"])
-    START --> Q1
-    Q1 -->|"No - enforcement delegated to host OS file permissions"| PRIV
-    Q1 -.->|"references"| NONEZ
-    PRIV --> OPS
-    OPS --> AUDITN
-    AUDITN --> DONE
+
+    Main --> Check --> Access --> Result
+    Access -.->|"not guarded by"| NoRBAC
 ```
 
-### 6.4.4 Data Protection
+### 6.4.4 Data Protection Assessment
 
-The system has **no data-protection subsystem**, because it processes no sensitive, personal, or persisted data. The only data are non-sensitive integer literals (`[10, 20, 30, 40]`, `app.py:4`) computed in memory and echoed to the console; nothing is written to a datastore, encrypted, masked, or transmitted over a network (Sections 5.4.5, 3.5). The `large.csv` files present at each level are never opened by any code and are excluded from tooling by `.blitzyignore` (Section 5.4.4). A whole-tree search confirmed there is no use of `hashlib`, `hmac`, `secrets`, `cryptography`, or `ssl`, and no environment-variable or credential reads.
+Data protection is **not applicable at runtime**. The system is stateless: it processes only the hard-coded list `[10, 20, 30, 40]` entirely in process memory and writes a transient result to standard output (Source: `app.py` L32–L42; §5.3.3, ADR-04). It stores no data at rest (no database, files, or persisted output), transmits no data over a network at runtime (no sockets are opened, §6.3.1.3), and handles no personal, financial, health, or otherwise sensitive or regulated data. The only encryption relevant anywhere in the project is transport encryption provided by **Git over HTTPS** during the build-time submodule fetch — a property of the transport, applied before the program runs, not of any application code (§6.3.4).
 
-#### 6.4.4.1 Data Sensitivity Classification
+Each data-protection concern named in this section's prompt is resolved against the evidence below, followed by the single build-time integrity control (6.4.4.2) and the compliance posture (6.4.4.3).
 
-All data handled by the system is public and transient. There is no field that would warrant encryption, masking, or retention controls.
+#### 6.4.4.1 Data Protection Control Matrix
 
-*Table 6.4-6 — Data Sensitivity Classification*
-
-| Data Element | Classification | Handling |
+| Data Protection Concern | Applicability | Actual Mechanism / Evidence |
 | --- | --- | --- |
-| Input list `[10, 20, 30, 40]` (`app.py:4`) | Non-sensitive / public constant | Held in memory only; discarded at process exit |
-| Computed total (100) and per-element echo | Non-sensitive / public | Written to stdout via `print()`; not retained |
-| `large.csv` (present, never opened) | Out of scope | Excluded by `.blitzyignore`; no `csv` import or file open |
-| `__pycache__` bytecode | Non-sensitive build artifact | Local import cache only; contains no application data |
+| Encryption at rest | Not applicable | No data at rest; nothing is stored, so there is nothing to encrypt (§5.3.3, ADR-04) |
+| Encryption in transit | Build-time TLS only | No runtime network I/O; the only channel is the build-time submodule fetch over Git/HTTPS (TLS) (§6.3.4) |
+| Key management | Not applicable | No cryptographic keys, secrets, or key store; `service.py` imports nothing and no key material exists |
+| Data masking rules | Not applicable | No sensitive fields, PII, or logs to mask; output is a fixed integer list written to stdout |
+| Secure communication | Build-time only | No runtime channel exists to secure; the sole channel is build-time Git-over-HTTPS (§6.3.1.3) |
+| Compliance controls | Not applicable | No personal/financial/regulated data and no compliance framework declared (see 6.4.4.3) |
 
-#### 6.4.4.2 Protection Control Disposition
+#### 6.4.4.2 Supply-Chain Integrity (the Sole Build-Time Control)
 
-*Table 6.4-5 — Data Protection Control Disposition*
+The one security-relevant data-handling control in the entire project protects **source acquisition**, not runtime data. The source tree is composed from two public GitHub repositories referenced as Git submodules and pinned to exact commit SHAs, fetched over HTTPS by a recursive clone before any code runs (§6.3.4.2, ADR-05). Its properties and one accepted limitation are recorded below.
 
-| Data Protection Control | Status | Basis / Evidence |
+| Build-Time Control | Status | Evidence |
 | --- | --- | --- |
-| Encryption at rest | Not applicable | No persisted data; only ephemeral in-memory values and bytecode cache (Section 3.5) |
-| Encryption in transit | Not applicable at runtime | No network transmission; build-time Git fetch relies on GitHub's HTTPS/TLS (Section 3.4) |
-| Key management | Not applicable | No cryptographic keys, secrets, or key store (no `hashlib`/`secrets`/`cryptography`) |
-| Data masking / redaction | Not applicable | No sensitive or PII fields to mask; output is public numeric data |
-| Secure communication | Not applicable at runtime | No sockets/APIs; only credential-free HTTPS submodule URLs at checkout (Section 3.4) |
-| Compliance controls | Not applicable | No regulated data processed; full compliance posture in Section 6.4.5 |
+| Transport encryption | TLS via HTTPS | Both submodule remotes are `https://` URLs (root `.gitmodules`, `ChildRepo/.gitmodules`) |
+| Commit pinning (integrity) | Enforced | `ChildRepo` @ `63b3f43`, `NestedChild` @ `d57c9dd` — exact SHAs fix the fetched revision for a reproducible checkout (ADR-05) |
+| Credential hygiene | Documented | `README.md` L80–L83: never embed access tokens or credentials in a shared clone URL |
+| Commit / submodule signature verification | Not implemented | No GPG or commit-signature verification; availability and integrity ultimately depend on the external GitHub remotes (§2.4.4, §5.3.4) |
 
-### 6.4.5 Standard Security Practices and Security Control Matrix
+#### 6.4.4.3 Compliance Requirements
 
-Although a dedicated security architecture is not warranted, the system as built already embodies several standard, defensive security practices — largely as a consequence of its minimal design. This subsection documents those practices, expresses them as a security control matrix, and records the compliance posture that follows from the data classification in Section 6.4.4.
+No regulatory or attestation compliance regime applies to this system, because it neither collects nor processes any data subject to such regimes and provisions no service or infrastructure to certify. The determination for each commonly considered regime is recorded below so the posture is explicit rather than assumed.
 
-#### 6.4.5.1 Standard Security Practices in Effect
-
-- **Near-zero attack surface.** The program exposes no network interface, reads no external input, and persists nothing; its only runtime output is text to stdout (Section 5.4.1). There is nothing for a remote or local attacker to reach.
-- **Least-privilege execution.** The process runs with exactly the privileges of the invoking OS user — no `setuid`, no privilege escalation, and no `subprocess` or `os.system` calls that could broaden its authority.
-- **Secure coding by construction.** The code contains no dynamic-execution or deserialization primitives (`eval`, `exec`, `compile`, `__import__`, `pickle`, `marshal`, `yaml.load`) and consumes no untrusted input, so injection and deserialization classes of vulnerability are structurally absent. The `service.py` functions are pure and deterministic.
-- **Secrets hygiene.** The tracked source contains no API keys, tokens, secrets, or credentials, and the committed `.gitmodules` reference the submodules over clean, credential-free HTTPS URLs (Section 3.4).
-- **Data-handling hygiene.** Only public numeric literals are processed; the sizable `large.csv` artifacts are excluded from tooling by `.blitzyignore` and are never read.
-- **Supply-chain integrity considerations.** The submodules are pinned to specific commits, but there is **no submodule content verification** — the `NestedChild` defect (a `service.py` that is a byte-for-byte copy of `app.py`) demonstrates the risk of consuming unverified submodule content (Sections 5.4.5, 4.3.2). The mitigating practice is to populate the tree from trusted, pinned commits via `git submodule update --init --recursive` and to review submodule changes before adoption.
-
-#### 6.4.5.2 Security Control Matrix
-
-*Table 6.4-7 — Security Control Matrix*
-
-| Control Category | Implemented Measure | Standard-Practice Basis |
+| Compliance Regime | Applicability | Rationale / Evidence |
 | --- | --- | --- |
-| Attack-surface minimization | No network/API/UI; hard-coded input; stdout-only | Reduce exposed interfaces |
-| Least privilege | Runs as invoking OS user; no escalation, `setuid`, or `subprocess` | Principle of least privilege |
-| Input handling | No external or untrusted input; fixed literal only | Avoid untrusted-input processing |
-| Injection resistance | No `eval`/`exec`/`compile`/`__import__`/`os.system` | Avoid dynamic code execution |
-| Deserialization safety | No `pickle`/`marshal`/`yaml.load` of external data | Avoid insecure deserialization |
-| Secrets management | Zero secrets committed; credential-free submodule URLs | No secrets in source control |
-| Dependency / supply chain | Zero third-party dependencies; pinned (unverified) submodules | Minimize and pin dependencies |
-| Transport security | Build-time Git over HTTPS (GitHub TLS) | Use TLS for remote fetches |
+| GDPR / CCPA (data privacy) | Not applicable | No personal data is collected, stored, or processed; input is a hard-coded integer list (Source: `app.py` L32) |
+| PCI-DSS (payment data) | Not applicable | No payment, cardholder, or financial data; no transactions occur |
+| HIPAA (health data) | Not applicable | No protected health information is present or handled |
+| SOC 2 / ISO 27001 (service/infra) | Not applicable | A standalone local script with "no container image, no cloud deployment, and no build step" (`README.md`, Deployment); no hosted service or tenant to attest |
+| Data retention / residency | Not applicable | Stateless; nothing is persisted, transferred, or located anywhere (§5.3.3, ADR-04) |
+| Third-party OSS licensing | Minimal obligation | Zero third-party dependencies, so there are no external license or attribution obligations to satisfy at runtime (ADR-01, §3.4) |
 
-#### 6.4.5.3 Compliance Requirements
+### 6.4.5 Security Zones and Trust Boundaries
 
-No regulatory compliance regime is triggered, because the system collects, stores, and transmits no personal, financial, health, or otherwise regulated data (Section 6.4.4). The posture below is documented for completeness.
+The system has an unusually simple trust topology. Conceptually there are three zones, but the **only trust boundary ever crossed is at build time** — when source is fetched from GitHub (an external, untrusted network) into the local working tree over HTTPS, with the fetched revisions fixed by commit pinning (§6.3.4.2, ADR-05). At runtime the program is a single, self-contained CPython process on the local host: it opens no sockets, reads no external resource, and writes only to a local terminal (stdout), so no runtime call crosses any network trust boundary (§6.3.1.3, §6.3.1.4). This mirrors the build-time-versus-runtime separation established in §6.3.
 
-*Table 6.4-8 — Compliance Posture*
+#### 6.4.5.1 Trust Zone Definitions
 
-| Compliance Regime | Applicability | Basis |
+| Zone | Trust Level | Boundary Crossing and Control |
 | --- | --- | --- |
-| GDPR / general data privacy | Not triggered | No personal data collected, stored, or processed |
-| PCI-DSS | Not triggered | No cardholder or payment data |
-| HIPAA | Not triggered | No protected health information |
-| SOC 2 / ISO 27001 | Not applicable | No hosted service, user accounts, or data custody |
-| FIPS 140 / cryptographic standards | Not applicable | No cryptography, hashing, or key material used |
-| Audit / retention mandates | Not applicable | No audit or log data is generated or retained (Section 5.4.1) |
+| Zone 1 — External: GitHub remotes (public internet) | Untrusted | Reached only at build time; crossing is protected by HTTPS/TLS plus exact-commit pinning, with no signature verification (§6.3.4.2, §2.4.4) |
+| Zone 2 — Developer / CI host (build-time) | Semi-trusted | Receives pinned source over TLS via recursive clone; credential-hygiene guidance applies (`README.md` L80–L83) |
+| Zone 3 — Local runtime host: CPython process | Trusted / isolated | No boundary crossed at runtime — opens no sockets, reads no external resource, writes to local stdout only (§6.3.1.3) |
 
-If the scope of the system were to change — for example, accepting external input, exposing a network interface, or handling sensitive data — the corresponding controls (input validation, authentication and authorization, TLS, encryption and key management, secrets management, and audit logging) would need to be introduced and this section revised accordingly. No such capability exists in the current codebase.
+#### 6.4.5.2 Security Zone Diagram
+
+The diagram separates the two phases. The single directed edge that crosses a network trust boundary is the build-time fetch from Zone 1 to Zone 2 (TLS + pinned commits). The handoff from Zone 2 to Zone 3 is a local source-on-disk step, after which the runtime host is fully self-contained.
+
+*Diagram 6.4.5 — Security Zones and Trust Boundaries: GitHub (untrusted, Zone 1) is reached only at build time over HTTPS with pinned commits; the developer/CI host (Zone 2) populates the working tree; the runtime host (Zone 3) executes a self-contained CPython process that opens no sockets and crosses no runtime boundary.*
+
+```mermaid
+flowchart TD
+    subgraph External["Zone 1: External / Untrusted (public internet)"]
+        GH["GitHub remotes<br/>github.com/lakshya-blitzy (HTTPS)"]
+    end
+    subgraph BuildHost["Zone 2: Developer / CI host (build-time only)"]
+        Clone["git clone --recursive<br/>over HTTPS / TLS"]
+        Tree["Working tree populated;<br/>submodules pinned 63b3f43 / d57c9dd"]
+        Clone --> Tree
+    end
+    subgraph RuntimeHost["Zone 3: Local runtime host (self-contained)"]
+        Proc["CPython process: python app.py<br/>main() to calculate_total (in-process)"]
+        Std["stdout (local terminal)"]
+        NoNet["No sockets opened;<br/>no runtime call leaves this host"]
+        Proc --> Std
+        Proc --- NoNet
+    end
+    GH -->|"TLS fetch of pinned commits<br/>(only trust boundary crossed, build-time)"| Clone
+    Tree -.->|"source on disk, then execute"| Proc
+```
 
 ### 6.4.6 References
 
+The following repository artifacts and specification sections were examined as evidence for this section. The "not applicable" determination is grounded in a full read of every source file across all three tiers, an exhaustive case-insensitive construct search that returned zero security matches, a manifest/configuration audit, first-hand runtime execution, and inspection of the submodule manifests and pinned commits.
+
 **Repository files examined**
 
-- `app.py` — Established the entry-point behavior: a hard-coded input list `[10, 20, 30, 40]` (line 4) and stdout-only output; confirmed no external input, network, or authentication surface.
-- `service.py` — Established the pure, deterministic `calculate_total`/`calculate_average` functions with no I/O, cryptography, secrets, or persistence.
-- `.gitmodules` — Established the build-time submodule declarations over clean, credential-free HTTPS URLs; confirmed no committed secrets.
-- `.blitzyignore` — Established the `*.csv` exclusion (e.g., `large.csv`) applied to tooling; supports data-handling hygiene.
-- `README.md` — One-line title only; confirmed no security documentation or configuration.
+- `app.py` — Root entry point; established the hard-coded input (L32), the in-process delegation `from service import calculate_total` (L15) and call (L34), the stdout-only writes (L36–L42), and the `__main__` guard (L45–L46). Confirmed no identity, credential, token, network, or crypto usage.
+- `service.py` — Root pure-computation module; established that it declares no imports, classes, state, or I/O and therefore contains no cryptographic, secret-handling, or authentication logic.
+- `README.md` — Project documentation; established the credential-hygiene security note (L80–L83), the "no third-party dependencies / no dependency manifest" posture, and the Deployment statement that this is a standalone script with "no container image, no cloud deployment, and no build step."
+- `.gitmodules` — Root submodule manifest; established the build-time `ChildRepo` remote over HTTPS (`https://github.com/lakshya-blitzy/600K_ChildRepo.git`), pinned at commit `63b3f43`.
+- `ChildRepo/.gitmodules` — Middle-tier submodule manifest; established the build-time `NestedChild` remote over HTTPS (`https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`), pinned at commit `d57c9dd`.
+- `ChildRepo/app.py`, `ChildRepo/service.py` — Mirror tier; confirmed a functionally equivalent copy with the same absence of any security surface.
+- `ChildRepo/NestedChild/app.py`, `ChildRepo/NestedChild/service.py` — Leaf tier; confirmed the same absence of security constructs (and the preserved circular-import defect noted elsewhere).
+- `.blitzyignore` (root, `ChildRepo/`, `ChildRepo/NestedChild/`) — Each contains only `*.csv`; honored by excluding all CSV files from inspection and documentation.
 
 **Repository folders examined**
 
-- `ChildRepo/` — Git submodule mirroring the root's two-file program; same non-security posture at the second level.
-- `ChildRepo/NestedChild/` — Nested Git submodule whose defective `service.py` illustrates the unverified-submodule (supply-chain) risk discussed in Section 6.4.5.
+- `ChildRepo/` — First-level Git submodule tier (pinned at `63b3f43`); an independent copy of the same program with no security controls.
+- `ChildRepo/NestedChild/` — Leaf Git submodule tier (pinned at `d57c9dd`); the deepest tier, likewise with no security controls.
 
-**Repository-wide verification**
+**Cross-referenced specification sections**
 
-- Whole-tree inspection — Confirmed the absence of authentication, authorization, cryptography/hashing/secrets/TLS, dynamic-execution/injection/deserialization primitives, and network/file I/O; the sole runtime output is `print()` to stdout. Committed submodule URLs are credential-free; no git access token or secret material appears in tracked content.
-
-**Cross-referenced Technical Specification sections**
-
-- Section 3.3 Open Source Dependencies — Zero third-party dependencies.
-- Section 3.4 Third-Party Services — No external services; no API keys, tokens, or credentials; credential-free submodule URLs.
-- Section 3.5 Databases and Storage — No persistence or datastore.
-- Section 5.4 Cross-Cutting Concerns (5.4.1 Logging, 5.4.3 Authentication and Authorization, 5.4.5 Disaster Recovery and Resilience) — Authentication/authorization not applicable; only trust boundary is the host-OS permission of the invoking user; `print()` to stdout is the sole output.
-- Sections 6.1 Core Services Architecture, 6.2 Database Design, and 6.3 Integration Architecture — Sibling "not applicable" determinations that establish the consistent characterization of this minimal, self-contained system.
+- §1.3 Scope (§1.3.2 Out-of-Scope) — the canonical statement that no network APIs, databases, message queues, caches, or third-party services are implemented anywhere.
+- §2.4 Implementation Considerations (§2.4.4) — the minimal attack surface and the absence of submodule signature/commit verification.
+- §3.4 Third-Party Services — "no third-party services of any kind"; GitHub as the sole external touchpoint, checkout-time only.
+- §5.3 Technical Decisions (§5.3.2 Communication Patterns, §5.3.3 Data Storage, §5.3.4 Security Mechanism Selection, §5.3.5 ADRs) — ADR-01 (stdlib-only zero-dependency), ADR-04 (stateless, no persistence), ADR-05 (submodule pinning over HTTPS), and ADR-06 (no authentication/authorization or input validation, fail-fast).
+- §5.4 Cross-Cutting Concerns (§5.4.1 Logging, §5.4.3 Authentication and Authorization) — the "no logging framework" observable surface and the "no authentication or authorization framework, and none is applicable" determination.
+- §6.3 Integration Architecture (§6.3.1.3 Verification Methodology, §6.3.1.4 System Boundary, §6.3.4 External Systems, §6.3.4.2 External Dependencies) — the no-runtime-socket determination, the build-time-versus-runtime boundary, and the Git-over-HTTPS submodule composition with pinned commits.
 
 ## 6.5 Monitoring and Observability
 
 ### 6.5.1 Monitoring and Observability Applicability Assessment
 
-**Determination: Detailed Monitoring Architecture is not applicable for this system.**
+**Detailed Monitoring Architecture is not applicable for this system.**
 
-The repository is a single-process, synchronous, standard-library-only Python program — a two-module modular monolith (`app.py` orchestrator plus `service.py` pure-function computation) that runs a fixed workflow to completion and writes a deterministic report to standard output (see Section 5.1 High-Level Architecture and Section 6.1.2). It exposes no network interface, defines no logging or metrics instrumentation, and ships no monitoring, alerting, dashboard, or deployment tooling. Every capability this section is intended to document — metrics collection, log aggregation, distributed tracing, alert management, dashboards, health-check endpoints, SLA monitoring, capacity tracking, and incident-response automation — presupposes a long-running or networked service and an operational platform that this system neither contains nor requires.
+`600K_ParentRepo` is a deliberately minimal, standard-library-only Python program whose entire runtime behavior is a single fixed-list summation written to standard output, executed once per manual invocation and then terminated (§5.1, §6.1.1). It runs as an **ephemeral, single-process command-line batch job** — there is no long-running service, no network listener, no persistent state, no scheduler, and no provisioned infrastructure to observe (§5.4.1, §6.1.3). Direct inspection of every source file across all three submodule tiers found **no monitoring, metrics, health-check, or telemetry instrumentation and no logging or tracing framework** — there is no `import logging`, no counters, and no correlation or span identifiers anywhere in the code (§5.4.1). A repository-wide search for monitoring, logging, tracing, alerting, and dashboard artifacts returned zero matches in source and configuration, and there is no containerization, orchestration, or CI/CD tooling that could host such a stack (§3.6.3).
 
-This determination is not merely an inference from the small size of the codebase; it is grounded in the verified absence of every runtime and infrastructure primitive on which a monitoring architecture depends. Across the entire tree (root plus the `ChildRepo` and `ChildRepo/NestedChild` submodules), the only import statement anywhere is the local `from service import calculate_total` (`app.py:1`) — there is no `logging` module, no metrics or tracing library (no Prometheus, OpenTelemetry, or StatsD), no HTTP/socket server, and no configuration, CI/CD, or container manifest. The program's only output mechanism is the standard-library `print()` function writing plain text to stdout (`app.py:8`, `11`, `13`), and its only error output is the interpreter's default traceback to stderr. This is consistent with Section 5.4.1 (which records monitoring, observability, logging, and tracing as absent) and Section 3.6.4 (no containerization, CI/CD, or infrastructure-as-code).
+Because there is no service runtime, the classic monitoring stack — metrics agents, log shippers, trace collectors, time-series databases, alert managers, and dashboards — has nothing to instrument. The table below records each defining monitoring capability against the repository evidence.
 
-The table below records each prerequisite of a monitoring architecture against its presence in this system.
-
-**Table 6.5-1 — Monitoring-Architecture Prerequisites vs. This System**
-
-| Monitoring Prerequisite | Present in System | Evidence |
+| Monitoring Capability | Present? | Evidence in Repository |
 | --- | --- | --- |
-| Long-running / networked service to observe | No | Batch process exits after the fixed workflow; no listener (Section 6.1.2) |
-| Instrumentation library (metrics / tracing / logs) | No | Only import anywhere is `from service import calculate_total` (`app.py:1`) |
-| Telemetry collector / agent / exporter | No | No Prometheus / OpenTelemetry / StatsD; no config in the tree |
-| Log framework / structured emitter | No | Output is `print()` to stdout only (`app.py:8, 11, 13`); no `logging` use |
-| Health-check / readiness endpoint | No | No HTTP or socket server anywhere in the tree |
-| Alerting / notification pipeline | No | No alert rules, Alertmanager, or notification channels |
-| Dashboard / visualization platform | No | No Grafana / Kibana / Datadog config or data source |
-| Monitoring deployment infrastructure | No | No Dockerfile / compose / Kubernetes / CI (Section 3.6.4) |
+| Metrics collection / time-series DB | No | No counters, gauges, or histograms; no Prometheus/StatsD client and no `import logging` anywhere (§5.4.1) |
+| Log aggregation / centralized logging | No | No logging framework; diagnostics are `print()` to stdout and default tracebacks to stderr (§5.4.1) |
+| Distributed tracing | No | Single synchronous process; no spans or correlation IDs; no OpenTelemetry/Jaeger/Zipkin (§5.4.1) |
+| Alerting / on-call tooling | No | No alert manager, notification channel, or paging integration; failures surface as a non-zero exit (§5.4.2) |
+| Dashboards / visualization | No | No Grafana/Kibana backend; the operator's terminal transcript is the only "view" |
+| Hosting for a monitoring stack | No | No Dockerfile/Compose/Kubernetes/IaC or CI/CD to run agents or collectors (§3.6.3) |
 
-Because none of these prerequisites is present, the remainder of this section (1) documents the minimal observability surface the system actually exposes and the basic monitoring practices that apply to it (Section 6.5.2), and then (2) dispositions each monitoring-infrastructure, observability-pattern, and incident-response capability the prompt enumerates (Sections 6.5.3 through 6.5.5), so the record is explicit rather than merely asserting non-applicability. This conclusion is consistent with the modular-monolith characterization in Sections 1.2, 5.1, 5.4, and 6.1.
+**Basic monitoring practices followed instead.** Observability is achieved by **direct human inspection** of the three interpreter-level signals the process emits, which together form the project's de-facto quality gate (§5.4.1, §3.6.3):
 
-**Basic monitoring practices that apply instead.** In lieu of a monitoring architecture, the system is verified operationally by direct observation of its three process-level signals — the standard-output stream, the standard-error stream, and the process exit code — as detailed in Section 6.5.2. These practices require no additional tooling and are sufficient for a deterministic, fixed-input batch program.
+- **Standard output (stdout)** — six deterministic lines on a successful run (`Total: 100`, the four operands, then `Application completed`), confirmed by executing the program (Source: `app.py` L36–L42; verified exit 0).
+- **Standard error (stderr)** — a Python traceback on failure; empty on a successful run.
+- **Process exit code** — `0` on success (root and `ChildRepo` tiers), `1` at the broken `NestedChild` leaf (verified by execution; §5.4.2, §2.4.4).
 
-### 6.5.2 Observability Surface and Monitoring Architecture
+The effective "monitoring architecture" is therefore a human-in-the-loop inspection loop rather than an automated pipeline, illustrated below.
 
-The system's entire observability surface consists of the three signals a single, short-lived operating-system process exposes to whoever invokes it: the standard-output stream, the standard-error stream, and the integer process exit code. Nothing is instrumented, timestamped, aggregated, retained, or exported; observability is limited to what the invoking operator can read on the console for a single run (consistent with Section 5.4.1). The only artifact written to disk during operation is CPython's `__pycache__/service.cpython-312.pyc` bytecode cache, which is an import optimization rather than an observability signal.
-
-**Table 6.5-2 — Observable Signals (Complete Observability Surface)**
-
-| Signal | Source | Observed Content / Meaning |
-| --- | --- | --- |
-| Standard output (stdout) | `print()` at `app.py:8, 11, 13` | Deterministic report: `Total: 100`, each element `10`/`20`/`30`/`40`, then `Application completed` |
-| Standard error (stderr) | Interpreter default exception handler | Full traceback text; emitted only when an uncaught exception occurs |
-| Process exit code | Python interpreter | `0` on successful completion; non-zero (e.g. `1`) on an uncaught exception |
-
-The diagram below is the **Monitoring Architecture** for this system as it actually exists: one monitored process, the three signals it emits, the operator who reads those signals directly on the console, and the monitoring-infrastructure tiers (agent/exporter, log store, trace collector/APM, time-series database, dashboards, alert manager) that are not present.
-
-**Diagram 6.5-1 — Monitoring Architecture (Actual Observability Surface)**
-
-```mermaid
-flowchart TB
-    Operator(["Developer / Operator (terminal)"])
-    subgraph Runtime["Monitored unit -- single OS process: python app.py"]
-        direction TB
-        Proc["app.py :: main()<br/>fixed workflow; in-process call to service.py"]
-        Sig1["stdout stream: line-oriented text<br/>Total: 100 / 10 / 20 / 30 / 40 / Application completed (app.py:8,11,13)"]
-        Sig2["stderr stream: interpreter default traceback (failure only)"]
-        Sig3["process exit code: 0 success / non-zero failure"]
-        Proc --> Sig1
-        Proc --> Sig2
-        Proc --> Sig3
-    end
-    Operator -->|"python app.py"| Proc
-    Sig1 -->|"read on console"| Operator
-    Sig2 -->|"read on console"| Operator
-    Sig3 -->|"echo $?"| Operator
-    subgraph Absent["Monitoring infrastructure -- NONE present"]
-        direction TB
-        NA1["No metrics agent / exporter (Prometheus / StatsD / OpenTelemetry)"]
-        NA2["No log aggregation / shipper / store"]
-        NA3["No trace collector / APM"]
-        NA4["No time-series DB, dashboards, or alert manager"]
-    end
-```
-
-As the diagram indicates, the only externally visible effects of a run are the lines written to stdout, an optional traceback on stderr, and the integer exit code; there is no collector, store, dashboard, or alerting tier to depict because none exists in the codebase (Section 6.1.2).
-
-**Basic monitoring practices.** Because there is no monitoring platform, operation is verified by direct, manual observation of the signals above. The practices that apply are:
-
-- **Output verification** — compare the stdout report against the expected fixed output (`Total: 100`, then `10`, `20`, `30`, `40`, then `Application completed`); any deviation indicates a regression. This expected output is the de-facto acceptance criterion recorded in Section 1.2.3.
-- **Exit-code check** — inspect the process exit status (for example, `echo $?`); `0` confirms success and a non-zero code indicates an uncaught failure (Section 5.4.2).
-- **Failure inspection** — on a non-zero exit, read the stderr traceback to identify the fault; the one standing example in the tree is the `ChildRepo/NestedChild` circular-import `ImportError`, which exits `1` (Section 5.4.2).
-- **Re-run for confirmation** — because the workflow is stateless and deterministic, re-invoking the program reproduces identical output and is the primary confirmation mechanism (Section 5.4.5).
-
-These practices require no additional dependencies and match the program's execution model as a fixed-input, single-run batch computation.
-
-### 6.5.3 Monitoring Infrastructure
-
-Because the system is a single-process modular monolith with no telemetry surface (Section 6.5.1), none of the five monitoring-infrastructure capabilities the prompt enumerates is implemented. Each is dispositioned below with its status and supporting evidence, followed by the basic practice that applies in its place. Every status resolves to "none" or "not applicable," and each is grounded in observed code rather than in generic assumptions.
-
-**Table 6.5-3 — Monitoring-Infrastructure Concerns: Disposition**
-
-| Concern | Disposition | Basis |
-| --- | --- | --- |
-| Metrics collection | None — no counters/gauges/timers or client library | Only import is `from service import calculate_total` (`app.py:1`) |
-| Log aggregation | None — `print()` to stdout only; nothing shipped or stored | `app.py:8, 11, 13`; no `logging` (Section 5.4.1) |
-| Distributed tracing | Not applicable — single in-process call; no spans or context | Sole interaction is `app.py:6`; no trace library |
-| Alert management | None — no rules, thresholds, or notification pipeline | No alerting config anywhere in the tree |
-| Dashboard design | None — the console is the only view; no visualization platform | No Grafana / Kibana / Datadog config |
-
-#### 6.5.3.1 Metrics Collection
-
-No metrics are collected. There is no metrics client library (no Prometheus client, StatsD, or OpenTelemetry), no counter/gauge/histogram/timer definitions, and no push or scrape endpoint anywhere in the tree; the only import in the codebase is the local `from service import calculate_total` (`app.py:1`). The program computes a single arithmetic result and prints it — the value in `Total: 100` is a functional output written to stdout (`app.py:8`), not a metric that is sampled, labeled, timestamped, or exported. The intrinsic quantities a metrics system might otherwise capture (for example, run count or wall-clock duration) are neither measured nor recorded by the code. In place of metrics collection, the applicable basic practice is to read the single-run stdout report and exit code directly (Section 6.5.2); the performance characteristics that could in principle be measured are described in Section 6.5.4.2.
-
-#### 6.5.3.2 Log Aggregation
-
-There is no log aggregation, and there are no logs in the conventional sense to aggregate. The codebase makes no use of the `logging` module or any structured-log emitter; its sole output mechanism is `print()` writing three plain-text, unlabeled, untimestamped lines to stdout (`app.py:8`, `11`, `13`), and its sole error output is the interpreter's default traceback to stderr (Sections 5.4.1 and 5.4.2). Nothing is written to a log file, forwarded to a shipper (such as Fluent Bit, Logstash, or Vector), or stored in an aggregation backend (such as Elasticsearch or Loki). Log retention, rotation, indexing, and correlation identifiers are therefore all absent. The applicable basic practice is operator-side console capture — redirecting stdout and stderr to a file at invocation time when a durable record of a specific run is needed (for example, `python app.py > run.log 2>&1`) — which is a shell action rather than a system capability.
-
-#### 6.5.3.3 Distributed Tracing
-
-Distributed tracing is not applicable. Tracing instruments a request as it traverses multiple services or asynchronous boundaries; this system has a single process and exactly one runtime interaction — a synchronous, in-process Python function call from `app.py` to `service.py` (`app.py:6`), resolved within one address space (Section 6.1.2). There are no spans, no trace or correlation identifiers, no context propagation, and no tracing library or collector (no OpenTelemetry, Jaeger, or Zipkin) anywhere in the tree. Because the call graph is a single deterministic path with no network hops, the execution order is fully described by reading the source (`app.py:1`–`13`), and no tracing infrastructure is warranted.
-
-#### 6.5.3.4 Alert Management
-
-No automated alert management exists: there are no alert rules or thresholds, no alert manager (such as Prometheus Alertmanager), and no notification channels (email, SMS, chat, webhook, or paging). Because there is no metrics pipeline (Section 6.5.3.1) and no monitoring platform, an "alert" in this system reduces to a human noticing an abnormal signal on the console — a non-zero exit code or a stderr traceback. The diagram below shows this manual alert flow: the operator observes a run's signals, decides whether the output and exit code match the expected result, and, on a mismatch, performs manual triage and remediation. There is no automated alert pipeline to depict.
-
-**Diagram 6.5-2 — Alert Flow (Manual Observation Model)**
-
-```mermaid
-flowchart TD
-    Start(["python app.py completes"])
-    Start --> Obs["Operator manually observes stdout + stderr + exit code"]
-    Obs --> Decide{"Exit code == 0 AND stdout matches expected report?"}
-    Decide -->|"Yes (root / ChildRepo)"| OK(["No alert -- run accepted"])
-    Decide -->|"No (e.g. NestedChild ImportError, exit 1)"| Detect["Human-detected condition (no automated signal)"]
-    Detect --> Triage["Manual triage: read stderr traceback; consult de-facto runbook (6.5.5.3)"]
-    Triage --> Act["Manual action: source-level fix and/or re-run"]
-    Act --> Start
-    subgraph Absent["Automated alert pipeline -- NONE present"]
-        direction TB
-        NA1["No alert rules / threshold engine"]
-        NA2["No Alertmanager / PagerDuty / Opsgenie"]
-        NA3["No notification channels (email / SMS / chat / webhook)"]
-        NA4["No on-call routing or paging"]
-    end
-```
-
-Since no thresholds are coded, the matrix below documents the de-facto, qualitative conditions an operator applies by hand. No numeric latency, throughput, or error-rate thresholds are defined anywhere in the repository (Section 5.4.4); the checks are pass/fail conditions derived from the expected behavior recorded in Section 1.2.3.
-
-**Table 6.5-4 — Alert Threshold Matrix (De-Facto Manual Checks)**
-
-| Observed Condition | De-Facto Threshold (Trigger) | Manual Action |
-| --- | --- | --- |
-| Process exit code | Any non-zero value (expected `0`) | Read the stderr traceback; triage and fix (Section 6.5.5.3) |
-| stdout report content | Any deviation from `Total: 100` / `10` / `20` / `30` / `40` / `Application completed` | Treat as a functional regression; inspect source and re-run |
-| `NestedChild` execution | `ImportError` at import time (exit `1`) | Apply the known source-level fix (Section 6.5.5.3) |
-
-#### 6.5.3.5 Dashboard Design
-
-No dashboards are designed or configured. There is no visualization platform (no Grafana, Kibana, or Datadog), no dashboard-as-code definition, no chart or panel specification, and no data source to query — consistent with the absence of any metrics or log store (Sections 6.5.3.1 and 6.5.3.2). The only "view" into a run is the operator's terminal, which displays the stdout report, any stderr traceback, and the shell's exit-status indicator. The diagram below represents this sole view as a notional console layout and marks the dashboard platform that is not present.
-
-**Diagram 6.5-3 — Dashboard Layout (Console as the Sole View)**
-
-```mermaid
-flowchart TB
-    subgraph Console["Sole operator view -- terminal / console (no dashboard tooling)"]
-        direction TB
-        Panel1["stdout panel (line-oriented)<br/>Total: 100<br/>10 / 20 / 30 / 40<br/>Application completed"]
-        Panel2["stderr panel<br/>traceback text (failure only)"]
-        Panel3["exit-status indicator<br/>0 success | 1 NestedChild ImportError"]
-    end
-    subgraph Absent["Dashboard platform -- NONE present"]
-        direction TB
-        NA1["No Grafana / Kibana / Datadog dashboards"]
-        NA2["No charts, panels, or visualization config"]
-        NA3["No metric queries or data-source wiring"]
-    end
-```
-
-Taken together, the five dispositions confirm that no monitoring-infrastructure tier is implemented; the console-observation practices in Section 6.5.2 are the complete substitute for this system's scope.
-
-### 6.5.4 Observability Patterns
-
-The observability patterns below describe how one would ordinarily know the system is healthy, performant, and meeting its objectives. For this fixed-input batch program the answer is uniformly minimal: correctness is verified by the deterministic stdout report and a zero exit code, and no performance, business, SLA, or capacity signal is instrumented. Each pattern is dispositioned below with its status and the supporting evidence.
-
-**Table 6.5-5 — Observability-Pattern Concerns: Disposition**
-
-| Concern | Disposition | Basis |
-| --- | --- | --- |
-| Health checks | No endpoint; process exit code is the de-facto health signal | No HTTP server; exit `0`/non-zero (Section 5.4.2) |
-| Performance metrics | None measured; intrinsic profile only | No timers in code; O(n), n = 4 (Section 5.4.4) |
-| Business metrics | None tracked; the computed total is functional output, not a KPI | `app.py:8`; no KPIs (Section 1.2.3) |
-| SLA monitoring | No SLA defined or measured | No SLAs/targets (Sections 1.2.3, 5.4.4) |
-| Capacity tracking | None; fixed workload, no resource accounting | Fixed input `[10,20,30,40]`; no quotas |
-
-#### 6.5.4.1 Health Checks
-
-The system exposes no health-check, readiness, or liveness endpoint, because it is not a service: there is no HTTP server, socket, or long-running process to probe (Section 6.1.2). Health is instead a terminal property of a single run. The de-facto health signal is the process exit code together with the completion sentinel printed at the end of the workflow — a successful run prints `Application completed` (`app.py:13`) and exits `0`, whereas a failed run emits a traceback to stderr and exits non-zero (Section 5.4.2). The only "health check" that applies is therefore to run the program and confirm both the completion line and a zero exit status. The one known unhealthy case in the tree is `ChildRepo/NestedChild`, whose `service.py` is a byte-for-byte copy of `app.py` and never defines `calculate_total`, so its run fails at import time with a circular-import `ImportError` (Sections 5.4.2 and 6.1.3.3).
-
-#### 6.5.4.2 Performance Metrics
-
-No performance metrics are measured, emitted, or retained; there are no timers, histograms, or counters in the code (Section 6.5.3.1). What can be characterized is the intrinsic, static performance profile of the computation, which is not instrumented at runtime:
-
-- **Algorithmic cost.** `calculate_total` is O(n) time and O(1) additional space — a single accumulator loop over the input (`service.py:1`–`7`) — and the orchestrator's print loop is O(n) (`app.py:10`–`11`). With the fixed four-element input, the work is effectively constant and negligible (Section 5.4.4).
-- **Dominant cost.** End-to-end wall-clock time is dominated by Python interpreter startup and module import, not by the computation itself (Section 5.4.4).
-
-The table below defines the performance quantities a monitoring system might capture for this workload and records that each is not instrumented here.
-
-**Table 6.5-6 — Performance Metric Definitions (Not Instrumented)**
-
-| Metric | Definition | Instrumented? |
-| --- | --- | --- |
-| Execution wall-clock time | Elapsed time from process start to exit | No — obtainable only with external tooling (e.g. `time python app.py`) |
-| Computation cost | Work performed by `calculate_total` over n inputs | No — O(n) with n = 4; not timed in code (`service.py:1-7`) |
-| Peak memory | Maximum resident memory of the process | No — no in-code measurement; small constant footprint |
-| Throughput | Runs completed per unit time | No — a single fixed batch run; not counted |
-
-The applicable basic practice, if a timing figure is ever needed, is to wrap the invocation with an external utility (for example, the shell `time` builtin) — an operator action outside the application.
-
-#### 6.5.4.3 Business Metrics
-
-No business metrics or KPIs are defined or tracked. The repository documents no business context, objectives, or success metrics (Sections 1.2.1 and 1.2.3), so there is nothing of that kind to instrument. The one domain value the program produces — the sum reported in the `Total: 100` line (`app.py:8`) — is the functional result of the fixed workflow, printed once to stdout and neither aggregated, trended, nor associated with any business objective. `service.py` also defines `calculate_average`, but no entry point invokes it, so even that secondary computation is never exercised as a tracked figure (Sections 1.2.2 and 2.1). Consequently there is no business-metric collection, and none is warranted for a demonstration-scope program.
-
-#### 6.5.4.4 SLA Monitoring
-
-No service-level agreements, objectives, or indicators (SLA / SLO / SLI) are defined anywhere in the repository, and none is monitored. There are no latency, throughput, availability, or error-budget targets in the code, configuration, or documentation (Sections 1.2.3 and 5.4.4). Because the program is a stateless batch computation rather than a continuously available service, availability-style SLAs do not apply; the only meaningful acceptance bar is functional correctness for a single run. The table below documents each common SLA dimension against its defined status in this system.
-
-**Table 6.5-7 — SLA Requirements (Defined Status)**
-
-| SLA Dimension | Defined in Repository? | Basis / De-Facto Expectation |
-| --- | --- | --- |
-| Availability / uptime | No | Not applicable — batch process, not a service (Section 6.1.2) |
-| Latency / response time | No | No target; cost dominated by interpreter startup (Section 5.4.4) |
-| Throughput | No | No target; a single fixed run |
-| Correctness (functional) | No formal SLA | De-facto: exact stdout report plus exit `0` (Section 1.2.3) |
-
-In short, SLA monitoring is not applicable; the de-facto expectation is deterministic functional correctness, verified by the practices in Section 6.5.2.
-
-#### 6.5.4.5 Capacity Tracking
-
-No capacity tracking is implemented. The workload is fixed — a hard-coded four-element list (`app.py:4`) processed once — so there is no variable demand to track, no resource-utilization accounting (CPU, memory, disk, or connections), no quotas or limits, and no capacity plan (Section 6.1.3.2). The program holds no durable state and opens no files or network connections; the `large.csv` files present at each level are never read by any code and are excluded by `.blitzyignore`, so they impose no runtime capacity concern (Section 5.4.4). Because the functions are pure and stateless, the only "scaling" the code permits is manually launching additional independent runs — which is neither orchestrated nor measured (Section 6.1.3.2). No capacity signal is therefore collected, and none is needed at this scope.
-
-### 6.5.5 Incident Response
-
-Incident response — in the operational sense of routed alerts, on-call escalation, and formal post-mortems — presupposes a monitored, continuously running service and an operations team. This system is a manually invoked, deterministic batch program with no alerting pipeline (Section 6.5.3.4), so each incident-response capability the prompt enumerates is dispositioned below as not implemented, with the manual practice that applies in its place. The single, well-understood failure mode in the tree — the `ChildRepo/NestedChild` circular-import defect — provides the one concrete "incident" against which these practices can be described.
-
-**Table 6.5-8 — Incident-Response Concerns: Disposition**
-
-| Concern | Disposition | Basis |
-| --- | --- | --- |
-| Alert routing | None — no alerts to route | No alert pipeline (Section 6.5.3.4) |
-| Escalation procedures | None defined | No on-call, roles, or response-time targets |
-| Runbooks | No formal runbook; de-facto manual steps exist | Re-run / source fix (Section 5.4.2) |
-| Post-mortem processes | None formal | No incident records or templates in the repo |
-| Improvement tracking | Git history plus source fixes | Six commits; `.gitmodules` (Sections 1.2.1, 3.6.3) |
-
-#### 6.5.5.1 Alert Routing
-
-There is no alert routing, because there are no alerts. With no metrics thresholds, no alert manager, and no notification channels (Section 6.5.3.4), there is nothing to route to a recipient, team, or on-call rotation. The only "signal" that a run went wrong is a non-zero exit code and a stderr traceback observed by the person who launched the program (Diagram 6.5-2). Routing therefore collapses to that same operator seeing the failure on their own console; there is no fan-out, deduplication, severity classification, or channel selection to configure.
-
-#### 6.5.5.2 Escalation Procedures
-
-No escalation procedures are defined. The repository documents no on-call schedule, severity tiers, response-time targets, ownership assignments, or escalation paths, and it defines no SLAs against which an escalation clock could run (Sections 1.2.3 and 5.4.4). Because a run either completes deterministically (exit `0`) or fails fast to the invoking operator (Section 5.4.2), the de-facto "escalation" is the operator deciding whether to fix the source and re-run or to defer — a single-actor decision with no tiered hand-off. Repository ownership, evidenced only by the public GitHub remotes declared in `.gitmodules` (Section 3.6.3), is the sole notion of responsibility present, and it is a source-control fact rather than an operational escalation contact.
-
-#### 6.5.5.3 Runbooks
-
-No formal runbooks exist in the repository — there is no operations documentation, and each `README.md` is a single title line (Section 1.2.1). However, the system's deterministic behavior and single known failure mode make the de-facto operational procedure short and unambiguous. The following steps constitute the effective runbook, each grounded in observed behavior:
-
-- **Normal run.** Execute `python app.py` from a level whose `service.py` defines `calculate_total` (root or `ChildRepo`); confirm the stdout report (`Total: 100`, then `10`/`20`/`30`/`40`, then `Application completed`) and a zero exit code (Sections 1.2.3 and 6.5.2).
-- **`ImportError` on `NestedChild`.** If running `ChildRepo/NestedChild/app.py` fails with a circular-import `ImportError`, the cause is that its `service.py` is a byte-for-byte copy of `app.py` and does not define `calculate_total`; the remedy is a source-level fix — restore a real `service.py` that defines `calculate_total` — after which the run succeeds (Sections 5.4.2 and 6.1.3.3).
-- **Missing submodule content.** If a level's files are absent, populate the tree with `git submodule update --init --recursive`, which requires network access to the public GitHub remotes (Section 3.6.3).
-- **Re-run to confirm.** Because the workflow is stateless and deterministic, re-invoking after a fix reproduces identical output and serves as the confirmation step (Section 5.4.5).
-
-#### 6.5.5.4 Post-Mortem Processes
-
-No post-mortem process is defined, and no incident records, templates, or retrospectives exist in the repository. The closest analogue to a documented incident is the standing `NestedChild` defect, which is captured as a known issue in this specification (Sections 1.2.2, 5.4.2, and 6.1.3.3) rather than through any in-repository post-incident workflow. For a deterministic program with no runtime state, a formal blameless-post-mortem process is not warranted; the effective mechanism for learning from a failure is diagnosing the stderr traceback, correcting the source, and committing the fix (Section 6.5.5.5).
-
-#### 6.5.5.5 Improvement Tracking
-
-Improvement tracking is provided solely by version control; there is no issue tracker, backlog, or changelog file committed to the repository. The Git history is the record of change — the parent repository has six scaffolding-oriented commits (for example, `Initial commit`, `Create app.py`, `Create service.py`, and `Add child submodule`), which document how the project was assembled rather than an ongoing operational-improvement loop (Section 1.2.1). Corrective work, such as fixing the `NestedChild` defect, would be tracked the same way: as a source change committed to the appropriate submodule remote declared in `.gitmodules` (Section 3.6.3). In short, "improvement tracking" here is Git commit history plus the pinned submodule pointers, consistent with the determinism-plus-version-control model in Section 5.4.5.
-
-### 6.5.6 References
-
-Repository files and folders examined as evidence for this section:
-
-- `app.py` - Root entry-point/orchestrator; established the sole output mechanism as `print()` to stdout (`app.py:8`, `11`, `13`), the completion sentinel `Application completed` (`app.py:13`), the fixed input list (`app.py:4`), the single local import (`app.py:1`), and the single in-process call (`app.py:6`) — confirming no logging, metrics, health endpoint, or tracing.
-- `service.py` - Pure computation module (`calculate_total` at lines 1–7, `calculate_average` at lines 10–14); confirmed the O(n)/O(1) intrinsic performance profile and that no timers, counters, or instrumentation exist.
-- `.gitmodules` - Declared the public GitHub submodule remotes; established the only notion of ownership/responsibility (source-control, not operational) referenced by the incident-response subsections.
-- `README.md` - One-line title heading at each level; confirmed the absence of any operations, runbook, or monitoring documentation.
-- `.blitzyignore` - Excludes `*.csv`; established that the `large.csv` files are never read by any code and impose no runtime capacity or monitoring concern.
-- `__pycache__/service.cpython-312.pyc` - CPython 3.12 bytecode cache; cited as an import optimization rather than an observability signal, and as evidence of the CPython 3.12 toolchain.
-- `ChildRepo/` - Git submodule replicating the functioning two-module application; the second level whose run exits `0` with the expected report.
-- `ChildRepo/NestedChild/` - Defective submodule instance whose `service.py` is a byte-for-byte copy of `app.py`, producing a circular-import `ImportError` (exit `1`); cited as the single concrete "incident," the one unhealthy health-check case, and the de-facto runbook example.
-- Repository-wide verification (across all `.py` files, excluding `.git` and `*.csv`) - Confirmed the absence of any `logging`, metrics, tracing, health-check, alerting, or dashboard imports/config, and of any Dockerfile, CI/CD, or infrastructure files anywhere in the tree.
-
-Technical Specification sections cross-referenced:
-
-- `1.2 System Overview` - No business context or KPIs (1.2.1), component roles and the unexercised `calculate_average` (1.2.2), and the de-facto acceptance behavior (expected stdout plus exit `0`) with no SLAs/KPIs (1.2.3); also the six scaffolding commits.
-- `2.1 Feature Catalog` - Confirmed `calculate_average` is defined but never invoked by any entry point.
-- `3.6 Development and Deployment` - No containerization, CI/CD, or infrastructure-as-code (3.6.4); CPython 3.12 toolchain and nested Git-submodule composition (3.6.1, 3.6.3).
-- `5.1 High-Level Architecture` - Modular-monolith characterization framing the single monitored unit.
-- `5.4 Cross-Cutting Concerns` - Monitoring/observability/logging/tracing absent (5.4.1), fail-fast error propagation and exit codes (5.4.2), no performance requirements or SLAs (5.4.4), and the determinism-plus-version-control resilience model (5.4.5).
-- `6.1 Core Services Architecture` - Single-process, single-in-process-call topology (6.1.2), scalability disposition (6.1.3.2), and the resilience/`NestedChild` defect disposition (6.1.3.3).
-
-No external (web) sources were required; every statement in this section is grounded in the repository or in the cross-referenced specification sections above.
-
-## 6.6 Testing Strategy
-
-### 6.6.1 Applicability Assessment and Testing Scope
-
-**Determination: Detailed Testing Strategy is not applicable for this system.**
-
-The repository is a minimal, standard-library-only Python demonstration — a two-module modular monolith (`app.py` orchestrator plus `service.py` pure-function computation) replicated across a three-level Git-submodule chain (`600K_ParentRepo` → `ChildRepo` → `ChildRepo/NestedChild`). It runs a fixed workflow to completion and writes a deterministic report to standard output (see Section 5.1 High-Level Architecture and Section 6.1.2). It contains **no test suite, no test-runner configuration, no CI/CD pipeline, and no build system.** The elaborate multi-layer testing program this section is normally intended to specify — service-integration suites, API contract tests, database integration tests, cross-browser UI automation, load and performance testing, and flaky-test quarantines — presupposes networked services, persistent data, and a user interface that this system neither has nor requires.
-
-This determination is grounded in verified absence rather than in the small size of the codebase. A whole-tree inspection (root plus the `ChildRepo` and `ChildRepo/NestedChild` submodules) found no test files (no `test_*.py` / `*_test.py`, no `tests/` directory), no `assert` statements, no doctests, no docstrings, and no test-runner or coverage configuration (`pytest.ini`, `tox.ini`, `setup.cfg`, `.coveragerc`). The only import statement anywhere is the local `from service import calculate_total` (`app.py:1`), and there are zero third-party dependencies (Section 3.3). This conclusion is consistent with the sibling "not applicable" determinations for Core Services Architecture (Section 6.1.1), Security Architecture (Section 6.4.1), and Monitoring and Observability (Section 6.5.1).
-
-In accordance with this section's guidance for such systems, the remainder documents the **basic unit-testing approach that applies** to the code as built. Although a comprehensive strategy is not warranted, the system exposes a small, highly testable surface — two pure functions plus one deterministic command-line workflow — for which a lightweight, dependency-free unit-test suite is both feasible and valuable. Such a suite would, among other things, catch the one standing defect in the tree (the `NestedChild` circular-import failure documented in Sections 5.4.2 and 6.1.3.3). Sections 6.6.2 through 6.6.4 therefore (a) specify that basic approach and (b) disposition each testing layer, automation concern, and quality metric the prompt enumerates, so the record is explicit rather than merely asserting non-applicability.
-
-**Table 6.6-1 — Testing-Layer Applicability**
-
-| Testing Layer | Applicable? | Basis / Evidence |
-| --- | --- | --- |
-| Unit testing of pure functions | Yes — recommended | `calculate_total` / `calculate_average` are pure, deterministic (`service.py:1-14`) |
-| CLI / smoke testing of the entry point | Yes — recommended | `app.py` writes a deterministic stdout report; importability guards against the `NestedChild` defect |
-| Service / API integration testing | Not applicable | No network services, APIs, RPC, or IPC anywhere in the tree (Section 6.1) |
-| Database integration testing | Not applicable | No database, ORM, driver, or persistence (Sections 6.2 and 3.5) |
-| End-to-end / UI / cross-browser testing | Not applicable | No UI, frontend, HTML/CSS/JS, or browser surface (Section 3.2) |
-| Performance / load testing | Not applicable | No SLAs/targets; O(n) with n = 4; cost dominated by interpreter startup (Section 5.4.4) |
-| Security / penetration testing | Minimal | Near-zero attack surface; reduces to dependency scan, static checks, and submodule review (Section 6.4) |
-
-#### 6.6.1.1 System Characteristics Driving the Determination
-
-The following verified characteristics establish why comprehensive testing is not warranted and shape the basic approach that is:
-
-- **Pure, deterministic computation.** `calculate_total` and `calculate_average` take an in-memory list and return a scalar with no side effects, no I/O, and no dependence on external or global state (`service.py:1-14`). Identical inputs always produce identical outputs, which makes exhaustive, assertion-based unit testing straightforward and eliminates test flakiness by construction.
-- **Single-process, synchronous execution.** The entire system is one operating-system process launched by `python app.py`; there is no concurrency, no network, and no second process, so there are no timing, ordering, or integration hazards to test for (Section 6.1.2).
-- **Stateless workflow.** A run holds no durable or session state and writes only to stdout, so no test fixtures, database seeding, or setup/teardown of external resources is required (Section 5.4.5).
-- **Fixed, non-sensitive input.** The workflow operates on the hard-coded literal `[10, 20, 30, 40]` (`app.py:4`); there is no untrusted input, configuration, or data source to parameterize or sanitize during testing (Section 6.4).
-- **No error-handling surface.** There is not a single `try`/`except`/`finally`/`raise` anywhere (Section 5.4.2); the failure model is fail-fast propagation, so negative-path testing reduces to confirming that expected exceptions surface (for example, the `NestedChild` `ImportError`).
-- **Excluded data artifacts.** The `large.csv` files at each level are excluded by `.blitzyignore` and are never opened by any code, so they are out of scope for all testing (Sections 5.4.4 and 6.4).
-
-#### 6.6.1.2 Testable Surface and Test-Scope Matrix
-
-The system's testable surface is the four features catalogued in Section 2.1, mapped below to the unit under test and the recommended focus of a basic suite.
-
-**Table 6.6-2 — Feature Test-Scope Matrix**
-
-| Feature | Unit Under Test | Recommended Test Focus |
-| --- | --- | --- |
-| F-001 List summation | `calculate_total(numbers)` (`service.py:1-7`) | Empty list → `0`; typical list → exact sum (`[10,20,30,40]` → `100`); negatives / mixed values |
-| F-002 Arithmetic mean | `calculate_average(numbers)` (`service.py:10-14`) | Empty guard → `0`; non-empty → float mean (`[10,20,30,40]` → `25.0`); exercises otherwise-unused code |
-| F-003 CLI workflow | `main()` (`app.py`) | Captured stdout equals the expected report; process exit code `0` |
-| F-004 Submodule composition | Import / smoke of each level's `service` module | Detects the `NestedChild` circular-import `ImportError` (exit `1`) |
-
-Three scope notes follow from this matrix. First, **`calculate_average` (F-002) is defined but never invoked by any entry point** (Sections 1.2.2 and 2.1); a unit test is therefore the only mechanism that would exercise this otherwise-dead code, and adding one is the highest-value single test in the suite. Second, the **only test double the codebase warrants is stdout capture** for F-003 — because `main()` communicates exclusively through `print()` (`app.py:8, 11, 13`), verifying it requires redirecting standard output (for example, `contextlib.redirect_stdout` or `unittest.mock.patch`) rather than mocking collaborators; the pure functions need no mocking at all. Third, an **importability/smoke check across the submodule levels (F-004) is the test that would have caught the standing defect** in `ChildRepo/NestedChild`, whose `service.py` is a byte-for-byte copy of `app.py` and thus fails to define `calculate_total` (Sections 5.4.2 and 6.1.3.3).
-
-### 6.6.2 Testing Approach
-
-The testing approach appropriate to this system is a small, **dependency-free unit-test suite** built with the Python standard library, complemented by a lightweight command-line smoke check. This choice deliberately preserves the repository's zero-dependency posture (Sections 3.2 and 3.3): adding a third-party runner such as `pytest` would introduce the project's first external dependency for no functional benefit at this scope. The three standard testing layers the prompt enumerates — unit, integration, and end-to-end — are addressed below; only the unit layer carries substantive, recommended content, while the integration and end-to-end layers are dispositioned against the single-process, no-service, no-UI reality of the system.
-
-#### 6.6.2.1 Unit Testing
-
-Unit testing is the primary — and, for this system, the sufficient — layer of verification. The units under test are the two pure functions in `service.py` and the `main()` orchestrator in `app.py` (Section 6.6.1.2).
-
-**Testing frameworks and tools.** The recommended toolchain is entirely standard library, so tests run on a bare interpreter with no install step:
-
-**Table 6.6-3 — Recommended Unit-Testing Tools**
-
-| Tool | Category | Role in the Recommended Suite |
-| --- | --- | --- |
-| `unittest` (standard library) | Test framework / runner | Primary: `TestCase` classes, assertions, and discovery via `python -m unittest` |
-| `doctest` (standard library) | Executable-docstring tests | Optional: verify example outputs embedded in function docstrings |
-| `contextlib.redirect_stdout` / `unittest.mock` (stdlib) | Output capture | Capture `print()` output from `main()` for F-003 assertions |
-| `trace` (standard library) | Coverage measurement | Optional line coverage via `python -m trace --count --missing` |
-| `pytest` / `coverage.py` (third-party) | Alternative runner / coverage | Optional only; would introduce the project's first external dependencies |
-
-**Test organization structure.** Tests should mirror the module layout and use the `unittest` discovery convention: a `test_service.py` (for `calculate_total` and `calculate_average`) and a `test_app.py` (for `main()`), either co-located with the source or under a `tests/` directory, discoverable with `python -m unittest discover`. Because the same two-module application is replicated at each submodule level, the suite is authored once per level (or shared) and run from each level's directory, since each `app.py` resolves `service` only from its own directory (Section 6.1.2).
-
-**Mocking strategy.** Mocking is minimal by design. The pure functions have no collaborators, I/O, or global state, so they are tested directly with concrete inputs and **require no mocks, stubs, or fakes.** The single place a test double is warranted is `main()`, whose only observable effect is text written via `print()` (`app.py:8, 11, 13`); its output is captured by redirecting standard output rather than by mocking dependencies:
-
-```python
-with contextlib.redirect_stdout(io.StringIO()) as buf:
-    main()
-self.assertIn("Total: 100", buf.getvalue())
-```
-
-**Code coverage requirements.** The entire testable surface is a handful of pure lines, so **100% line coverage of `service.py` (and of `main()` in `app.py`) is achievable and is the recommended target** for the basic suite. Coverage can be measured with the standard-library `trace` module (`python -m trace --count`) to avoid a dependency, or with third-party `coverage.py` if richer branch reporting is desired. Note that the repository currently defines no coverage tooling or threshold; the target here is a recommendation for the proposed suite, not an observed configuration.
-
-**Test naming conventions.** The suite follows standard `unittest` discovery and readability conventions:
-
-- Test modules are named `test_<module>.py` (e.g., `test_service.py`) so `unittest discover` finds them.
-- Test classes are named `Test<UnitUnderTest>` (e.g., `TestCalculateTotal`, `TestCalculateAverage`).
-- Test methods begin with `test_` and describe the condition and expected outcome, e.g., `test_empty_list_returns_zero`, `test_average_of_fixed_list_is_25`.
-
-**Test data management.** Test data is trivial and fully in-memory; there are no fixtures, seed files, databases, or factories. The canonical dataset is the same fixed list the application uses — `[10, 20, 30, 40]` (`app.py:4`) — whose verified outputs (`calculate_total` → `100`; `calculate_average` → `25.0`) serve as the primary oracle, alongside the empty-list edge case (`[]` → `0` for both functions) and optional negative/mixed-value lists. Because every function is deterministic, no randomization, seeding, or data cleanup is needed.
-
-**Example test patterns.** The following illustrative patterns cover the three unit types (pure sum, pure mean, and captured-stdout workflow):
-
-```python
-class TestCalculateTotal(unittest.TestCase):
-    def test_empty_list_returns_zero(self):
-        self.assertEqual(calculate_total([]), 0)
-    def test_fixed_list_sums_to_100(self):
-        self.assertEqual(calculate_total([10, 20, 30, 40]), 100)
-```
-
-```python
-def test_average_of_fixed_list_is_25(self):
-    self.assertEqual(calculate_average([10, 20, 30, 40]), 25.0)
-    self.assertEqual(calculate_average([]), 0)   # guard path exercises dead code
-```
-
-An equivalent `doctest` embeds the oracle directly in the function's docstring, which both documents and tests the contract:
-
-```python
-def calculate_total(numbers):
-    """>>> calculate_total([10, 20, 30, 40])
-    100"""
-```
-
-**Test data flow.** The diagram below shows how in-memory test data flows through the units under test and is compared against expected oracles — the complete test data path, with no external data sources.
+*Diagram 6.5.1 — Monitoring Architecture (as-built): the operator manually triggers a run; the ephemeral CPython process emits stdout, stderr, and an exit code; the operator inspects those signals against the expected result. No metrics agent, log shipper, trace collector, time-series database, alert manager, or dashboard exists.*
 
 ```mermaid
 flowchart LR
-    TD["In-memory test data<br/>lists: [10,20,30,40], [], negatives"]
-    subgraph SUT["System under test (in-process, no external I/O)"]
-        direction TB
-        CT["calculate_total(numbers) -> int"]
-        CA["calculate_average(numbers) -> float or 0"]
-        MN["main() -> print() to stdout"]
-    end
-    Cap["Captured stdout buffer<br/>(contextlib.redirect_stdout)"]
-    Exp["Expected oracle<br/>100 / 25.0 / 'Total: 100...' + exit 0"]
-    Assert{"assertEqual / assertIn"}
-    Res(["Result: pass / fail"])
-    TD --> CT --> Assert
-    TD --> CA --> Assert
-    TD --> MN --> Cap --> Assert
-    Exp --> Assert
-    Assert --> Res
+    Op["Operator / Developer"]
+    Cmd["Manual trigger:<br/>python app.py"]
+    Proc["Single ephemeral<br/>CPython process"]
+    Out["stdout<br/>(6 lines on success)"]
+    ErrOut["stderr<br/>(traceback on failure)"]
+    Code["process exit code<br/>(0 success / 1 failure)"]
+    Inspect["Human inspection:<br/>compare against expected result"]
+    Absent["Absent by design:<br/>metrics agent, log shipper, trace collector,<br/>time-series DB, alert manager, dashboards"]
+
+    Op --> Cmd --> Proc
+    Proc --> Out --> Inspect
+    Proc --> ErrOut --> Inspect
+    Proc --> Code --> Inspect
+    Inspect --> Op
+    Proc -.->|"none instantiated"| Absent
 ```
 
-#### 6.6.2.2 Integration Testing
+Sub-sections 6.5.2–6.5.4 address each area required by this section — monitoring infrastructure, observability patterns, and incident response — by recording the actual minimal practice and marking the specific automated capabilities as *Not applicable*, together with supporting evidence, consistent with the evidence-based treatment in §5.4 and §6.1.
 
-Conventional integration testing — verifying interactions across service, API, and database boundaries — is **not applicable**, because the system has exactly one runtime interaction: a synchronous, in-process Python function call from `app.py` to `service.py` within a single address space (`app.py:1, 6`; Section 6.1.2). There are no network services, endpoints, message brokers, or data stores to integrate. The only meaningful "integration" test is therefore the same `main()`-level check described under end-to-end testing: it exercises import resolution, the orchestrator, the computation module, and stdout formatting together in one process.
+### 6.5.2 Monitoring Infrastructure
 
-**Table 6.6-4 — Integration Testing Concerns: Disposition**
+No monitoring infrastructure is deployed or configured for this system; the components a monitoring-infrastructure design would specify do not exist in the repository (§5.4.1, §3.6.3). Each required element is recorded below against the evidence, followed by the basic practice that stands in its place.
 
-| Integration Concern | Status | Basis / Evidence |
+| Infrastructure Element | Applicability | Actual Mechanism / Evidence |
 | --- | --- | --- |
-| Service integration (module wiring) | In-process only | `app.py` imports and calls `service` (`app.py:1, 6`); covered by a `main()`-level test |
-| API testing (contract / endpoint) | Not applicable | No HTTP/REST/GraphQL/RPC endpoints anywhere (Section 6.3) |
-| Database integration testing | Not applicable | No database, ORM, or driver; nothing to seed or roll back (Sections 6.2, 3.5) |
-| External-service mocking | Not applicable | Zero third-party services or dependencies; nothing to stub (Sections 3.3, 3.4) |
-| Test environment management | Single local host | CPython 3.6+, standard library only; submodules via `git submodule update --init --recursive` |
+| Metrics collection | Not applicable | No metric emission or scraping; the only "success metric" is the fixed 6-line stdout transcript (Source: `app.py` L36–L42) |
+| Log aggregation | Not applicable | No `logging` module or log files; `print()` writes to the controlling terminal's stdout, tracebacks to stderr — never collected or shipped (§5.4.1) |
+| Distributed tracing | Not applicable | One synchronous in-process call (`from service import calculate_total`); no spans, trace context, or correlation IDs (§5.4.1, §6.1.2) |
+| Alert management | Not applicable | No alert manager or notification channel; a failed run is signalled only by a non-zero exit code and a stderr traceback (§5.4.2) |
+| Dashboard design | Not applicable | No visualization backend; the operator's terminal transcript is the sole "dashboard" (see Diagram 6.5.2) |
 
-**Test environment management.** The test environment is a single developer workstation running a CPython interpreter (minimum 3.6 for f-strings; the observed toolchain is 3.12, per Section 3.1.2). No database, message queue, container, service stub, or CI runner is provisioned, because none is required. The only environment-preparation step beyond having an interpreter is populating the submodule tree recursively (`git submodule update --init --recursive`, which needs network access to the public GitHub remotes; Section 3.6.3). The diagram below depicts this minimal environment and enumerates the external test dependencies that are deliberately absent.
+**Metrics collection.** The program emits no numeric telemetry. Its correctness is judged by an exact match of the deterministic output rather than by aggregated metrics; the domain result (`Total: 100`) and the four operands are printed once and are transient (§5.4.1). There is no metric namespace, no scrape endpoint, and no push gateway.
 
-```mermaid
-flowchart TB
-    Dev(["Developer workstation / shell"])
-    subgraph Env["Local test environment (single host, no network dependencies)"]
-        direction TB
-        Py["CPython 3.6+ interpreter<br/>(observed toolchain: 3.12)"]
-        Runner["unittest / doctest runner (standard library)"]
-        Src["Source under test:<br/>app.py, service.py"]
-        Cache["__pycache__/*.pyc bytecode cache"]
-        Py --> Runner
-        Runner --> Src
-        Src --> Cache
-    end
-    subgraph Absent["External test dependencies -- NONE present"]
-        direction TB
-        NA1["No database / fixtures server / seed data"]
-        NA2["No network services / APIs / stubs to run"]
-        NA3["No containers, CI runners, or test grid"]
-        NA4["No browser / Selenium / device farm"]
-    end
-    Dev -->|"python -m unittest discover"| Py
-```
+**Log aggregation.** There is no structured or centralized logging — no `import logging`, no log levels, no log files, and no shipper to an aggregator such as ELK, Splunk, or CloudWatch. All human-readable output is written directly to the controlling terminal and is not persisted beyond the terminal session (§5.4.1).
 
-#### 6.6.2.3 End-to-End Testing
+**Distributed tracing.** With a single process performing one in-memory function call and then exiting, there is no distributed call graph to trace; no tracing SDK is present at any tier (§6.1.2). The only inter-module edge, `app.py → service.py`, is an ordinary Python import resolved at process start (§6.1.2).
 
-For this system, the "end-to-end" path is the command-line run of `app.py` itself: a single process that resolves its import, computes the total, prints the report, and exits. An end-to-end check therefore runs the program (or invokes `main()`), captures its standard output, and asserts both the exact report and the exit code against the de-facto acceptance criteria recorded in Section 1.2.3.
+**Alert management.** Fault signalling is in-band and synchronous: the interpreter prints a traceback to stderr and returns a non-zero exit code (§5.4.2). There is no asynchronous alert delivery, deduplication, or silencing. Alert semantics — including the threshold matrix — are documented in §6.5.4.
 
-**Table 6.6-5 — End-to-End Scenarios**
+**Dashboard design.** Because there is no metrics or logging backend, no dashboard is (or can be) built. The closest analog is the operator's terminal transcript, whose logical "panels" — the result transcript (stdout), the failure output (stderr), and the status indicator (exit code) — form the de-facto single-pane view an operator reads after each run.
 
-| E2E Scenario | Trigger | Expected Result (Oracle) |
-| --- | --- | --- |
-| Happy-path CLI run (root / `ChildRepo`) | `python app.py` | stdout `Total: 100`, then `10`/`20`/`30`/`40`, then `Application completed`; exit `0` |
-| Defective level (`NestedChild`) | `python ChildRepo/NestedChild/app.py` | Circular-import `ImportError`; exit `1` (negative-path assertion) |
-
-**UI automation approach.** Not applicable — the system has no user interface, frontend, or web layer of any kind (no HTML/CSS/JavaScript anywhere; Section 3.2), so there is nothing to drive with a UI-automation tool.
-
-**Test data setup / teardown.** None is required. The workflow is stateless and operates on a hard-coded list, so there is no database to seed, no filesystem state to create, and nothing to tear down after a run; re-invocation reproduces identical output (Section 5.4.5). The `large.csv` artifacts are never read and are excluded by `.blitzyignore`, so they play no part in setup or teardown.
-
-**Performance testing requirements.** Not applicable — the repository defines no SLAs, latency/throughput targets, or benchmarks (Section 5.4.4). The intrinsic profile is O(n) time and O(1) additional space over a fixed four-element input, with end-to-end wall-clock time dominated by interpreter startup rather than computation. If a timing figure were ever needed, it would be obtained by wrapping the invocation with an external utility (for example, the shell `time` builtin) — an operator action outside the application, not an in-code performance test.
-
-**Cross-browser testing strategy.** Not applicable — there is no browser-rendered surface, so no cross-browser matrix, headless-browser grid, or device farm is relevant to this system.
-
-### 6.6.3 Test Automation and CI/CD Integration
-
-**No test automation or CI/CD integration exists in the repository.** There is no `.github/workflows` directory and no other continuous-integration configuration (GitLab CI, CircleCI, Jenkins, etc.), consistent with Section 3.6.4, which records the complete absence of containerization, CI/CD pipelines, and infrastructure-as-code. Because there is also no test suite (Section 6.6.1), there is currently nothing for a pipeline to run and no automated gate that would have caught the standing `NestedChild` defect prior to integration (Sections 3.6.4 and 6.1.3.3). The de-facto execution model is therefore fully manual: a developer runs the program — and, under the recommended approach, the standard-library test suite — from the command line and reads the result on the console.
-
-The following diagram shows the recommended manual test-execution flow and marks the automated-pipeline constructs that are not present.
+*Diagram 6.5.2 — Dashboard Layout (de-facto): the operator's terminal is the only "dashboard." Panel A shows the result transcript on stdout, Panel B shows failure output on stderr, and Panel C shows the process status derived from the exit code.*
 
 ```mermaid
 flowchart TD
-    Start(["Developer runs: python -m unittest discover"])
-    Start --> Discover["Test discovery (test_*.py)"]
-    Discover --> RunUnit["Execute unit tests<br/>calculate_total / calculate_average"]
-    RunUnit --> RunSmoke["Execute CLI smoke test<br/>run app.py / main(), capture stdout"]
-    RunSmoke --> Collect["Collect results (+ optional coverage via trace)"]
-    Collect --> Gate{"All tests passed?"}
-    Gate -->|"Yes -- exit 0"| Pass(["Report OK, proceed"])
-    Gate -->|"No -- e.g. NestedChild ImportError"| Fail["Report failures + traceback to console"]
-    Fail --> Manual["Manual fix (no auto-retry, no CI gate present)"]
-    Manual --> Start
-    subgraph Absent["Automated pipeline -- NONE present"]
-        direction TB
-        NA1["No CI runner (.github/workflows, GitLab CI, Jenkins)"]
-        NA2["No push / PR / schedule triggers"]
-        NA3["No parallel sharding / OS-version matrix"]
-        NA4["No flaky-test quarantine (determinism => no flakiness)"]
+    subgraph Terminal["Operator terminal - de-facto single-pane dashboard"]
+        subgraph P1["Panel A: Result transcript (stdout)"]
+            A1["Line 1: Total: 100"]
+            A2["Lines 2-5: 10 / 20 / 30 / 40"]
+            A3["Line 6: Application completed"]
+        end
+        subgraph P2["Panel B: Failure output (stderr)"]
+            B1["Empty on success"]
+            B2["Traceback on failure<br/>(circular ImportError at NestedChild)"]
+        end
+        subgraph P3["Panel C: Status indicator (exit code)"]
+            C1["exit code 0 -> healthy"]
+            C2["exit code 1 -> failed"]
+        end
     end
+    A3 --> C1
+    B2 --> C2
 ```
 
-Each automation concern the prompt enumerates is dispositioned below.
+### 6.5.3 Observability Patterns
 
-**Table 6.6-6 — Test-Automation Concerns: Disposition**
+The observable behavior of the system reduces to the three interpreter-level signals established in §5.4.1. The patterns below map each observability concern required by this section onto that reality; none involves automated collection or aggregation.
 
-| Automation Concern | Status | Basis / Evidence |
+**Health checks.** There is no HTTP `/health` endpoint or liveness/readiness probe because there is no server to probe. The de-facto health check is a **synthetic execution check**: run the tier and assert both the process exit code and the exact stdout transcript. This was confirmed by direct execution of each tier.
+
+| Tier | Health Signal (verified) | Healthy Criterion |
 | --- | --- | --- |
-| CI/CD integration | None present | No `.github/workflows` or any CI configuration (Section 3.6.4) |
-| Automated test triggers | None present | No pipeline; the de-facto trigger is a manual `unittest` invocation |
-| Parallel test execution | Not warranted | Sub-second suite over pure functions; a single process suffices |
-| Test reporting | Console + exit code | `unittest` OK/FAILED summary; optional `trace` coverage; no dashboards (Section 6.5) |
-| Failed-test handling | Fail-fast, manual | Non-zero exit surfaces failure; source-level fix and re-run (Section 5.4.2) |
-| Flaky-test management | Not applicable | Deterministic pure functions; no concurrency/network/time; flakiness is structurally impossible |
+| Root (`app.py`) | Exit 0; 6-line stdout | First line `Total: 100`, then `10`/`20`/`30`/`40`, then `Application completed` |
+| `ChildRepo/app.py` | Exit 0; 6-line stdout | Transcript identical to the root tier |
+| `ChildRepo/NestedChild/app.py` | Exit 1; empty stdout + stderr traceback | Never healthy — preserved circular-import defect (§2.4.4, §6.5.4) |
 
-**CI/CD integration.** None is configured. Should automation ever be desired, the dependency-free nature of the suite makes it trivial: a single CI job that checks out the tree recursively and runs the standard-library suite would suffice and would keep the project's zero-dependency posture intact. The canonical command is:
+**Performance metrics.** No performance metrics are collected or emitted. §5.4.4 records the *observed intrinsic* characteristics (not commitments), reproduced here for completeness.
 
-```bash
-python -m unittest discover     # exit code 0 = all tests passed
+| Performance Aspect | Defined Target | Observed Characteristic |
+| --- | --- | --- |
+| Latency / response time | None | Dominated by interpreter start-up, not computation (§5.4.4) |
+| Time complexity | None | `calculate_total` is an O(n) single pass, n = 4 fixed (Source: `service.py` L38–L39) |
+| Space complexity | None | O(1) extra memory — a single accumulator (§5.4.4) |
+| First-run cost | None | One-time bytecode compilation cached in `__pycache__`, amortized on later runs (§3.6.2) |
+
+**Business metrics.** No business or product KPIs are defined, tracked, or emitted. The only domain-level output is the computed aggregate itself — the total `100` and the four operands printed to stdout (Source: `app.py` L36–L40); it is displayed once and never recorded, counted, or aggregated across runs.
+
+**SLA monitoring.** No SLAs, service-level objectives, or error budgets are defined anywhere in the codebase or documentation (§5.4.4). There is consequently nothing to monitor against an SLA, and no availability, latency, or throughput commitment exists. The correctness-based acceptance criterion below stands in place of an SLA and is verified manually (§3.6.3).
+
+| SLA Dimension | Formal Requirement | Substitute Acceptance Criterion |
+| --- | --- | --- |
+| Availability / uptime | None (no service runs continuously) | Not applicable — the process is invoked on demand and exits |
+| Latency / throughput | None | Not applicable — a single synchronous batch run (§5.4.4) |
+| Functional correctness | None (no formal SLA) | Exact match of the 6-line stdout and exit code 0 (manual quality gate, §3.6.3) |
+
+**Capacity tracking.** No capacity metrics are tracked and no capacity planning applies: the input is the hard-coded four-element list, so there is no variable load, queue depth, connection count, or resource-utilization signal to observe (§5.4.4, §6.1.3). The only "capacity" dimension present is compositional — additional tiers are added by declaring further Git submodules — which grows the source tree, not runtime serving capacity (§6.1.3).
+
+### 6.5.4 Incident Response
+
+No automated incident-response tooling exists; the system follows a **fail-fast, fail-loud** model in which any error propagates to the interpreter's default handler, printing a traceback to stderr and exiting non-zero (§5.4.2). There are no `try`/`except` blocks, retries, or fallback paths, so recovery is manual (§5.4.2). Exactly one failure mode is realized in the repository — the `NestedChild` circular-import defect — and it anchors the incident-response practices documented here.
+
+**Alert routing.** Alerts are neither generated nor routed by any tooling. The failure "signal" is delivered **in-band and synchronously** to the controlling terminal of whoever launched the run: a stderr traceback plus a non-zero exit code (§5.4.2). There is no PagerDuty/Opsgenie/email/Slack integration and no routing rules. The flow by which a failure surfaces is shown below.
+
+*Diagram 6.5.4 — Alert Flow: a failed run surfaces synchronously as a stderr traceback and a non-zero exit code, observed directly by the operator who launched it; there is no asynchronous routing or escalation tier.*
+
+```mermaid
+flowchart TD
+    Start(["python app.py (any tier)"])
+    Imp{"Import 'service':<br/>calculate_total resolves?"}
+    Run["main() runs; prints 6 lines"]
+    OK(["Exit 0 + expected stdout:<br/>healthy, no alert"])
+    Trace["Uncaught exception:<br/>traceback to stderr"]
+    NonZero(["Exit 1 + empty/short stdout"])
+    Signal["Alert = non-zero exit + stderr traceback,<br/>delivered in-band to the terminal"]
+    Responder["Operator who launched the run<br/>(sole responder; no routing/escalation)"]
+    Action["Consult README Known Issues and runbook;<br/>root-cause, then fix source or re-run"]
+
+    Start --> Imp
+    Imp -->|"Yes: root / ChildRepo"| Run --> OK
+    Imp -->|"No: NestedChild circular import"| Trace --> NonZero --> Signal --> Responder --> Action
 ```
 
-**Automated test triggers.** There are no triggers today (no push, pull-request, tag, or scheduled events, because there is no pipeline). Under an optional CI adoption, the natural triggers would be on push and pull-request to run the suite before merge; this is a recommendation, not an observed configuration.
+**Escalation procedures.** There are no on-call rotations or escalation tiers. Because execution is a manual, interactive act, the operator who runs the program is simultaneously the detector and the responder; "escalation," if any, is an ordinary developer workflow — inspect the traceback, read the README, edit the source (§5.4.2).
 
-**Parallel test execution.** Parallelization is unnecessary. The recommended suite comprises only a few sub-second, CPU-bound unit tests over pure functions, so `unittest`'s sequential, single-process execution is more than adequate; there is no I/O wait or long-running case that would benefit from sharding. (`unittest` itself does not parallelize by default; a third-party runner would be required to do so and is not warranted here.)
+**Runbooks.** No dedicated runbook repository exists, but the READMEs and §3.6.4 together provide the de-facto operational runbook (acquire → run → observe → recover). The concise runbook for the observable failure conditions is:
 
-**Test reporting requirements.** Reporting is limited to what the runner prints to the console — `unittest`'s dotted progress line, per-failure tracebacks, the final `OK` / `FAILED (...)` summary, and the process exit code (`0` when all tests pass, non-zero otherwise). Optionally, the standard-library `trace` module can emit a line-coverage report. There is no test-result database, HTML report, JUnit-XML export, or dashboard, consistent with the console-only observability surface documented in Section 6.5.2.
-
-**Failed-test handling.** Failure handling follows the system's fail-fast model (Section 5.4.2): a failing assertion or an uncaught exception (for example, the `NestedChild` circular-import `ImportError`) causes `unittest` to report the failure with a traceback and exit non-zero. There is no automated retry, rerun, or notification; remediation is a manual source-level fix followed by re-running the suite. Because runs are deterministic, a fix is confirmed simply by observing that the suite subsequently reports `OK` and exits `0`.
-
-**Flaky-test management.** Flaky-test management is not applicable. Flakiness arises from non-determinism — concurrency, network timing, shared mutable state, clocks, or random data — none of which exists here: the functions are pure and deterministic, the process is single-threaded and synchronous, and the input is a fixed literal (Sections 6.1.2 and 6.6.1.1). A test either always passes or always fails for a given source state, so there is no quarantine list, retry-on-failure policy, or flakiness dashboard to maintain.
-
-### 6.6.4 Quality Metrics, Quality Gates, and Security Testing
-
-**The repository currently defines no quality metrics, coverage thresholds, quality gates, or security-testing requirements** — there is no coverage configuration, no CI gate, and no SLA anywhere in the tree (Sections 3.6.4, 5.4.4, and 6.6.3). The targets, gates, and checks specified below are therefore **recommendations for the proposed basic unit-test suite**, not observed configurations. They are deliberately proportionate to the system's scope: a tiny, deterministic, dependency-free program whose correctness oracle is the exact stdout report and exit code recorded in Section 1.2.3.
-
-#### 6.6.4.1 Quality Metrics and Targets
-
-Because the testable surface is small and purely functional, high, absolute metric targets are both meaningful and easily achievable. The success oracle for every metric derives from the verified behavior in Sections 1.2.3 and 6.6.1.2 (`calculate_total([10,20,30,40]) == 100`; `calculate_average([10,20,30,40]) == 25.0`; both return `0` for the empty list).
-
-**Table 6.6-7 — Recommended Quality Metrics and Targets**
-
-| Metric | Recommended Target | Basis / Note |
+| Symptom (observed) | Likely Cause | Operator Action |
 | --- | --- | --- |
-| Line coverage (`service.py`, `main()`) | 100% | Small pure surface; measurable with the stdlib `trace` module (Section 6.6.2.1) |
-| Branch coverage (`calculate_average` guard) | 100% | Two branches only: empty → `0`; non-empty → mean (`service.py:11-14`) |
-| Unit-test success rate | 100% pass (suite exit `0`) | Deterministic execution; any failure is a genuine defect, never flakiness |
-| Performance threshold | None defined (not applicable) | No SLAs or latency/throughput targets; O(n) with n = 4 (Section 5.4.4) |
+| Exit 1, empty stdout, `ImportError` traceback | `NestedChild` `app.py` and `service.py` are equivalent → circular import (§2.4.4) | Documented defect; run the root or `ChildRepo` tier, or fix the leaf `service.py` |
+| Exit 0 but stdout ≠ the expected 6 lines | Source edited, wrong tier, or wrong interpreter | Re-verify the tier and Python 3.6+; compare against the expected transcript (§3.6.4) |
+| `python` not found or Python 2 behavior | Interpreter resolution | Invoke `python3 app.py` (§3.6.4) |
+| Empty submodule directory | Non-recursive clone | Run `git submodule update --init --recursive` (§3.6.4) |
 
-**Documentation requirements.** The reference contract to document and assert is the deterministic output specified in Section 1.2.3 — `Total: 100`, each element on its own line, then `Application completed`, with exit `0`. For the test suite itself, the recommended documentation practices are: descriptive test method names that state the condition and expected result (Section 6.6.2.1); optional `doctest` examples embedded in `calculate_total` / `calculate_average` docstrings, which serve as both documentation and executable tests; and, if a suite is added, a short note in `README.md` on how to run it (`python -m unittest discover`), since each `README.md` is currently a single title line (Section 1.2.1).
+**Post-mortem processes.** No formal post-mortem process is defined. For the single realized incident, a root-cause analysis has effectively been completed and preserved in documentation: the `NestedChild` `app.py` and `service.py` were byte-identical at the pre-documentation baseline, so importing `service` re-enters a partially initialized module and `calculate_total` never resolves (README "Known Issues and Notes," L253–L278; §2.4.4). This documented analysis serves as the de-facto post-mortem; the defect is **retained as-is by deliberate decision**, not remediated (§6.1.4).
 
-#### 6.6.4.2 Quality Gates
+**Improvement tracking.** There is no in-repository issue tracker, backlog, or CI to track corrective actions. Change history and known-issue notes are tracked through Git (commits and pinned submodule SHAs) and the README/specification documentation; the `NestedChild` defect is knowingly carried forward rather than closed (§2.4.4, §6.1.4).
 
-In the absence of CI, the following gates are applied manually by the developer before accepting a change; each maps to a console-observable signal and, if a pipeline were adopted (Section 6.6.3), could be enforced automatically without adding dependencies.
+**Alert threshold matrix.** Because there are no numeric metrics, "thresholds" are defined over the observable signals themselves. Any deviation from the healthy baseline is treated as a single critical condition — the run either produced the exact expected result or it did not.
 
-**Table 6.6-8 — Recommended Quality Gates**
-
-| Quality Gate | Pass Condition | Enforcement |
+| Observed Signal | Healthy Baseline | Threshold → Severity |
 | --- | --- | --- |
-| Functional correctness | Suite reports `OK`; process exit code `0` | Manual (console); optional CI |
-| Coverage | 100% line/branch of the testable surface | Manual `trace` review; optional CI |
-| Submodule importability (F-004) | Each level's `service` module defines `calculate_total` | Smoke test; catches the `NestedChild` defect |
-| Secure-coding invariants | No dangerous primitives or untrusted input introduced | Static grep check (Section 6.6.4.3) |
+| Process exit code | `0` | `≠ 0` → Critical (run failed) |
+| stdout | Exactly the 6 expected lines | Missing/changed first line or line count → Critical (incorrect output) |
+| stderr | Empty | Non-empty (traceback present) → Critical (investigate) |
+| Runtime duration | No target defined | Not measured — no threshold (§5.4.4) |
 
-The **submodule-importability gate** is the highest-value gate for this specific codebase: a smoke test asserting that each level's `service` module exposes `calculate_total` is precisely the check that fails on the `ChildRepo/NestedChild` copy (whose `service.py` is a byte-for-byte duplicate of `app.py`) and would have prevented that defect from being integrated (Sections 5.4.2 and 6.1.3.3).
+### 6.5.5 References
 
-#### 6.6.4.3 Security Testing Requirements
-
-Security testing is minimal by construction, consistent with the near-empty attack surface established in Section 6.4. The system authenticates no users, exposes no network interface, reads no untrusted input, processes no sensitive data, and has zero third-party dependencies (Sections 6.4.1.2 and 3.3). Dynamic application security testing (DAST) and penetration testing are therefore not applicable, and security testing reduces to a few cheap, mostly static checks that confirm these favorable invariants have not regressed.
-
-**Table 6.6-9 — Security Testing Requirements**
-
-| Security Test Type | Applicability | Basis / Evidence |
-| --- | --- | --- |
-| Dependency / SCA scanning | Trivially satisfied | Zero third-party dependencies to scan; no supply-chain package surface (Section 3.3) |
-| Secrets scanning | Recommended (low cost) | No secrets in tracked source; credential-free HTTPS submodule URLs (Section 6.4) |
-| Static dangerous-primitive check | Recommended | Confirm continued absence of `eval`/`exec`/`compile`/`__import__`/`os.system`/`subprocess`/`pickle`/`marshal` and of untrusted input (`input()`/`sys.argv`/stdin) (Section 6.4.1.2) |
-| Submodule content review | Recommended | Submodules are pinned but not content-verified; the `NestedChild` defect illustrates the supply-chain risk (Section 6.4.5) |
-| DAST / penetration testing | Not applicable | No network, API, or UI attack surface to probe (Section 6.4.1.2) |
-
-The two security checks that carry real value here are the **static dangerous-primitive check** — a grep-style scan confirming the code introduces no dynamic-execution, deserialization, or untrusted-input primitives (all currently absent per Section 6.4.1.2) — and **submodule content review**, since the multi-repository composition (F-004) pulls pinned-but-unverified submodule content; reviewing submodule changes before adoption is the mitigating practice recommended in Section 6.4.5. Neither requires additional tooling or dependencies, keeping security testing aligned with the system's dependency-free design.
-
-### 6.6.5 References
+The following repository artifacts and specification sections were examined as evidence for this section. Runtime behavior was confirmed by direct execution of each tier; the absence of monitoring/logging/tracing tooling was confirmed by a repository-wide search of all source and configuration files.
 
 **Repository files examined**
 
-- `app.py` — Established the entry-point/orchestrator (feature F-003): the local import (`app.py:1`), the hard-coded input list `[10, 20, 30, 40]` (`app.py:4`), the single in-process call (`app.py:6`), and the `print()` output lines (`app.py:8, 11, 13`). Basis for the CLI end-to-end oracle (`Total: 100` / elements / `Application completed`, exit `0`) and for the sole test double (stdout capture).
-- `service.py` — Established the unit-test surface: `calculate_total` (F-001, lines 1–7) and `calculate_average` (F-002, lines 10–14), verified as pure and deterministic (`[10,20,30,40]` → `100` / `25.0`; `[]` → `0` / `0`). Confirmed no mocking is required and that `calculate_average` is defined but unexercised by any entry point.
-- `README.md` — One-line title only at each level; established the minimal-documentation baseline underlying the test-documentation recommendation.
-- `.gitmodules` — Declared the nested Git-submodule composition (F-004); basis for the submodule-population step (`git submodule update --init --recursive`) in test environment management and for the submodule-content-review security check.
-- `.blitzyignore` — Excludes `*.csv`; established that the `large.csv` files are never read by any code and are out of scope for all testing.
-- `__pycache__/service.cpython-312.pyc` — CPython 3.12 bytecode cache; cited as evidence of the observed interpreter toolchain for the test environment (minimum language level Python 3.6+).
+- `app.py` — Root entry point; established the deterministic 6-line stdout transcript (L36–L42), the domain output (`Total: 100` and the four operands, L36–L40), and exit-0 success behavior (verified by execution).
+- `service.py` — Root computation module; established the absence of logging/imports/state and the O(n) single-pass accumulation loop (L38–L39).
+- `README.md` — Confirmed the standard-library-only, zero-dependency, no-container/no-CI model and the "Known Issues and Notes" root-cause note for the `NestedChild` defect (L253–L278).
+- `.gitmodules`, `ChildRepo/.gitmodules` — Established the build-time submodule composition (no runtime service topology to monitor).
+- `ChildRepo/app.py`, `ChildRepo/service.py` — Mirror tier; verified identical healthy behavior (exit 0, 6-line stdout) as a second passing health-check target.
+- `ChildRepo/NestedChild/app.py`, `ChildRepo/NestedChild/service.py` — Defective leaf; verified the circular-import `ImportError` (exit 1, empty stdout, stderr traceback) that anchors §6.5.4 incident response.
+- `.blitzyignore` (root, `ChildRepo/`, `ChildRepo/NestedChild/`) — Each contains only `*.csv`; honored by excluding all CSV files from inspection and documentation.
+- `__pycache__/*.cpython-312.pyc` — CPython bytecode cache; cited as the only persisted, auto-regenerated artifact (first-run compilation cost in §6.5.3).
 
 **Repository folders examined**
 
-- `ChildRepo/` — Git submodule replicating the functioning two-module application; the second level whose run exits `0` with the expected report, confirming the happy-path E2E scenario.
-- `ChildRepo/NestedChild/` — Defective submodule instance whose `service.py` is a byte-for-byte copy of `app.py` and therefore never defines `calculate_total`, producing a circular-import `ImportError` (exit `1`); cited as the standing defect that the recommended submodule-importability smoke test and quality gate would catch.
+- `ChildRepo/` — First-level Git submodule tier (verified healthy run).
+- `ChildRepo/NestedChild/` — Leaf Git submodule tier (verified failure mode).
 
-**Repository-wide verification**
+**Cross-referenced specification sections**
 
-- Whole-tree inspection (root plus the `ChildRepo` and `ChildRepo/NestedChild` submodules, excluding `.git` and `*.csv`) — Confirmed the absence of any test files (`test_*.py` / `*_test.py` / `tests/`), `assert` statements, doctests, docstrings, and test-runner/coverage configuration (`pytest.ini`, `tox.ini`, `setup.cfg`, `.coveragerc`), as well as the absence of any CI/CD configuration. Confirmed the only import anywhere is the local `from service import calculate_total` and that there are zero third-party dependencies. Verified runtime behavior and exit codes on CPython 3.12.
+- §5.4 Cross-Cutting Concerns — §5.4.1 (the three observable signals; absence of monitoring/logging/tracing), §5.4.2 (fail-fast error handling), §5.4.4 (no SLAs/KPIs; observed intrinsic performance), §5.4.5 (stateless recovery).
+- §6.1 Core Services Architecture — §6.1.1 (single-process applicability), §6.1.2 (in-process module interaction), §6.1.3 (no scaling/capacity), §6.1.4 (resilience / the realized failure mode).
+- §3.6 Development & Deployment — §3.6.2 (implicit bytecode compilation), §3.6.3 (no CI/CD or containers; manual quality gate), §3.6.4 (acquire/run/observe model and runbook basis).
+- §5.1 High-Level Architecture — single-process, monolithic execution model.
+- §2.4 Implementation Considerations — §2.4.4 (the preserved `NestedChild` circular-import defect).
 
-**Cross-referenced Technical Specification sections**
+**Runtime verification**
 
-- `1.2 System Overview` — De-facto acceptance criteria, i.e., the expected stdout report plus exit `0` (1.2.3); the unexercised `calculate_average` (1.2.2); the single-line `README.md` (1.2.1).
-- `2.1 Feature Catalog` — Feature identifiers F-001 (`calculate_total`), F-002 (`calculate_average`, never invoked), F-003 (`app.py` `main()`), and F-004 (nested submodule composition) used throughout the test-scope matrix.
-- `3.1 Programming Languages` — Python 3.6+ minimum with the observed CPython 3.12 toolchain (test environment).
-- `3.2 Frameworks and Libraries` — No test framework present; zero libraries, underpinning the standard-library-only, dependency-free tooling choice.
-- `3.3 Open Source Dependencies` — Zero third-party dependencies; basis for the trivially satisfied SCA/dependency-scan requirement.
-- `3.4 Third-Party Services` — No external services; basis for "no external-service mocking."
-- `3.5 Databases and Storage` — No database or persistence; basis for "no database integration testing."
-- `3.6 Development and Deployment` — No build system, containerization, or CI/CD (3.6.4); nested submodule composition and recursive population (3.6.3).
-- `5.1 High-Level Architecture` — Modular-monolith characterization framing the testable surface.
-- `5.4 Cross-Cutting Concerns` — Fail-fast error propagation and exit codes (5.4.2); no performance requirements or SLAs (5.4.4); determinism-plus-version-control resilience (5.4.5).
-- `6.1 Core Services Architecture` — Single-process, single-in-process-call topology (6.1.2) and the `NestedChild` defect disposition (6.1.3.3); basis for "no service/integration testing."
-- `6.2 Database Design` — Confirmed no database (database integration testing not applicable).
-- `6.3 Integration Architecture` — Confirmed no APIs or endpoints (API testing not applicable).
-- `6.4 Security Architecture` — Attack-surface analysis (6.4.1.2) and standard security practices, including the pinned-but-unverified submodule supply-chain consideration (6.4.5); basis for the security-testing requirements.
-- `6.5 Monitoring and Observability` — Console-only observability surface (stdout/stderr/exit code) (6.5.2); basis for the test-reporting disposition.
+- Executed `python3 app.py` at all three tiers (observed CPython 3.12.3; §3.6.1 additionally documents 3.13.7): root and `ChildRepo` → exit 0 with the expected 6-line transcript; `ChildRepo/NestedChild` → exit 1 with empty stdout and a circular-import `ImportError` on stderr.
 
-**External sources**
+## 6.6 Testing Strategy
 
-- None. Every statement in this section is grounded in the repository evidence or in the cross-referenced specification sections above; no web sources were required.
+### 6.6.1 Testing Strategy Applicability and Scope
+
+**Detailed Testing Strategy is not applicable for this system** in the sense of a multi-layer, automated test architecture (unit + integration + end-to-end + performance + security suites executed under a continuous-integration pipeline). `600K_ParentRepo` is a deliberately minimal, standard-library-only Python demonstration whose entire runtime behavior is a single deterministic fixed-list summation written to standard output, executed once per manual invocation and then terminated (§5.1, §6.1.1).
+
+This determination is evidence-based. The repository ships **no test suite, no test runner, no test/coverage configuration, and no continuous-integration pipeline**: a repository-wide inspection of every non-ignored file across all three submodule tiers found no `test_*.py`/`*_test.py` modules, no `tests/` package, no `conftest.py`, and no use of `unittest`, `pytest`, `doctest`, or the `assert` statement anywhere in the six Python source files (282 lines total, per §3.1). Because the project depends only on the Python standard library and declares no dependency manifest (`requirements.txt`, `setup.py`, `pyproject.toml` are all absent — §3.1, §3.3), there is no place to install or pin a third-party test framework. This "Not applicable" framing is consistent with the evidence-based treatment given to §6.4 Security Architecture, §6.5 Monitoring and Observability, and §8 Infrastructure, and with §1.3.2, which places packaging, tests, and CI/CD out of scope.
+
+What the system *does* warrant is a **basic unit-testing approach** for its two pure numeric helpers and its entry-point workflow; that approach is documented in §6.6.2. In the absence of an automated suite, the current de-facto quality gate is a **manual synthetic-execution check** (§6.5.3, §3.6.3): each tier is run and its exact standard output and process exit code are compared against the expected result.
+
+**Basis for the determination.** Each fact below was confirmed by direct inspection and execution of the repository.
+
+| Testing Consideration | Repository Evidence | Consequence |
+| --- | --- | --- |
+| Existing automated tests | None — no `test_*.py`/`tests/`/`conftest.py`; no `unittest`/`pytest`/`assert` in any of the 6 modules | Nothing to run or extend today |
+| Dependencies / manifest | Standard-library only; no `requirements.txt`/`setup.py`/`pyproject.toml` (§3.1, §3.3) | No third-party test framework installed or pinnable |
+| CI/CD tooling | No `.github/` directory and no pipeline or build configuration (§3.6) | No automated trigger, runner, or reporting host |
+| Runtime shape | Single-process, ephemeral CLI batch job; deterministic output (§5.1, §6.1.1) | No services, network, database, or UI to integration/E2E-test |
+
+**Testing levels applicability.** The matrix records each testing level required by this section against the repository reality.
+
+| Testing Level | Applicability | Basis |
+| --- | --- | --- |
+| Unit testing | Applicable (basic — see §6.6.2) | Two pure, deterministic helpers plus a print-only entry point are trivially testable (§3.1) |
+| Integration testing | Minimal / mostly not applicable | Only edge is the in-process `app.py → service.py` import; no external systems (§6.6.3) |
+| End-to-end testing | Minimal (CLI transcript only) | "E2E" reduces to asserting the 6-line stdout and exit code per tier (§6.6.3) |
+| API / contract testing | Not applicable | No network/HTTP/RPC surface — the "API" is two in-process functions (§6.3) |
+| Database integration testing | Not applicable | No database or persistence layer (§3.5, §6.2) |
+| UI / cross-browser testing | Not applicable | No user interface or browser (§7) |
+| Performance / load testing | Not applicable | Fixed 4-element input; `calculate_total` is O(n), n = 4; cost dominated by interpreter start-up (§6.5.3) |
+| Security testing | Not applicable (documented) | No untrusted input, network exposure, secrets, or deserialization; minimal attack surface (§6.4, §2.4) |
+
+**Testable surface (in scope for §6.6.2).** The units that can be meaningfully and deterministically exercised are:
+
+- `service.calculate_total(numbers)` — root `service.py:L18` and `ChildRepo/service.py:L18`; verified `[10,20,30,40] → 100`, `[] → 0`, `(1,2,3) → 6`, `[1.5,2.5] → 4.0`, non-iterable such as `5` → `TypeError`.
+- `service.calculate_average(numbers)` — `service.py:L44`; verified `[10,20,30,40] → 25.0`, `[] → 0`, unsized/generator input → `TypeError`. It is defined but never invoked by the workflow (§3.1), so it is tested purely for API coverage.
+- `app.main()` — `app.py:L17`; prints `Total: 100`, the four operands, then `Application completed` (`app.py:L32–L42`), guarded by `if __name__ == "__main__":` (`app.py:L45`).
+- The **preserved `NestedChild` defect** as a negative/regression assertion — running `ChildRepo/NestedChild/app.py` exits `1` with empty stdout and a circular-import `ImportError` (§2.4.4, §6.5.4).
+- **Submodule composition** (build-time; feature F-004) — the recursive checkout invariant that co-locates each `app.py` with a `service.py` that actually defines `calculate_total`.
+
+#### 6.6.1.1 Test Environment Architecture
+
+No test infrastructure is provisioned. The complete test environment is a **single developer workstation running a stock CPython interpreter** — the same environment used to run the application (§3.6). There are no CI runners, containers, databases, network services, browsers, or external accounts, and none are required. The source under test (`app.py` + `service.py` at each of the three tiers) is exercised directly by the standard-library `unittest` runner in-process, with `subprocess` used only for the black-box tier/defect checks.
+
+| Resource | Requirement | Evidence |
+| --- | --- | --- |
+| Interpreter | Any CPython 3.6+ (verified on 3.12.3 and 3.13.7) | f-strings at `app.py:L36`; §3.1 |
+| Third-party packages | None | Standard-library only; no manifest (§3.3) |
+| Services (DB / network / cloud) | None | No persistence or network I/O (§3.5, §6.3) |
+| Compute footprint | Negligible — one process, O(1) working memory | §6.5.3 |
+
+*Diagram 6.6.1 — Test environment architecture: a single local CPython interpreter drives the standard-library `unittest` runner against the three source tiers; classic test infrastructure is absent by design.*
+
+```mermaid
+flowchart TD
+    subgraph Dev["Developer workstation (local, ephemeral)"]
+        Py["CPython 3.6+ interpreter<br/>(verified on 3.12.3 and 3.13.7)"]
+        UT["Python stdlib test runner<br/>unittest + unittest.mock + io.StringIO + subprocess"]
+        subgraph SUT["System under test (source modules only)"]
+            Root["Root tier<br/>app.py + service.py"]
+            Child["ChildRepo tier<br/>app.py + service.py"]
+            Nested["NestedChild tier<br/>app.py + service.py (defective)"]
+        end
+    end
+    Absent["Absent by design:<br/>no CI runners, no database, no network/HTTP,<br/>no browsers/UI, no containers, no external services"]
+    Py --> UT
+    UT --> Root
+    UT --> Child
+    UT --> Nested
+    UT -.->|"not provisioned"| Absent
+```
+
+### 6.6.2 Unit Testing Approach
+
+No unit tests exist in the repository today. The approach documented here is the **basic, standard-library-only unit-testing approach** that should be applied to the code, chosen deliberately to remain consistent with the project's zero-dependency Python posture (§3.1, §3.3): it relies exclusively on modules that ship with CPython so that "the project runs with a stock Python interpreter out of the box" continues to hold for the tests as well.
+
+#### 6.6.2.1 Frameworks and Tooling
+
+`unittest` (the standard-library `xUnit`-style framework built into CPython 3.6+) is the recommended primary framework and runner. All supporting needs — output capture, black-box execution, and coverage — are also satisfied by standard-library modules, so no third-party package is introduced.
+
+| Tool (standard library) | Role | Rationale |
+| --- | --- | --- |
+| `unittest` | Primary framework + runner (`python -m unittest discover`) | Built into CPython 3.6+; preserves the zero-dependency constraint (§3.1) |
+| `unittest.mock` | Patch/stub helpers (rarely needed here) | Standard library; avoids adding a dependency |
+| `io.StringIO` + `contextlib.redirect_stdout` | Capture `main()` stdout for assertions | Standard library; the entry point's only output is `print()` |
+| `subprocess` + `sys.executable` | Black-box run of a tier and regression check for the `NestedChild` defect | Standard library; asserts exit code and stdout end-to-end |
+| `doctest` (optional) | Validate worked docstring examples (e.g., `calculate_total([10,20,30,40]) # -> 100`) | Docstrings and `README.md` already contain runnable examples |
+| `trace` (stdlib) or `coverage.py` (optional, dev-only) | Line/branch coverage measurement | `trace` keeps zero runtime deps; `coverage.py` would be the single optional developer tool |
+
+`pytest` is a popular alternative, but adopting it would introduce a third-party dependency contrary to the project's documented zero-dependency posture (§3.3); `unittest` is therefore the recommended default, with `pytest` acceptable only as a developer-local convenience that is never required to run the suite.
+
+#### 6.6.2.2 Test Organization and Naming Conventions
+
+Because each tier is an **independent Git repository/submodule** with its own `app.py`/`service.py` (§2.x feature F-004, §6.1), tests are organized **per tier** and colocated with the code they exercise; each tier's suite is found through `unittest`'s built-in discovery run from that tier's root. This mirrors the source topology `600K_ParentRepo → ChildRepo → NestedChild` rather than assuming a single monorepo test tree.
+
+| Location | Test module(s) | Covers |
+| --- | --- | --- |
+| repository root | `test_service.py` | `calculate_total`, `calculate_average` |
+| repository root | `test_app.py` | `main()` stdout transcript and success behavior |
+| `ChildRepo/` | `test_service.py`, `test_app.py` | Mirror-tier helpers and workflow |
+| `ChildRepo/NestedChild/` | `test_defect.py` | Regression assertion of the circular-import failure |
+
+Naming follows standard `unittest` conventions so that discovery works without configuration:
+
+| Element | Convention | Example |
+| --- | --- | --- |
+| Test module | `test_<module>.py` | `test_service.py` |
+| Test case class | `Test<Unit>` extending `unittest.TestCase` | `class TestCalculateTotal` |
+| Test method | `test_<behavior>_<condition>_<expected>` | `test_empty_list_returns_zero` |
+
+Because `app.py` imports `from service import calculate_total` (`app.py:L15`), tests must run with the tier's directory on `sys.path` (that is, executed from that tier's root). This reflects the structural co-location invariant documented in §3.1 — each `app.py` must sit beside a `service.py` that actually defines `calculate_total`.
+
+#### 6.6.2.3 Mocking Strategy and Test Data Management
+
+**Mocking strategy — effectively none required.** `service.py` has no imports, no classes, and no module-level state, and performs no I/O (§3.1); the two helpers are pure and deterministic, so there are no collaborators, clocks, filesystems, networks, or external services to stub or fake. There are no databases or external services to mock either (§6.2, §6.3). The only interaction with the outside world is `app.main()` writing to standard output, which is captured with standard-library `io.StringIO`/`contextlib.redirect_stdout` (or `unittest.mock.patch`) rather than a mocking framework. The one place a test double is warranted is the black-box regression check for the `NestedChild` defect, which is run as a real child process via `subprocess`.
+
+**Test data management.** All inputs are small in-line literals; there are no fixtures, factories, seeded databases, or external data files, and the `.blitzyignore` policy excludes CSV data from the repository entirely. The canonical dataset mirrors the production fixed list `[10, 20, 30, 40]` (`app.py:L32`). The following empirically verified datasets drive the suite:
+
+| Dataset | Input | Expected Result (verified) |
+| --- | --- | --- |
+| Canonical list | `[10, 20, 30, 40]` | total `100`; average `25.0`; stdout = 6 lines |
+| Empty | `[]` | total `0`; average `0` |
+| Tuple (sized) | `(1, 2, 3)` | total `6` |
+| Floats | `[1.5, 2.5]` | total `4.0` |
+| Non-iterable | `5` | `calculate_total` raises `TypeError` |
+| Unsized iterable | a generator expression | `calculate_average` raises `TypeError` |
+| Nested defect run | `python app.py` in `NestedChild` | exit `1`, empty stdout, circular-import `ImportError` |
+
+*Diagram 6.6.2 — Test data flow: fixed literal datasets feed the units under test, whose results are checked by `unittest` assertions and reduced to a pass/fail outcome. No persistent data store participates.*
+
+```mermaid
+flowchart LR
+    Data["In-test literals<br/>[10,20,30,40] / [] / (1,2,3) / 5 / generator"]
+    subgraph Cases["unittest test methods (per tier)"]
+        Ct["calculate_total(numbers)"]
+        Ca["calculate_average(numbers)"]
+        Mn["app.main() via redirect_stdout"]
+    end
+    Asrt["Assertions<br/>assertEqual / assertRaises / assertMultiLineEqual"]
+    Res["Test outcome<br/>PASS / FAIL"]
+    Data --> Ct --> Asrt
+    Data --> Ca --> Asrt
+    Data --> Mn --> Asrt
+    Asrt --> Res
+```
+
+#### 6.6.2.4 Example Test Patterns
+
+The patterns below are illustrative `unittest` skeletons grounded in the verified behavior of the code. They fall into three shapes: value assertions for pure functions, exception assertions for invalid input, and transcript assertions for the entry point.
+
+Pattern 1 — pure-function value assertion for `calculate_total`:
+
+```python
+def test_total_canonical_list_returns_100(self):
+    self.assertEqual(calculate_total([10, 20, 30, 40]), 100)
+```
+
+Pattern 2 — edge case (empty input) for `calculate_average`:
+
+```python
+def test_average_empty_returns_zero(self):
+    self.assertEqual(calculate_average([]), 0)
+```
+
+Pattern 3 — exception assertion for invalid (non-iterable) input:
+
+```python
+def test_total_non_iterable_raises_type_error(self):
+    with self.assertRaises(TypeError):
+        calculate_total(5)
+```
+
+Pattern 4 — entry-point stdout transcript for `main()`:
+
+```python
+with redirect_stdout(io.StringIO()) as buf:
+    main()
+self.assertEqual(buf.getvalue().splitlines()[0], "Total: 100")
+```
+
+Pattern 5 — black-box regression assertion preserving the `NestedChild` circular-import defect:
+
+```python
+r = subprocess.run([sys.executable, "app.py"], cwd="ChildRepo/NestedChild",
+                   capture_output=True, text=True)
+self.assertEqual(r.returncode, 1)   # empty stdout; circular-import ImportError on stderr
+```
+
+### 6.6.3 Integration, End-to-End, and Specialized Testing
+
+For this system, integration, end-to-end, and specialized (performance, security, cross-browser) testing are either **minimal or not applicable**, because there are no external systems, no persistence, no network surface, and no user interface (§6.1, §6.2, §6.3, §7). This sub-section addresses each item required by the section prompt, documenting the minimal practice where one is meaningful and marking the rest *Not applicable* with supporting evidence.
+
+#### 6.6.3.1 Integration Testing
+
+The only runtime integration edge in the entire system is the **in-process import** by which `app.py` obtains `calculate_total` from the co-located `service.py` (`app.py:L15`; §6.1.2). Feature F-004 (nested submodule composition) is a **build-time** relationship with no cross-level runtime coupling (§2.4, §6.1), so there is no cross-tier service call to integration-test — each tier is validated independently.
+
+| Integration Concern | Applicability | Approach / Evidence |
+| --- | --- | --- |
+| Service integration | Minimal | Assert composed `main()` behavior and that `from service import calculate_total` resolves for a tier (`app.py:L15`; §6.1.2) |
+| API testing | Covered by unit tests | No network API; the "API" is `calculate_total`/`calculate_average`/`main` (§6.6.2); docstring/README examples enforceable with `doctest` |
+| Database integration | Not applicable | No database or persistence layer (§3.5, §6.2) |
+| External service mocking | Not applicable | No external/third-party services to mock (§3.4, §6.3) |
+| Test environment management | Trivial | Single local interpreter; the only setup is recursive submodule checkout so each tier's `service.py` is present (§3.6) |
+
+The practical "integration test" is therefore an execution-level assertion: run `main()` (or the tier as a subprocess) and confirm that the `app.py → service.py` composition produces the expected transcript — the same synthetic-execution check used as the de-facto quality gate (§6.5.3).
+
+#### 6.6.3.2 End-to-End and Cross-Browser Testing
+
+End-to-end testing reduces to running each tier as a black box and asserting its complete standard-output transcript and process exit code. The three scenarios below were verified by direct execution (CPython 3.12.3; documented also on 3.13.7 — §3.1).
+
+| Scenario (tier) | Command | Expected Outcome (verified) |
+| --- | --- | --- |
+| Root success | `python app.py` (repository root) | stdout `Total: 100`, then `10`/`20`/`30`/`40`, then `Application completed`; exit 0 |
+| ChildRepo success | `python app.py` (`ChildRepo/`) | Identical 6-line transcript; exit 0 |
+| NestedChild failure (negative) | `python app.py` (`ChildRepo/NestedChild/`) | Empty stdout; exit 1; circular-import `ImportError` on stderr |
+
+The remaining specialized concerns in this category are not applicable to a console-only, fixed-input program:
+
+| Specialized Concern | Applicability | Basis |
+| --- | --- | --- |
+| UI automation (Selenium/Playwright/Cypress) | Not applicable | No graphical or web UI; output is plain stdout text (§7) |
+| Cross-browser testing | Not applicable | No browser or web front end exists (§7) |
+| Test data setup / teardown | None required | Hard-coded literals; stateless, ephemeral process; the only residue is regenerable `__pycache__` bytecode (§3.6.2) |
+| Performance / load testing | Not applicable (characterized only) | `calculate_total` is O(n) with n = 4 fixed; O(1) memory; latency dominated by interpreter start-up; no thresholds defined (§6.5.3) |
+
+#### 6.6.3.3 Security Testing
+
+Security testing is documented as **not applicable** for automated suites, consistent with §6.4 Security Architecture and the minimal attack surface recorded in §2.4: the code takes no external input, opens no network sockets, holds no secrets, and performs no deserialization or dynamic evaluation. The security-relevant practices that *do* apply are static and supply-chain oriented rather than dynamic penetration tests.
+
+| Security Test Concern | Applicability | Basis |
+| --- | --- | --- |
+| Untrusted-input / fuzz testing | Not applicable | Input is a hard-coded list; no external or user input reaches the code (§6.4, §2.4) |
+| Injection / deserialization | Not applicable | No `eval`/`exec`/`pickle`, no SQL, no parsers anywhere in the six modules (§6.4) |
+| AuthN / AuthZ testing | Not applicable | No authentication, authorization, sessions, or secrets (§6.4) |
+| Supply-chain hygiene | Advisory (manual) | Verify pinned submodule SHAs and clean public HTTPS remotes; never embed credentials in clone URLs (README "Setup" security note; §2.4) |
+| Input robustness (fail-fast) | Covered by unit tests | Non-numeric input surfaces a `TypeError` rather than a wrong result — asserted in §6.6.2 (Pattern 3) |
+
+### 6.6.4 Test Automation and CI/CD Integration
+
+**No test automation or CI/CD is configured for this system.** There is no `.github/` directory, no pipeline definition, and no build configuration anywhere in the repository (§3.6). The de-facto "automation" today is a human running each tier and comparing its transcript and exit code against the expected result (§6.5.3). This sub-section records that current state and a **minimal, technology-consistent automation** that could be adopted without changing the application — always noting that CI/CD is itself out of scope per §1.3.2.
+
+#### 6.6.4.1 CI/CD Integration and Test Execution Flow
+
+Because the suite is standard-library-only, a minimal pipeline needs nothing more than a Python interpreter and a recursive checkout; no services, containers, or credentials are required.
+
+| Aspect | Current State | Recommended Minimal Approach |
+| --- | --- | --- |
+| CI/CD platform | None — no `.github/` or pipeline/build config (§3.6) | One workflow that checks out recursively, selects CPython 3.6+, and runs `python -m unittest discover` per tier |
+| Trigger | Manual invocation only (§6.5.3) | On push / pull-request to the tracked branch, plus manual dispatch |
+| Runner / host | Developer workstation | A stock CPython image; no services or containers needed (§3.6) |
+
+*Diagram 6.6.4 — Test execution flow: recursive checkout co-locates each tier's `service.py`; the standard-library runner executes the unit and transcript assertions, then the deterministic `NestedChild` negative regression; any failure stops the run with a non-zero exit.*
+
+```mermaid
+flowchart TD
+    Start(["Trigger: manual run, or (recommended) push / PR to tracked branch"])
+    Checkout["git submodule update --init --recursive<br/>(co-locate service.py at each tier)"]
+    Setup["Select CPython 3.6+ interpreter"]
+    Discover["python -m unittest discover (per tier)"]
+    Unit{"Unit + transcript<br/>assertions pass?"}
+    Defect{"NestedChild regression:<br/>exit 1 + ImportError as expected?"}
+    Pass(["Report PASS (exit 0)"])
+    Fail(["Report FAIL (non-zero exit):<br/>print traceback / diff, then stop"])
+    Start --> Checkout --> Setup --> Discover --> Unit
+    Unit -->|Yes| Defect
+    Unit -->|No| Fail
+    Defect -->|Yes| Pass
+    Defect -->|No| Fail
+```
+
+#### 6.6.4.2 Triggers, Parallelism, Reporting, and Failure Handling
+
+The operational characteristics of the (recommended) automation follow directly from the deterministic, dependency-free nature of the code.
+
+| Automation Aspect | Position | Basis |
+| --- | --- | --- |
+| Automated triggers | None today; recommend push/PR + manual dispatch | No pipeline exists (§3.6) |
+| Parallel execution | Unnecessary | A handful of sub-second tests; optional per-tier sharding only if the tree grows |
+| Test reporting | `unittest` console report today; optional JUnit-XML via extra tooling | No dashboards or report store (§6.5) |
+| Failed-test handling | Fail-fast: a non-zero exit stops the run and prints the traceback/diff | Matches the application's own fail-fast model (§5.4.2) |
+| Flaky-test management | Not applicable — behavior is deterministic | Pure functions, fixed input, no concurrency/network/time; the `NestedChild` failure is a deterministic, expected negative (§2.4.4) |
+
+**Failed test handling.** Failures surface exactly as application faults do — in-band and synchronously: an assertion failure or a tier's non-zero exit causes `unittest` to return a non-zero status, which fails the run and prints the offending traceback or transcript diff (§5.4.2). There is no retry, quarantine, or auto-rerun step.
+
+**Flaky test management.** Flakiness has no source in this system: every function is pure and deterministic, every input is a fixed literal, and there is no concurrency, timing, network, or randomness to perturb results. The single persistent failure — the `NestedChild` circular-import defect — is deterministic and is asserted as an **expected negative outcome** (§6.6.3.2), so it is never treated as flaky and never masks a real regression.
+
+### 6.6.5 Quality Metrics and Quality Gates
+
+The repository **defines no formal quality metrics, coverage targets, success-rate requirements, or performance thresholds today** — consistent with the absence of SLAs/SLOs/KPIs recorded in §5.4.4 and §6.5. The figures below are therefore **recommended targets for the basic unit-testing approach** of §6.6.2, not commitments observed in the code. They are deliberately simple because the executable surface is tiny — only a handful of statements, a single loop, and a single branch per tier — which makes full coverage readily achievable.
+
+#### 6.6.5.1 Coverage and Success-Rate Targets
+
+| Metric | Recommended Target | Rationale / Evidence |
+| --- | --- | --- |
+| Statement coverage (`service.py`) | 100% | Handful of statements + one loop; fully reachable with the datasets in §6.6.2 |
+| Branch coverage (`calculate_average`) | 100% (both arms of `if not numbers`) | Only one branch exists (`service.py:L75`) |
+| Statement coverage (`app.py` `main`) | 100% via the transcript test | Straight-line print workflow (`app.py:L32–L42`) |
+| Positive test success rate | 100% pass on every supported interpreter | Deterministic pure functions; no flakiness (§6.6.4.2); 3.6+, verified 3.12.3/3.13.7 (§3.1) |
+
+The single **negative** regression (the `NestedChild` defect) is a special case: its "success" is defined as faithfully reproducing the documented failure (exit `1` + circular-import `ImportError`), not as a passing run.
+
+#### 6.6.5.2 Performance Thresholds
+
+No performance thresholds are defined or applicable; the values below are **observed intrinsic characteristics** (informational only), reproduced from §6.5.3 for completeness — none is a gate.
+
+| Performance Aspect | Defined Threshold | Observed Characteristic (informational) |
+| --- | --- | --- |
+| Latency / response time | None | Dominated by interpreter start-up, not computation (§6.5.3) |
+| Time complexity | None | `calculate_total` is O(n), n = 4 fixed (`service.py:L38–L39`) |
+| Memory | None | O(1) — a single accumulator (§6.5.3) |
+| Throughput / load | None | Single synchronous batch run; no load dimension (§6.5.3) |
+
+#### 6.6.5.3 Quality Gates
+
+The de-facto quality gate in force today is the **manual synthetic-execution check** (§6.5.3, §3.6.3). The recommended automated gates simply encode that same check plus the basic suite.
+
+| Quality Gate | Pass Criterion | Basis |
+| --- | --- | --- |
+| Manual synthetic execution (current) | Root & ChildRepo: exact 6-line stdout + exit 0; NestedChild: exit 1 + `ImportError` | De-facto gate today (§6.5.3, §3.6.3) |
+| Unit + transcript suite (recommended) | All positive `unittest` assertions pass | §6.6.2 |
+| Negative regression (recommended) | `NestedChild` reproduces exit 1 + circular-import `ImportError` | §6.6.3.2, §2.4.4 |
+| Coverage gate (optional) | Meets the §6.6.5.1 targets | Optional dev tooling (`trace` / `coverage.py`) |
+
+#### 6.6.5.4 Documentation Requirements
+
+Testing documentation is expected to remain consistent with the project's documentation-first practice (§3.1): the source already carries behavior-and-edge-case docstrings and a comprehensive README, and any tests added should keep those artifacts in sync rather than duplicating them.
+
+| Documentation Artifact | Requirement | Evidence |
+| --- | --- | --- |
+| Docstrings (behavior + edge cases) | Keep aligned with tests; enforce worked examples with `doctest` | `service.py:L18–L78`, `app.py:L17` |
+| README expected output | Remains the single source of truth for the E2E transcript check | README "Deployment and How to Run" |
+| README "Known Issues" | Keep the `NestedChild` defect note aligned with the negative regression | README "Known Issues and Notes" (L253–L278) |
+
+### 6.6.6 References
+
+The following repository artifacts and specification sections were examined as evidence for this section. The absence of any test suite, test runner, coverage configuration, and CI/CD tooling was confirmed by a repository-wide search of all non-ignored source and configuration files; runtime behavior was confirmed by direct execution of each tier.
+
+**Repository files examined**
+
+- `app.py` — Root entry point; established the entry-point workflow under test (`main()`, `app.py:L17`, `L32–L42`), the intra-repository import (`app.py:L15`), the `__main__` guard (`app.py:L45`), and the Python 3.6+ floor via f-strings (`app.py:L36`).
+- `service.py` — Root computation module; established the two pure, import-free, side-effect-free units under test — `calculate_total` (`service.py:L18`, loop `L38–L39`) and `calculate_average` (`service.py:L44`, sole branch `L75`) — and the docstring statement that they are "trivially testable."
+- `README.md` — Confirmed the standard-library-only/zero-dependency model, the expected 6-line output transcript, the API worked-examples, the recursive-checkout and clone-credential security note, and the "Known Issues and Notes" defect record (`L253–L278`).
+- `.gitmodules` — Established the build-time submodule composition (feature F-004), showing there is no runtime service topology to integration-test.
+- `ChildRepo/app.py`, `ChildRepo/service.py` — Mirror tier; verified identical healthy behavior (exit 0, 6-line stdout) as a second passing target and confirmed the functional co-location invariant holds.
+- `ChildRepo/NestedChild/app.py`, `ChildRepo/NestedChild/service.py` — Defective leaf; `service.py` is a byte-for-byte duplicate of `app.py`, causing the circular-import `ImportError` (exit 1, empty stdout) that anchors the negative regression test and §6.6.3.2/§6.6.4.
+- `.blitzyignore` (root, `ChildRepo/`, `ChildRepo/NestedChild/`) — Each contains only `*.csv`; honored by excluding all CSV files from inspection and documentation (relevant to the "no data files" test-data note in §6.6.2.3).
+
+**Repository folders examined**
+
+- `` (repository root) — Confirmed no `tests/`, no `.github/`, and no dependency manifest at the top level.
+- `ChildRepo/` — First-level Git submodule tier (verified healthy run; independent per-tier test target).
+- `ChildRepo/NestedChild/` — Leaf Git submodule tier (verified failure mode; negative-regression target).
+
+**Cross-referenced specification sections**
+
+- §1.3 Scope — §1.3.2 places packaging, tests, and CI/CD out of scope.
+- §2.4 Implementation Considerations — §2.4.4 (the preserved `NestedChild` circular-import defect); minimal security attack surface.
+- §3.1 Programming Languages — Python 3.6+, standard-library-only, six modules / 282 lines; "trivially reusable and testable" helpers; verification on 3.12.3 and 3.13.7.
+- §3.3 Open Source Dependencies — no dependency manifest, so no third-party test framework is pinnable.
+- §3.4 Third-Party Services / §3.5 Databases & Storage — no external services and no database to integration-test.
+- §3.6 Development & Deployment — no CI/CD or containers; manual quality gate; implicit bytecode compilation.
+- §5.1 High-Level Architecture / §5.4 Cross-Cutting Concerns — single-process model; §5.4.2 fail-fast handling; §5.4.4 no SLAs/KPIs.
+- §6.1 Core Services Architecture — single-process applicability; in-process `app.py → service.py` interaction; no scaling/capacity.
+- §6.2 Database Design / §6.3 Integration Architecture — no persistence and no integration surface to test.
+- §6.4 Security Architecture — minimal attack surface underpinning the security-testing assessment.
+- §6.5 Monitoring and Observability — the three observable signals, the synthetic-execution health check, and the observed performance characteristics reused here.
+- §7 User Interface Design — no UI, underpinning the not-applicable UI-automation and cross-browser determinations.
+
+**Runtime verification**
+
+- Executed `python3 app.py` at all three tiers (observed CPython 3.12.3; §3.1 additionally documents 3.13.7): root and `ChildRepo` → exit 0 with the expected 6-line transcript; `ChildRepo/NestedChild` → exit 1 with empty stdout and a circular-import `ImportError` on stderr.
+- Exercised the helper functions directly to confirm the test-data expectations in §6.6.2.3: `calculate_total([10,20,30,40])=100`, `calculate_total([])=0`, `calculate_total((1,2,3))=6`, `calculate_total([1.5,2.5])=4.0`, `calculate_total(5)`→`TypeError`; `calculate_average([10,20,30,40])=25.0`, `calculate_average([])=0`, `calculate_average(<generator>)`→`TypeError`.
+- Confirmed via repository-wide search that no `unittest`/`pytest`/`doctest`/`assert`/`def test_` usage exists in any of the six Python modules.
 
 # 7. User Interface Design
 
@@ -3223,14 +3189,443 @@ The two security checks that carry real value here are the **static dangerous-pr
 
 **No user interface required.**
 
-This repository does not define, contain, or depend on any user interface. It is a minimal, non-interactive Python program whose only user-facing surface is one-way text written to standard output (`stdout`). It presents no graphical, web, mobile, desktop, or interactive terminal (TUI) interface, and it accepts no interactive user input.
+The `600K_ParentRepo` repository — together with its two nested Git submodules, `ChildRepo` and `ChildRepo/NestedChild` — defines **no user interface of any kind**. It is a deliberately minimal, standard-library-only Python command-line program whose entire human-facing behavior is a fixed set of plain-text lines written to standard output. There is no graphical (GUI), web, or terminal (TUI) interface; there are no screens, views, or templates; and there is therefore no visual design surface, no UI schema, no UI/backend interaction boundary, and no interactive user-input flow to document in this section.
 
-This determination is grounded in a full inspection of every level of the repository — the root project and the nested `ChildRepo` and `ChildRepo/NestedChild` Git submodules, all of which mirror the same two-file Python structure:
+This determination is grounded in direct inspection of every source file across all three repository tiers and is consistent with the architecture recorded in §5.1 High-Level Architecture, which states that the process's standard-output stream and exit code are its sole runtime output interface and that there is "no GUI, HTTP endpoint, or API surface."
 
-- **No frontend or markup assets exist.** The complete file inventory (excluding `.git` and the `.blitzyignore`-excluded `*.csv` files) consists only of Python modules (`app.py`, `service.py`), one-line `README.md` files, and `.gitmodules` / `.blitzyignore` configuration. There are no `.html`, `.css`, `.scss`, `.js`, `.jsx`, `.ts`, `.tsx`, `.vue`, or `.svelte` files, no `package.json`, and no `templates/`, `static/`, `public/`, or asset directories anywhere in the tree.
-- **No UI, GUI, or TUI framework is present.** There is no web/UI framework (e.g., Flask, Django, FastAPI, Streamlit, React) and no desktop or terminal-UI toolkit (e.g., Tkinter, PyQt, PySide, `curses`). Consistent with this, Section 3.2 (Frameworks and Libraries) records that a frontend/UI framework is "Not present — No JavaScript/TypeScript, HTML, or CSS files exist anywhere," and the codebase imports no third-party libraries at all.
-- **No interactive input is accepted.** `app.py` operates on a hard-coded list (`[10, 20, 30, 40]`) and contains no `input()` prompt, command-line argument parsing (`argparse`, `sys.argv`), CLI framework (`click`, `typer`), or interactive-terminal handling. As Section 1.2 (System Overview) states, the application "accepts no arguments, files, or interactive input."
-- **The only output is one-way stdout.** Each `app.py` `main()` calls `print()` to emit results. Executing the root program produces the following fixed console output and then exits successfully:
+### 7.1.1 Basis for Determination
+
+The following evidence, gathered from the repository, establishes the absence of a user interface:
+
+| Evidence examined | Finding |
+| --- | --- |
+| File types present in the repository | Only `.py`, `.md`, `.gitmodules`, and `.blitzyignore` files (plus `.pyc` bytecode caches and `.csv` files excluded by `.blitzyignore`). There are **no** `.html`, `.css`, `.js`, template, or image assets, and no `static/`, `templates/`, `frontend/`, or `ui/` directories |
+| Framework and library imports (all `*.py`) | The **only** import statement anywhere in the codebase is the intra-repository `from service import calculate_total`. No web (Flask/Django/FastAPI), GUI (Tkinter/PyQt/wx/Kivy), or terminal-UI (curses/rich/textual/urwid) libraries are imported |
+| Runtime output mechanism (`app.py`) | `main()` writes plain text with `print()` to standard output only; there is no rendering, templating, or windowing |
+| Runtime input mechanism (`app.py`) | The program operates on a hard-coded list literal `[10, 20, 30, 40]`; it uses no `input()`, `argparse`, `sys.argv`, environment variables, files, or network input |
+| Documentation (`README.md` files) | The root and `ChildRepo` READMEs are entirely CLI-oriented — their "Deployment and How to Run" guidance is simply `python app.py`, producing text on standard output. No README contains any UI, screen, or frontend section |
+
+### 7.1.2 Sole Human-Facing Touchpoint
+
+The only way a human interacts with the program is by invoking it from a shell and reading the text it prints. Running the root (or `ChildRepo`) entry point produces exactly the following, verified standard output:
+
+```text
+$ python app.py
+Total: 100
+10
+20
+30
+40
+Application completed
+```
+
+This is a program **output stream**, not a designed user interface: it renders no controls, accepts no input, and has no layout, styling, or navigation. The command-line invocation and this output are documented as a system workflow (§4.1) and as the runtime output boundary of the architecture (§5.1), not as UI design. (For completeness, the leaf submodule `ChildRepo/NestedChild` produces no output at all: its `app.py` fails at import time with a circular-import `ImportError`, as recorded in §1.2 and §5.1.)
+
+### 7.1.3 Applicability of Requested UI Topics
+
+Because no user interface exists, each topic normally covered by this section is not applicable. The mapping below records that determination explicitly rather than inferring UI details that the code does not implement:
+
+| UI aspect | Applicability | Basis in repository |
+| --- | --- | --- |
+| Core UI technologies | Not applicable | No UI framework or library is present; the program uses only the Python standard library and `print()` |
+| UI use cases | Not applicable | There is no interactive UI; the single non-interactive workflow (fixed-list summation, feature F-003) is documented in §4.1 |
+| UI / backend interaction boundaries | Not applicable | There is no UI tier; the only runtime boundary is an intra-process function call, `app.py → service.calculate_total` (§5.1) |
+| UI schemas | Not applicable | No forms, view models, DTOs, or serialized UI payloads exist anywhere in the codebase |
+| Screens required | None | No screens, views, pages, or templates exist in the repository; there are no UI screens to reference |
+| User interactions | Not applicable | The program is non-interactive and accepts no user input at runtime |
+| Visual design considerations | Not applicable | There is no visual surface; output is line-oriented plain text with no layout, color, typography, or theming |
+
+
+## 7.2 References
+
+The following repository files, folders, and technical-specification sections were examined as evidence for the determination that no user interface exists.
+
+**Files examined**
+
+- `app.py` — Root command-line entry point. Established that `main()` writes plain text to standard output via `print()`, operates on a hard-coded list, and defines no interactive input, rendering, or UI logic; its only import is `from service import calculate_total`.
+- `service.py` — Root computation module. Established that the numeric helpers are pure functions with no imports, no I/O, and no UI concerns.
+- `ChildRepo/app.py` — Established that the middle-tier entry point mirrors the same CLI/stdout-only pattern.
+- `ChildRepo/service.py` — Established that the middle-tier helpers mirror the same pure, I/O-free pattern.
+- `ChildRepo/NestedChild/app.py` — Established that the leaf-tier entry point mirrors the same pattern (and fails at import time by construction, producing no output).
+- `ChildRepo/NestedChild/service.py` — Established the leaf-tier module content contributing to the documented circular-import defect.
+- `README.md` — Root documentation. Established that usage is exclusively command-line (`python app.py` → standard output) and that no UI, screen, or frontend section exists.
+- `ChildRepo/README.md` — Established that the middle-tier documentation is likewise CLI-only with no UI content.
+- `.blitzyignore` — Established the repository-wide `*.csv` exclusion honored throughout this investigation.
+
+**Folders examined**
+
+- `` (repository root, `600K_ParentRepo`) — Confirmed the top-level inventory contains only Python sources, Markdown docs, and Git-submodule configuration; no `static/`, `templates/`, `frontend/`, or `ui/` directories.
+- `ChildRepo/` — First-level Git submodule; confirmed it replicates the two-file (`app.py`/`service.py`) pattern with no UI assets.
+- `ChildRepo/NestedChild/` — Leaf Git submodule; confirmed it contains only the mirrored sources and a one-line README, with no UI assets.
+
+**Cross-referenced specification sections**
+
+- §1.2 System Overview — Confirmed the application accepts no command-line arguments, files, or interactive input and performs no network, database, or file I/O.
+- §4.1 System Workflows — Documents the non-interactive fixed-list summation workflow (feature F-003) that produces the standard-output text.
+- §5.1 High-Level Architecture — Confirmed the system is a single-process command-line program whose sole runtime output interface is the standard-output stream and exit code, with "no GUI, HTTP endpoint, or API surface."
+
+
+# 8. Infrastructure
+
+## 8.1 Infrastructure Applicability Assessment
+
+**Detailed Infrastructure Architecture is not applicable for this system.**
+
+`600K_ParentRepo` is a standalone, standard-library-only Python demonstration application that executes to completion as a single, short-lived local process. Its entire runtime behavior consists of computing the sum of a hard-coded list `[10, 20, 30, 40]` through `service.calculate_total`, printing `Total: 100`, echoing each number, and printing `Application completed`. It exposes no network listener, opens no socket, accepts no command-line arguments, reads no configuration, and persists nothing beyond the transient bytecode cache that CPython writes automatically. Consequently, there is no server to provision, no service to host, no cluster to orchestrate, and no cloud account to configure.
+
+Because there is genuinely no deployment infrastructure to describe, this section deliberately avoids inventing hypothetical environments, service tiers, or SLAs. Instead, it documents the **minimal build and distribution requirements** that actually govern how the system is acquired and run — the developer/CI workstation model, the Git submodule acquisition flow, and the (near-zero) resource footprint — and it explicitly marks the cloud, containerization, and orchestration domains as *Not Applicable* with a stated rationale for each. The application-level observability model (stdout/stderr/exit code) is documented in section 6.5 Monitoring and Observability; this section covers only the *infrastructure* dimension.
+
+The complete "infrastructure" of this system is therefore a local execution host with a Python interpreter and Git, operating on a cloned working tree. The following diagram captures this minimal local-execution model — the only architecture that the repository evidence supports.
+
+```mermaid
+flowchart TB
+    Remote["GitHub Remotes<br/>ChildRepo and NestedChild<br/>HTTPS clone sources"]
+    subgraph Host["Local Execution Host - Developer or CI Workstation"]
+        direction TB
+        CPython["CPython 3.6+ Interpreter<br/>3.12.3 observed"]
+        Git["Git 2.43.0<br/>acquisition only"]
+        subgraph Tree["Cloned Submodule Working Tree"]
+            direction TB
+            Parent["600K_ParentRepo<br/>app.py plus service.py"]
+            Child["ChildRepo<br/>app.py plus service.py"]
+            Nested["NestedChild<br/>app.py plus service.py"]
+            Parent -.->|contains| Child
+            Child -.->|contains| Nested
+        end
+    end
+    StdOut["Standard Output Stream<br/>Total: 100 and completion lines"]
+    Remote -->|git clone --recursive| Git
+    Git -->|populates| Parent
+    CPython -->|python app.py| Parent
+    Parent -->|prints| StdOut
+```
+
+### 8.1.1 System Classification and Determination
+
+The repository is classified as a **standalone command-line demonstration/reference application** rather than a deployable service. This classification is derived directly from observed repository evidence: the entry point `app.py` guards execution with `if __name__ == "__main__"`, its `main()` function runs once and returns, and the pure computation lives in `service.py` (`calculate_total`, plus an unused `calculate_average`). The `README.md` explicitly states that the project is a standalone standard-library Python script with no container image, no cloud deployment, and no build step. The `.gitmodules` file establishes that the repository is the root of a two-level Git submodule tree (`600K_ParentRepo → ChildRepo → NestedChild`), which is a source-composition mechanism, not a deployment topology.
+
+| Classification Attribute | Observed Value | Evidence Source |
+|---|---|---|
+| System type | Standalone CLI demonstration script | `app.py`, `README.md` |
+| Execution model | Single process, run-to-completion | `app.py` `main()` under `__main__` guard |
+| Runtime dependencies | Python standard library only (zero third-party) | `README.md`; absence of manifests |
+| Interfaces | Standard output only (no network/args/config) | `app.py`, `service.py` |
+| Distribution unit | Git working tree with recursive submodules | `.gitmodules` |
+| Persistent state | None (transient `__pycache__` bytecode only) | Repository scan |
+
+The determination is unambiguous: a system with no runtime services, no external interfaces, no persistent state, and no packaging artifacts has no infrastructure to architect. The only operational concern is *how a person or CI job obtains and runs the code*, which is addressed as build-and-distribution requirements in section 8.2.3 and the (equally minimal) automation posture in section 8.6.
+
+### 8.1.2 Evidence of Absent Infrastructure Artifacts
+
+A comprehensive scan of the repository confirmed that none of the conventional infrastructure, deployment, or automation artifacts are present. The only hidden directories in the tree belong to the Git version-control family and the CPython bytecode cache (`__pycache__/`), neither of which constitutes deployable infrastructure. The table below records the categories searched and their status.
+
+| Infrastructure Category | Representative Artifacts Searched | Status in Repository |
+|---|---|---|
+| Containerization | `Dockerfile`, `docker-compose.yml`, `.dockerignore` | Absent |
+| CI/CD automation | `.github/workflows/`, `.gitlab-ci.yml`, `Jenkinsfile`, `.circleci/` | Absent |
+| Infrastructure as Code | `*.tf`, CloudFormation templates, Helm charts, K8s `*.yaml`/`*.yml` | Absent |
+| Dependency manifests | `requirements*.txt`, `setup.py`, `pyproject.toml`, `Pipfile`, `package.json` | Absent |
+| Build automation | `Makefile`, `*.sh`, `build.gradle`, `tox.ini`, `noxfile.py` | Absent |
+| Configuration files | `*.cfg`, `*.ini`, `*.toml`, `*.env`, service/scheduler units | Absent |
+| Version-control metadata | `.git/`, `.gitmodules`, `.blitzyignore` | Present (not infrastructure) |
+| Bytecode cache | `__pycache__/*.cpython-312.pyc` | Present (transient build side effect) |
+
+This absence is not an omission to be remediated; it is consistent with the system's declared scope. Section 1.3 Scope explicitly lists packaging, tests, CI/CD, and containerization as out-of-scope, and Section 3.6 Development & Deployment independently confirms the absence of any build system, packaging, containerization, or CI/CD tooling. The remainder of Section 8 documents the genuinely minimal operational reality rather than a notional deployment stack.
+
+## 8.2 Deployment Environment
+
+Because the system is a standalone script rather than a hosted service, "deployment" reduces to acquiring the source tree and running it locally. This sub-section documents the target environment, the (minimal) environment-management posture, and the concrete build-and-distribution requirements that actually apply.
+
+### 8.2.1 Target Environment Assessment
+
+**Environment type.** The only target environment is a **local execution host** — a developer or CI workstation that already possesses a Python interpreter and Git. The system is neither cloud-hosted, hybrid, nor multi-cloud; there is no on-premises server tier either, because nothing runs as a persistent service. Execution is initiated interactively (or by a CI step) and terminates within milliseconds. This assessment follows directly from Section 3.6 Development & Deployment, which documents the run model as `git` acquisition followed by `python app.py`, and from `README.md`, which declares the absence of any container image, cloud deployment, or build step.
+
+**Geographic distribution.** Not applicable. Section 1.3 Scope records geographic and market coverage as not applicable, and the program performs no network communication at runtime and holds no user data, so there are no regionality, latency, data-residency, or replication requirements.
+
+**Resource requirements and sizing guidelines.** The workload is a single-pass summation over four integers (`service.calculate_total`), which is O(n) in time with n = 4 and O(1) in additional memory. The resource envelope is therefore dominated by the CPython runtime itself rather than by the computation. The measured tracked source footprint (all `*.py` + `README.md` + `.gitmodules`, excluding `.git/`, the `.blitzyignore`-excluded CSV, and `__pycache__/`) is approximately 60 KB, of which the executable Python is only ~10 KB.
+
+| Resource | Minimum | Recommended | Notes |
+|---|---|---|---|
+| CPU | 1 core | 1 core | Single-threaded; no concurrency |
+| Memory | Tens of MB (CPython base) | 64 MB | Interpreter dominates; workload adds negligible RAM |
+| Storage | < 1 MB source (excl. CSV/`.git`) | 50 MB | Interpreter and Git metadata stored separately |
+| Network | None at runtime | Broadband for one-time clone | HTTPS to GitHub for acquisition only |
+
+**Network requirements.** No runtime network access is required — the program never opens a socket. Network connectivity is needed only once, during acquisition, to reach the GitHub remotes over HTTPS. A dedicated network architecture diagram is therefore not applicable; the only network edge is the transient `git clone` shown in the deployment workflow diagram in Section 8.2.3.
+
+**Compliance and regulatory requirements.** No compliance or regulatory obligations were identified in the repository. The program collects no personal data, performs no I/O beyond writing to standard output, and makes no network calls. The `.blitzyignore` files (each containing `*.csv`) exclude the large CSV fixtures at every tier from tooling scope; those files are not read, executed, or distributed as part of the system.
+
+**Infrastructure cost estimate.** Because no infrastructure is provisioned, the recurring infrastructure cost is effectively zero. The toolchain is free and open source.
+
+| Cost Category | Estimated Cost | Basis |
+|---|---|---|
+| Compute / hosting | $0 recurring | Runs on an existing local or CI workstation |
+| Cloud services | $0 | No cloud provider is used |
+| Software licensing | $0 | CPython (PSF license) and Git are free/open source |
+| Storage / data egress | $0 | One-time source clone only; no hosted storage |
+| Total recurring infrastructure | $0 | No provisioned infrastructure exists |
+
+### 8.2.2 Environment Management
+
+**Infrastructure as Code (IaC).** Not applicable. No infrastructure is provisioned, so there is nothing to declare in Terraform, CloudFormation, Helm, or Kubernetes manifests — and the repository scan confirmed none exist.
+
+**Configuration management.** None. The program is fully self-contained: it reads no environment variables, no command-line arguments, and no configuration files, and the repository contains no `*.cfg`/`*.ini`/`*.toml`/`*.env` files. The input list `[10, 20, 30, 40]` is hard-coded in `app.py`, so there is no configuration surface to manage.
+
+**Environment promotion strategy.** Traditional dev → staging → production promotion is not applicable, because there is only one environment (the local execution host) and no deployed instances. The closest real analogue is **source version promotion across the Git submodule hierarchy**: a change committed in a child repository is "promoted" upward when the parent records the child's new commit SHA, and reaches consumers when they re-clone or run `git submodule update`. The following diagram represents this source-versioning flow rather than a runtime environment ladder.
+
+```mermaid
+flowchart LR
+    subgraph Authoring["Source Authoring"]
+        direction TB
+        Edit["Edit app.py and service.py"]
+        Commit["git commit"]
+        Edit --> Commit
+    end
+    subgraph Versioning["Submodule Version Promotion"]
+        direction TB
+        PushChild["Push ChildRepo or NestedChild commit"]
+        BumpPointer["Parent records new submodule SHA"]
+        PushChild --> BumpPointer
+    end
+    subgraph Consumption["Consumer Acquisition"]
+        direction TB
+        Clone["git clone --recursive"]
+        Run["python app.py"]
+        Clone --> Run
+    end
+    Commit --> PushChild
+    BumpPointer --> Clone
+```
+
+**Backup and disaster recovery.** The system has no runtime state, database, or persisted output to back up, so disaster recovery is limited to source preservation. The authoritative copy of the source lives in the Git history of the parent repository and its two submodule remotes on GitHub (`600K_ChildRepo.git` and `600K_Nested_ChildRepo.git`). Recovery from loss of a local working tree is a re-clone: `git clone --recursive`. Because the parent pins each submodule to an exact commit (ChildRepo at `63b3f43`, NestedChild at `d57c9dd` per `.gitmodules` and the recorded gitlinks), a recovered clone reconstructs a byte-identical tree, giving deterministic, reproducible recovery with no additional backup infrastructure.
+
+### 8.2.3 Build and Distribution Requirements
+
+These are the only requirements that materially govern the system. They are intentionally minimal.
+
+**Prerequisites.** The host must provide a compatible interpreter and Git; nothing else is installed because there are no third-party packages.
+
+| Prerequisite | Version / Requirement | Purpose |
+|---|---|---|
+| CPython interpreter | 3.6+ (3.12.3 observed; 3.13.7 documented in `README.md`) | Executes `app.py` and `service.py` |
+| Git client | Any recent release (2.43.0 observed) | Recursive clone of the submodule tree |
+| Network access | HTTPS reachability to github.com | One-time acquisition of submodules |
+| Disk space | Tens of KB of source (excl. `.blitzyignore` CSV) | Stores the working tree |
+
+**Acquisition and deployment workflow.** The system is distributed as a Git working tree, not a packaged artifact. The recommended acquisition is `git clone --recursive <repo-url>`; an existing clone is completed with `git submodule update --init --recursive`. There is **no build stage** — the only compilation is CPython's implicit, automatic generation of `__pycache__/*.cpython-*.pyc` bytecode on first import. Execution outcomes differ by tier, reflecting the known NestedChild defect documented in `README.md`.
+
+```mermaid
+flowchart TB
+    Start(["Operator or CI Job"])
+    subgraph Acquire["Acquisition Stage"]
+        direction TB
+        CloneStep["git clone --recursive REPO_URL<br/>or git submodule update --init --recursive"]
+        Populate["Working tree populated<br/>ChildRepo at 63b3f43 and NestedChild at d57c9dd"]
+        CloneStep --> Populate
+    end
+    subgraph RunStage["Execution Stage - no build step"]
+        direction TB
+        Invoke["python app.py"]
+        Bytecode["CPython writes __pycache__ bytecode"]
+        Invoke --> Bytecode
+    end
+    Decide{"Which tier is executed?"}
+    OK["Exit 0<br/>Total: 100 plus completion lines"]
+    Fail["Exit 1<br/>circular ImportError in NestedChild"]
+
+    Start --> CloneStep
+    Populate --> Invoke
+    Bytecode --> Decide
+    Decide -->|Parent or ChildRepo| OK
+    Decide -->|NestedChild| Fail
+```
+
+**External dependencies.** The system has no runtime library dependencies; its only external dependencies are the two submodule source repositories and the host toolchain. All are pinned or version-observed, and none are vendored into the parent tree.
+
+| External Dependency | Reference / Pin | Role |
+|---|---|---|
+| ChildRepo (GitHub `600K_ChildRepo.git`) | commit `63b3f43` | First-level submodule source |
+| NestedChild (GitHub `600K_Nested_ChildRepo.git`) | commit `d57c9dd` | Second-level submodule source |
+| CPython runtime | 3.6+ (host-provided) | Interpreter; not vendored |
+| Git | 2.43.0 observed (host-provided) | Acquisition tooling |
+
+**Maintenance procedures.** Maintenance is limited to source and toolchain upkeep because there is no running infrastructure:
+
+- **Submodule currency:** advance a submodule pointer by pulling the child, then committing the updated gitlink in the parent (`git add ChildRepo && git commit`); consumers pick it up via `git submodule update --recursive`.
+- **Verification after changes:** re-run `python app.py` at the root and in `ChildRepo/`; both should print `Total: 100` and exit 0. `ChildRepo/NestedChild/app.py` is expected to fail with a circular `ImportError` and exit 1 until that defect is resolved.
+- **Interpreter currency:** although the code targets Python 3.6+, Python 3.6 itself reached end-of-life in December 2021; maintainers should run on a currently supported CPython release (the 3.12/3.13 line already exercised in this repository) to receive security and bug fixes.
+- **Bytecode hygiene:** `__pycache__/` directories are regenerated automatically and may be deleted safely; they are transient and are not part of the distributed source.
+
+## 8.3 Cloud Services
+
+**Cloud services are not applicable to this system, and this sub-section is intentionally skipped beyond the following rationale.**
+
+No cloud provider is selected, referenced, or required. The repository contains no cloud provider SDKs, credentials, service definitions, or Infrastructure-as-Code templates (no `*.tf`, CloudFormation, or provider configuration files were found during the artifact scan). At runtime the program performs no network communication of any kind — it neither authenticates to a cloud API nor reads from or writes to any managed service — so there is no compute, storage, messaging, or database service to provision. `README.md` explicitly states that there is no cloud deployment, and this is corroborated by Section 1.3 Scope (which places such concerns out of scope) and Section 3.6 Development & Deployment (which records the deployment model as a local `python app.py` invocation). Consequently, the prompt's cloud-services topics — provider selection and justification, core services and versions, high-availability design, cost optimization, and cloud security/compliance — have no basis in the codebase and are not documented.
+
+## 8.4 Containerization
+
+**Containerization is not applicable to this system, and this sub-section is intentionally skipped beyond the following rationale.**
+
+The system is not containerized and does not need to be. The repository artifact scan found no `Dockerfile`, `docker-compose.yml`, `.dockerignore`, or any other container definition at any tier of the submodule tree. `README.md` explicitly states that there is no container image, and Section 3.6 Development & Deployment independently records containerization as *None*. The application is a short-lived, standard-library-only script that runs directly on a host interpreter via `python app.py`; it has no OS-level dependencies to isolate, no services to package, and no runtime that would benefit from image-based distribution. Because there is no image, the prompt's containerization topics — container platform selection, base-image strategy, image versioning, build optimization, and image security scanning — do not apply and are not documented. Reproducibility, which containers often provide, is instead achieved here through exact Git submodule commit pinning (see Section 8.2.2).
+
+## 8.5 Orchestration
+
+**Orchestration is not applicable to this system, and this sub-section is intentionally skipped beyond the following rationale.**
+
+There is nothing to orchestrate. Orchestration platforms (Kubernetes, Nomad, Docker Swarm, or Compose) coordinate the scheduling, scaling, networking, and lifecycle of long-running containers or services — none of which exist here. The system is a single, ephemeral process that runs to completion in milliseconds, exposes no service endpoint, maintains no replicas, and requires no scheduling, service discovery, load balancing, or auto-scaling. The repository artifact scan found no Kubernetes manifests, Helm charts, or any `*.yaml`/`*.yml` orchestration descriptors at any tier. Since containerization itself is absent (Section 8.4) and no service tier exists, the prompt's orchestration topics — platform selection, cluster architecture, service deployment strategy, auto-scaling configuration, and resource-allocation policies — have no counterpart in the codebase and are not documented.
+
+## 8.6 CI/CD Pipeline
+
+**No automated CI/CD pipeline exists in this repository.** The artifact scan found no GitHub Actions workflows (`.github/workflows/`), GitLab CI (`.gitlab-ci.yml`), Jenkins (`Jenkinsfile`), or CircleCI (`.circleci/`) definitions at any tier, and Section 3.6 Development & Deployment independently records CI/CD as *None*. Section 1.3 Scope places CI/CD out of scope. This sub-section therefore documents the *de-facto* manual process that substitutes for each conventional pipeline stage, so that a maintainer who later introduces automation has an accurate baseline.
+
+### 8.6.1 Build Pipeline
+
+There is no build pipeline to trigger, and there is nothing to build in the conventional sense — CPython compiles modules to `__pycache__/*.cpython-*.pyc` bytecode implicitly and automatically on first import, producing no distributable artifact. The table maps each conventional build-pipeline concern to its actual status here.
+
+| Pipeline Concern | Conventional Tooling | Status in This System |
+|---|---|---|
+| Source-control trigger | Webhooks / Actions on push or PR | Absent; a manual `git push` is the only event |
+| Build environment | Hosted CI runners | Absent; the developer's local CPython is the de-facto builder |
+| Dependency management | `pip` / `poetry` / lockfiles | Absent; standard-library only, no manifests to resolve |
+| Artifact generation & storage | Wheels/images in a registry | Absent; only transient local bytecode, never stored or published |
+| Quality gates | Automated test/lint/scan jobs | Absent; de-facto gate is manual execution and stdout inspection |
+
+As documented in Section 3.6, the sole quality gate is a human running the program and confirming that the output matches the expected `Total: 100` plus the completion lines. There is no automated linting, type-checking, formatting, or test execution because no such configuration or test suite is committed.
+
+### 8.6.2 Deployment Pipeline
+
+There is no deployment pipeline. "Deployment" is the manual acquire-and-run flow shown in the deployment workflow diagram in Section 8.2.3, and each conventional deployment-pipeline concern maps to a manual, Git-native equivalent:
+
+- **Deployment strategy:** No blue-green, canary, or rolling strategy applies because there are no running instances to shift traffic between. Deployment is simply `git clone --recursive` followed by `python app.py` on the target host.
+- **Environment promotion workflow:** Not applicable in the traditional dev/staging/prod sense; the only promotion is source-version promotion across the submodule hierarchy, documented and diagrammed in Section 8.2.2.
+- **Rollback procedures:** Rollback is a Git operation. Reverting to a previous behavior is achieved by checking out an earlier commit (`git checkout <sha>`) or by resetting a submodule gitlink to its prior pinned commit and re-running `git submodule update --recursive`. No infrastructure teardown is involved.
+- **Post-deployment validation:** Validation is the same manual run-and-inspect step used as the build quality gate — confirm the root and `ChildRepo/` executions print `Total: 100` and exit 0, and note that `ChildRepo/NestedChild/` is expected to exit 1 with a circular `ImportError` until that defect is fixed.
+- **Release management:** There is no formal release process, versioned release artifact, or changelog automation. The Git commit history and the exact submodule commit pins (ChildRepo `63b3f43`, NestedChild `d57c9dd`) constitute the entire, immutable record of what is "released" at any point in time.
+
+## 8.7 Infrastructure Monitoring
+
+There is no provisioned infrastructure to monitor. The system runs as a transient local process with no host fleet, no service endpoint, no scheduler, and no persistent state, so there is nothing for a monitoring stack to observe on an ongoing basis. No monitoring agents, metrics exporters, log shippers, tracing libraries, dashboards, or alerting rules are present in the repository. Application-level observability for a single run — the three signals of standard output, standard error, and process exit code — is documented in Section 6.5 Monitoring and Observability; this sub-section addresses only the *infrastructure* monitoring dimensions requested by the prompt, each of which is reported at its true (minimal) state.
+
+- **Resource monitoring approach.** Not instrumented. Because the process starts and exits within milliseconds and consumes negligible CPU and memory (a single O(n) pass with n = 4, O(1) additional memory), there is no long-lived resource profile to track. If an operator wishes to measure a run ad hoc, ordinary OS utilities such as `/usr/bin/time` can wrap `python app.py`, but nothing in the repository configures or requires this.
+- **Performance metrics collection.** None collected. The program emits no timing, throughput, or latency metrics, and no metrics backend exists to receive them. The performance envelope is fixed and trivial by construction (four additions), so there is no variability worth sampling.
+- **Cost monitoring and optimization.** Not applicable. As established in Section 8.2.1, recurring infrastructure cost is $0 — the system runs on an already-owned workstation using free, open-source tooling — so there is no spend to monitor and no cost-optimization lever to pull.
+- **Security monitoring.** Not applicable at the runtime level. The program presents essentially no attack surface: it accepts no external input, opens no network connection, and performs no `eval`/dynamic-code or deserialization operations. The one genuine security consideration is *supply-chain integrity*, which is addressed structurally rather than through monitoring — each submodule is pinned to an exact commit SHA (ChildRepo `63b3f43`, NestedChild `d57c9dd`), giving deterministic source provenance. No cryptographic signature verification of those commits is configured, and no automated dependency or vulnerability scanning is present.
+- **Compliance auditing.** Not applicable. No regulatory regime governs this demonstration script, and it collects and stores no auditable data. The only audit trail is the Git commit history of the parent repository and its submodules, which records every change to the source.
+
+The following table summarizes each requested monitoring dimension and the mechanism (if any) that is genuinely available.
+
+| Monitoring Dimension | Status | Available Mechanism |
+|---|---|---|
+| Resource monitoring | Not instrumented | Ad-hoc OS tools (e.g., `time`) only |
+| Performance metrics | Not collected | Fixed sub-millisecond O(n) run; no emitters |
+| Cost monitoring | Not applicable | $0 recurring cost; nothing to track |
+| Security monitoring | Not applicable (runtime) | Submodule SHA pinning for supply-chain provenance |
+| Compliance auditing | Not applicable | Git commit history is the sole audit trail |
+
+## 8.8 References
+
+The following repository files, folders, and Technical Specification sections were examined as evidence for Section 8. External web sources were sought for the Python support-lifecycle fact but none were retrievable in this environment; the Python 3.6 end-of-life date is stated from well-established knowledge rather than a cited source.
+
+**Repository files**
+
+- `app.py` - Established the root entry point: `main()` under the `if __name__ == "__main__"` guard, the hard-coded input list, the `Total: 100` and completion output, and the absence of arguments/config/network.
+- `service.py` - Established the pure computation (`calculate_total`) and the defined-but-unused `calculate_average`, confirming an O(n)/O(1), side-effect-free workload.
+- `README.md` - Established the standalone, standard-library-only nature; the explicit "no container image, no cloud deployment, no build step" statement; Python 3.6+ targeting with 3.13.7 documented; the submodule tree; and the NestedChild circular-import defect.
+- `.gitmodules` - Established the two-level submodule composition and the GitHub HTTPS remotes for ChildRepo and NestedChild.
+- `.blitzyignore` - Established the `*.csv` exclusion honored throughout (CSV fixtures are not read, executed, or distributed).
+
+**Repository folders**
+
+- `ChildRepo/` - Contained the first-level submodule (`app.py`, `service.py`, `README.md`, and its own `.gitmodules` mapping NestedChild); confirmed correct `Total: 100` / exit 0 execution and pinned commit `63b3f43`.
+- `ChildRepo/NestedChild/` - Contained the second-level submodule whose byte-identical `app.py`/`service.py` cause the circular `ImportError` / exit 1 outcome; pinned commit `d57c9dd`.
+- `__pycache__/` - Contained the transient `*.cpython-*.pyc` bytecode, cited as the only implicit "build" side effect and confirming that no distributable artifact is produced.
+
+**Cross-referenced Technical Specification sections**
+
+- Section 1.3 Scope - Confirmed that packaging, tests, CI/CD, and containerization are out of scope, and that geographic/market coverage is not applicable.
+- Section 3.6 Development & Deployment - Confirmed the toolchain versions, the absence of any build system/packaging/containerization/CI/CD, the implicit-bytecode-only build, and the `git clone` → `python app.py` run model.
+- Section 6.5 Monitoring and Observability - Confirmed the application-level observability model (stdout/stderr/exit code) that Section 8.7 defers to for run-level signals.
+
+**External sources**
+
+- [web] Python support lifecycle - No web result was retrievable in this environment; the statement that Python 3.6 reached end-of-life in December 2021 is provided from established knowledge and is not attributed to a fetched source.
+
+# 9. Appendices
+
+## 9.1 Additional Technical Information
+
+Sections 1 through 8 document this system's behavior, technology stack, architecture, security posture, and its one standing defect in full. This appendix gathers a small set of supplementary, independently verifiable reference facts — per-file size and line metrics, the exact Git object identifiers, and the verbatim runtime signatures — that the body relies on implicitly but does not consolidate in any single place. Every value below was measured directly against the repository's current working tree on branch `2007_01` (HEAD `9ba0477`) under CPython 3.12.3, and is consistent with the technology and composition model described in Sections 3.1, 3.6, and 5.1. As throughout the specification, the `*.csv` artifacts excluded by the repository's `.blitzyignore` files (Section 1.3.2) are omitted, and — because no dependency manifest, build, test, container, CI/CD, or infrastructure tooling exists anywhere in the tree — there is no such tooling to enumerate here.
+
+### 9.1.1 Consolidated Source-Artifact Inventory
+
+The entire application source is **6 Python files** — three copies of `app.py` and three of `service.py` — totaling **282 lines and 9,409 bytes**. The two functioning tiers (root `600K_ParentRepo` and `ChildRepo`) carry module and function docstrings plus inline comments, which is why their `service.py` (78 lines) is substantially larger than their `app.py` and why the root and `ChildRepo` copies are no longer byte-identical to each other (consistent with Section 1.2.2). The per-file source inventory is:
+
+| File | Level | Lines | Bytes |
+| --- | --- | --- | --- |
+| `app.py` | Root (`600K_ParentRepo`) | 46 | 1,463 |
+| `service.py` | Root (`600K_ParentRepo`) | 78 | 2,851 |
+| `app.py` | `ChildRepo` | 48 | 1,666 |
+| `service.py` | `ChildRepo` | 78 | 2,883 |
+| `app.py` | `ChildRepo/NestedChild` | 16 | 273 |
+| `service.py` | `ChildRepo/NestedChild` | 16 | 273 |
+
+The inventory is itself the fingerprint of the `NestedChild` defect analyzed in Sections 1.2.2, 2.4.4, and 5.4.2: at the deepest tier `app.py` and `service.py` are **byte-for-byte identical** (both 16 lines / 273 bytes, MD5 `a7f6989f2b3303c418c206a8cb50afa0`), whereas at the two functioning tiers `service.py` is a distinct, larger module that actually defines `calculate_total` and `calculate_average`. That identity at `NestedChild` is exactly why its `service.py` defines no `calculate_total` and the tier fails with a circular-import `ImportError`.
+
+The remaining tracked, non-source artifacts (byte sizes) are:
+
+| Artifact | Root (bytes) | ChildRepo (bytes) | NestedChild (bytes) |
+| --- | --- | --- | --- |
+| `README.md` | 11,172 | 11,132 | 23 |
+| `.gitmodules` | 102 | 113 | — (none) |
+| `.blitzyignore` (pattern `*.csv`) | 6 | 6 | 6 |
+
+The root and `ChildRepo` `README.md` files are comprehensive (278 and 273 lines respectively) and dominate the tracked byte footprint, while the `NestedChild` `README.md` remains a single 23-byte title line (`# 600K_Nested_ChildRepo`) with no trailing newline; the `NestedChild` level carries no `.gitmodules` because it is the leaf of the submodule chain and declares no further child. Two categories of on-disk content are deliberately excluded from this inventory: the generated specification under `blitzy/documentation/` (documentation output, not application source) and the `*.csv` files excluded by `.blitzyignore`.
+
+The only build-like artifacts present are CPython bytecode caches produced by the interpreter on first import — not hand-written source. `service.cpython-312.pyc` exists at each of the three levels, and `app.cpython-312.pyc` additionally exists at the root, all under `__pycache__/`. Their four-byte magic number is `cb0d0d0a`, denoting CPython 3.12 (consistent with Sections 3.1.2 and 3.6.2). These caches are untracked (they appear in no `git ls-files` output) and form no part of the tracked footprint above.
+
+### 9.1.2 Git Commit and Submodule-Pin Reference
+
+The document body records that branch `2007_01` carries an 18-commit history (Sections 1.1 and 1.2.1) and that the submodules are referenced at pinned commits (Sections 3.6.4 and 5.1.4), but it does not enumerate the underlying Git object identifiers. They are consolidated here. All identifiers were read from the repository's own Git metadata; the submodule remotes are the credential-free public HTTPS URLs already declared in `.gitmodules` and cited in Sections 3.6.4 and 5.1.4 (identified below by repository name only).
+
+Parent repository commit history on branch `2007_01` (newest first; HEAD is `9ba0477`):
+
+| Short SHA | Commit subject |
+| --- | --- |
+| `9ba0477` | Merge pull request #4 |
+| `cfb52fd` | Adding Blitzy Technical Specifications |
+| `9040173` | Fix QA findings in parent docs + bump ChildRepo pointer |
+| `a71f435` | Update ChildRepo submodule to corrected nested-module documentation |
+| `de48187` | docs(parent): refresh leaf-README status; add prerequisite/run/known-issue evidence |
+| `d1e1da5` | chore: bump ChildRepo submodule for NestedChild comprehensive README |
+| `e582063` | docs(parent): fix README citation locators, known-issue accuracy, invalid fences |
+| `3be43e8` | docs: expand README with setup, submodule composition, API reference, deployment |
+| `01be788` | docs(parent): correct stale main() Source citation in app.py; bump ChildRepo |
+| `cb4c987` | Add docstrings and inline comments to app.py; update ChildRepo submodule |
+| `13aae56` | docs(service): correct parent service.py citation locators; bump ChildRepo |
+| `abc845a` | docs: document service.py API and update ChildRepo submodule |
+| `c77daf2` | Add child submodule |
+| `a79d4a4` | Add files via upload |
+| `160cb3b` | Create .blitzyignore |
+| `3b04370` | Create service.py |
+| `ffa4b03` | Create app.py |
+| `13bfbe4` | Initial commit |
+
+The history divides cleanly into the first six scaffolding commits (`13bfbe4` → `c77daf2`, which build the minimal program and add the child submodule) and the twelve subsequent documentation-oriented commits (`abc845a` → `9ba0477`, which add docstrings, comprehensive READMEs, and this specification). This division is the reason the pre-documentation baseline discussed in the Git history is anchored at `c77daf2`.
+
+The submodule pins (the gitlink each superproject records for its child) are:
+
+| Submodule path | Declared in (`.gitmodules` → remote) | Pinned commit SHA |
+| --- | --- | --- |
+| `ChildRepo` | root → `600K_ChildRepo.git` | `63b3f4335c7c40cf41b7db9776d5caa4c4bcec9d` |
+| `ChildRepo/NestedChild` | `ChildRepo` → `600K_Nested_ChildRepo.git` | `d57c9dd41e08e5a8a00b8c43962a16fb860447eb` |
+
+These commit and submodule-pin identifiers are the concrete anchors behind the reproducible-checkout procedure documented in Section 3.6.4 (`git clone --recursive` or `git submodule update --init --recursive`) and the determinism-plus-version-control resilience model in Section 5.4.5. Because there is no submodule content verification (Sections 2.4.4 and 6.4.5), the pinned `NestedChild` commit `d57c9dd` above is precisely the point at which the defective, self-importing `service.py` copy enters the composed tree.
+
+### 9.1.3 Canonical Runtime Signatures
+
+The body describes the success and failure outcomes by name and by exit code (Sections 1.2.3, 3.6.4, and 4.3.2) but does not reproduce the verbatim console text; the exact signatures are recorded here for reference. All were captured by direct execution under CPython 3.12.3.
+
+Running the root or `ChildRepo` `app.py` succeeds, writing the following to standard output and exiting with status code `0`:
 
 ```text
 Total: 100
@@ -3241,495 +3636,68 @@ Total: 100
 Application completed
 ```
 
-This standard-output stream is program output, not a designed user interface: it has no screens, layouts, navigation, controls, styling, or bidirectional interaction.
+Running `ChildRepo/NestedChild/app.py` fails at import time with an empty standard output and exit status `1`. On CPython 3.12.3 the standard-error message is the classic circular-import form (absolute path elided as `<path>`):
 
-Because no user interface exists, the interface-design topics this section would otherwise document are not applicable. Each is addressed explicitly below for completeness:
-
-| UI design topic | Applicability in this repository |
-| --- | --- |
-| Core UI technologies | Not applicable — no UI/GUI/web framework or markup/styling assets exist |
-| UI use cases | Not applicable — the only workflow is a non-interactive `stdout` computation |
-| UI / backend interaction boundaries | Not applicable — no client/server or view/controller boundary; a single synchronous process prints to `stdout` |
-| UI schemas | Not applicable — no forms, view models, component props, or UI data contracts |
-| Screens required | None — there are no screens, views, pages, or windows |
-| User interactions | None — no user input, events, gestures, or navigation are handled |
-| Visual design considerations | Not applicable — no layout, theming, typography, color, or accessibility surface exists |
-
-No UI screens were found in the repository to reference, because none exist at any level of the root project or its `ChildRepo` and `ChildRepo/NestedChild` submodules.
-
-## 7.2 References
-
-The following repository files and folders were examined to determine that no user interface exists:
-
-- `app.py` - Root entry point; `main()` operates on a hard-coded list and writes results to `stdout` via `print()`; contains no interactive input, argument parsing, or UI code. Identical at the `ChildRepo` and `ChildRepo/NestedChild` levels.
-- `service.py` - Pure calculation functions (`calculate_total`, `calculate_average`); performs no I/O and no rendering.
-- `README.md` - One-line title only; documents no user interface.
-- `.gitmodules` - Declares the `ChildRepo` Git submodule; no UI relevance.
-- `.blitzyignore` - Excludes `*.csv`; honored (CSV files were not inspected or documented).
-- `ChildRepo/` - Git submodule mirroring the root two-file Python structure; contains no UI assets.
-- `ChildRepo/NestedChild/` - Nested Git submodule mirroring the same structure; contains no UI assets.
-
-Technical Specification sections cross-referenced for consistency:
-
-- `1.2 System Overview` - Confirms the application "accepts no arguments, files, or interactive input."
-- `3.2 Frameworks and Libraries` - Confirms no frontend/UI framework and that "No JavaScript/TypeScript, HTML, or CSS files exist anywhere."
-
-Repository-wide verification performed:
-
-- Full-tree file-type inventory - Confirmed the tree contains only `.py`, `.pyc`, `.md`, `.gitmodules`, and `.blitzyignore` files; no frontend, markup, styling, or UI files and no `package.json`.
-- Framework and interactive-input scan - Found no web/GUI/TUI framework and no `input()`, `argparse`, `sys.argv`, `click`, `typer`, or `curses` usage in any Python module.
-- Live execution of `app.py` (root and `ChildRepo`) - Produced only the fixed `stdout` output shown in Section 7.1 and exited successfully, with no prompt, window, or interactive surface.
-
-# 8. Infrastructure
-
-## 8.1 Infrastructure Applicability Assessment
-
-**Determination: Detailed Infrastructure Architecture is not applicable for this system.**
-
-The repository is a standalone, single-process, standard-library-only Python program — a two-module modular monolith (`app.py` orchestrator plus `service.py` pure-function computation) that runs a fixed workflow to completion and writes a deterministic report to standard output (see Section 5.1 High-Level Architecture and Section 6.1 Core Services Architecture). It is not a deployable service and requires no provisioned infrastructure: it exposes no network interface, defines no persistence, and ships no build, packaging, containerization, CI/CD, orchestration, cloud, or monitoring tooling. Every capability this section is intended to document — cloud provisioning, containerization, orchestration, environment promotion across dev/staging/prod tiers, and infrastructure monitoring — presupposes a hosted or networked deployment target that this system neither contains nor requires.
-
-This determination is not merely an inference from the small size of the codebase; it is grounded in the verified absence of every infrastructure primitive across the entire tree (root plus the `ChildRepo` and `ChildRepo/NestedChild` submodules). The only import statement anywhere is the local `from service import calculate_total` (`app.py:1`); there is no dependency manifest, no `Dockerfile`, no CI/CD configuration, no Infrastructure-as-Code file, and no cloud SDK or monitoring agent. This is consistent with Section 3.6 (no build system, containerization, CI/CD, or infrastructure-as-code), Section 1.3.2 (which records "Packaging, tests, CI/CD, containerization" as explicitly out of scope — "no manifests, test suite, pipelines, or `Dockerfile`"), and Section 5.4 (no monitoring, logging, authentication, SLAs, or runtime external resources).
-
-The table below records each prerequisite of a deployment infrastructure against its presence in this system.
-
-**Table 8.1-1 — Infrastructure Prerequisites vs. This System**
-
-| Infrastructure Prerequisite | Present in System | Evidence |
-| --- | --- | --- |
-| Hosted / provisioned runtime target (server, VM, cloud) | No | No deployment descriptor, host config, or IaC anywhere in the tree |
-| Container image and registry | No | No `Dockerfile`, `docker-compose.yml`, or image manifest (Section 3.6.4) |
-| Orchestration platform (scheduler) | No | No Kubernetes/Helm manifests; single OS process (Section 6.1.2) |
-| CI/CD automation | No | No `.github/workflows`, GitLab CI, Jenkins, or CircleCI config |
-| Infrastructure as Code | No | No Terraform (`*.tf`), CloudFormation, or Pulumi files |
-| Build / dependency-management system | No | No manifests or lockfiles; zero third-party dependencies (Section 3.3) |
-| Network-addressable service | No | No socket/HTTP/server code; stdout-only batch process (Section 6.1.2) |
-| Monitoring / telemetry infrastructure | No | No metrics, logging, or tracing libraries or config (Section 6.5) |
-
-Because none of these prerequisites is present, the remainder of Section 8 documents only the **minimal build and distribution requirements** the system actually has — the local execution model (this subsection), the deployment environment and its management (Section 8.2), and the minimal build/distribution "pipeline" expressed through Git (Section 8.6) — and then dispositions each infrastructure domain the prompt enumerates (Cloud Services in Section 8.3, Containerization in Section 8.4, Orchestration in Section 8.5, and Infrastructure Monitoring in Section 8.7), so the record is explicit rather than merely asserting non-applicability.
-
-#### Actual Infrastructure Model — Local Execution
-
-The system's entire "infrastructure" is a single host — a developer or operator workstation providing a CPython 3.6+ interpreter — on which the source is obtained, compiled implicitly to bytecode on first import, and executed to completion. There is no second host, container, network participant, or hosted service. The only build-time external interaction is an HTTPS fetch from the public GitHub remotes to populate the nested Git-submodule tree (Section 3.6.3); at runtime the process performs no network I/O at all.
-
-The diagram below is the **Infrastructure Architecture** for this system as it actually exists: the single host and its execution components, the build-time source composition over HTTPS, and the deployment-infrastructure tiers (cloud, containers, orchestration, network services, IaC/CI-CD/monitoring) that are not present.
-
-**Diagram 8.1-1 — Infrastructure Architecture (Local Execution Model)**
-
-```mermaid
-flowchart TB
-    Operator(["Developer / Operator"])
-    subgraph Host["Single host -- developer/operator workstation (OS + CPython 3.6+)"]
-        direction TB
-        Src["Source files: app.py + service.py<br/>(under 2 KB per level)"]
-        Interp["CPython interpreter -- python app.py"]
-        Pyc["__pycache__/service.cpython-312.pyc<br/>bytecode cache, compiled on import"]
-        Stdout["stdout: Total: 100 / 10 / 20 / 30 / 40 / Application completed"]
-        Src -->|"from service import calculate_total"| Interp
-        Interp --> Pyc
-        Interp --> Stdout
-    end
-    subgraph Composition["Build-time source composition (Git submodules)"]
-        direction TB
-        GitCli["Git client -- git clone --recursive"]
-        Remotes["Public GitHub HTTPS remotes<br/>600K_ChildRepo / 600K_Nested_ChildRepo"]
-        GitCli -->|"HTTPS fetch (build-time only)"| Remotes
-    end
-    Operator -->|"python app.py"| Interp
-    Operator -->|"obtain source"| GitCli
-    GitCli -->|"checkout working tree"| Src
-    Stdout -->|"read on console"| Operator
-    subgraph Absent["Deployment infrastructure -- NONE present"]
-        direction TB
-        NA1["No cloud provider / hosted compute"]
-        NA2["No containers or images (no Dockerfile)"]
-        NA3["No orchestrator / scheduler (no Kubernetes)"]
-        NA4["No load balancer / gateway / network services"]
-        NA5["No IaC / CI-CD / monitoring stack"]
-    end
+```text
+ImportError: cannot import name 'calculate_total' from partially initialized module 'service' (most likely due to a circular import) (<path>/service.py)
 ```
 
-As the diagram indicates, the only components that exist are the interpreter, the source files, the bytecode cache, and the stdout stream on one host, plus the build-time Git fetch; there is no cloud, container, orchestration, or network tier to depict because none exists in the codebase. This is consistent with the single-process topology documented in Section 6.1.2.
+The trailing parenthetical is CPython-version-dependent. Python 3.13.x instead emits a "consider renaming" hint, so the same defect surfaces as:
 
-## 8.2 Deployment Environment
-
-Because the system requires no provisioned infrastructure (Section 8.1), its "deployment environment" reduces to a single local host that provides a Python interpreter. This subsection assesses that minimal target environment and how it is managed, documenting resource sizing, cost, and external dependencies as required, and explicitly dispositioning the environment-management concerns (IaC, configuration management, environment promotion, backup/disaster recovery) that a hosted system would otherwise address.
-
-### 8.2.1 Target Environment Assessment
-
-**Environment type.** The only environment is a **local developer/operator workstation** running any operating system with a CPython 3.6+ interpreter. The system is neither on-premises server infrastructure, cloud, hybrid, nor multi-cloud — it is a locally executed command-line program (`python app.py`) with no hosted runtime (Section 6.1.2). The observed toolchain is CPython 3.12 (evidenced by the `__pycache__/service.cpython-312.pyc` caches), while the source itself requires only Python 3.6+ (the sole version-sensitive feature is f-string formatting in `app.py`), per Section 3.1.
-
-**Geographic distribution.** None. There is no deployment target, no region or availability-zone concept, no localization, and no market/geographic scope (consistent with Section 1.3.1, which records geographic/market coverage as "Not applicable"). Execution is a single local run wherever the source and an interpreter are present.
-
-**Network architecture.** Not applicable at runtime. The process opens no sockets, binds no ports, and performs no network I/O; it reads a hard-coded list and writes to stdout (Section 6.1.2). The **only** network interaction anywhere is a build-time HTTPS fetch to the public GitHub remotes declared in `.gitmodules`, performed once to populate the submodule tree (Section 3.6.3); that interaction is depicted in the deployment workflow diagram (Diagram 8.6-1). Because no runtime network topology exists, no separate network-architecture diagram is warranted.
-
-**Resource requirements.** Minimal. The workload is an O(n) summation over a fixed four-element list, and end-to-end wall-clock time is dominated by interpreter startup rather than by the computation (Section 5.4.4). The guidelines below are sizing recommendations for the single execution host; they are not enforced by any code or configuration.
-
-**Table 8.2-1 — Resource Sizing Guidelines (Single Execution Host)**
-
-| Resource | Guideline | Basis |
-| --- | --- | --- |
-| CPU | Any single modern core; utilization negligible | O(n) with n = 4; cost dominated by interpreter startup (Section 5.4.4) |
-| Memory | A few MB (interpreter baseline only) | Small constant footprint; one 4-element in-memory list |
-| Disk (source) | Under 2 KB of source per level | Measured tracked source footprint = 1,937 bytes across all three levels |
-| Network | Build-time HTTPS to GitHub only; none at runtime | `.gitmodules` remotes; no runtime sockets (Section 6.1.2) |
-
-Note on checkout footprint: a full recursive checkout also materializes large data files (`*.csv`) that are excluded from documentation and use by `.blitzyignore` and are never read by any code (Section 5.4.4); they add disk usage but impose no CPU, memory, or runtime concern.
-
-**Compliance and regulatory requirements.** None documented or applicable. The program is a local CLI operating on data hard-coded in its own source; it handles no personal, financial, or otherwise regulated data, reads no external input, and integrates with no identity provider. There is no authentication or authorization framework — the only trust boundary is the operating-system permission of whoever can execute `python app.py`, which is governed entirely by the host OS and is outside the application (Section 5.4.3). The build-time submodule remotes are referenced through committed, credential-free HTTPS URLs; any access control there is GitHub's, not the application's.
-
-**Infrastructure cost estimate.** Recurring infrastructure cost is **$0** — there is no hosted compute, storage, network, registry, or monitoring to provision, and the toolchain (CPython and Git) is free and open-source.
-
-**Table 8.2-2 — Infrastructure Cost Estimate**
-
-| Cost Category | Estimated Recurring Cost | Notes |
-| --- | --- | --- |
-| Hosted compute / cloud services | $0 | No cloud or hosted runtime (Section 8.3) |
-| Software licensing | $0 | CPython and Git are free/open-source |
-| CI/CD, container registry, monitoring | $0 | None provisioned (Sections 8.4–8.7) |
-| Total recurring infrastructure | $0 | Runs on an existing local workstation |
-
-**External dependencies.** The application has **zero** third-party runtime package dependencies (the only import anywhere is the local `service` module, per Section 3.3). The external dependencies that do exist are the interpreter, the Git client, and the two build-time submodule source remotes.
-
-**Table 8.2-3 — External Dependencies**
-
-| External Dependency | Type | Purpose |
-| --- | --- | --- |
-| CPython interpreter (3.6+ required; 3.12 observed) | Runtime prerequisite | Executes `app.py` / `service.py` |
-| Git (with submodule support) | Build-time tool | Composes the nested submodule tree |
-| `github.com/lakshya-blitzy/600K_ChildRepo.git` | Build-time source | Provides `ChildRepo` submodule content |
-| `github.com/lakshya-blitzy/600K_Nested_ChildRepo.git` | Build-time source | Provides `NestedChild` submodule content |
-
-### 8.2.2 Environment Management
-
-Because there is no provisioned infrastructure, environment management is limited to source management under Git; the hosted-environment concerns the prompt enumerates are dispositioned below with the practice that applies in their place.
-
-**Table 8.2-4 — Environment-Management Concerns: Disposition**
-
-| Concern | Disposition | Basis |
-| --- | --- | --- |
-| Infrastructure as Code (IaC) | None — no Terraform/CloudFormation/Pulumi/Ansible | Verified absence across the tree (Section 3.6.4) |
-| Configuration management | None — no config files, env vars, or runtime flags | No configuration surface (Section 1.3.2) |
-| Environment promotion (dev/staging/prod) | Not applicable — no distinct tiers; Git branches/pinned submodule commits only | Single local execution model; `.gitmodules` |
-| Backup & disaster recovery | Stateless runtime; source recoverability via Git | Nothing to back up at runtime (Section 5.4.5) |
-
-**Infrastructure as Code.** No IaC approach exists — there are no Terraform, CloudFormation, Pulumi, or Ansible artifacts anywhere in the tree (Section 3.6.4). The execution environment is a manually prepared workstation with a Python interpreter; there is nothing to provision or converge.
-
-**Configuration management.** There is no configuration to manage. The program reads no configuration files, environment variables, command-line arguments, or runtime flags (Section 1.3.2); its input is the hard-coded list `[10, 20, 30, 40]` in `app.py`. The only "configuration" that governs a build is the set of pinned submodule commits recorded in the Git index and declared in `.gitmodules` (Section 3.6.3).
-
-**Environment promotion strategy.** There are no dev/staging/prod environments to promote between, because the same local execution model is the only environment (Section 6.1.2). What promotion the project does support is expressed entirely through Git — committing source changes to a branch and advancing the pinned submodule pointer — as detailed in Section 8.6.2 and illustrated in Diagram 8.6-2.
-
-**Backup and disaster recovery.** At runtime there is nothing to recover: the process is stateless, holds no session or durable data, and writes only to stdout, so a failed run leaves no partial or corrupt state and re-invocation reproduces identical output (Section 5.4.5). There is no redundancy, failover, replication, or backup because there is a single process and no data store, and none is warranted for this scope. At the source level, recoverability is provided by Git — the application source and pinned submodule pointers are version-controlled, so a working tree can be reconstituted in a fresh environment with `git clone` followed by `git submodule update --init --recursive`, assuming network access to the GitHub remotes.
-
-**Maintenance procedures.** Maintenance is source-level: edit `app.py`/`service.py` and commit to the appropriate Git remote (Section 3.6.1). The one standing maintenance item in the tree is the `ChildRepo/NestedChild` defect — its `service.py` is a byte-for-byte copy of `app.py` and never defines `calculate_total`, so that level fails at import time with a circular-import `ImportError`; the remedy is a deliberate source-level fix restoring a real `service.py` (Sections 5.4.2 and 6.1.3.3). Because there is no submodule content verification, this defect is not self-healing.
-
-## 8.3 Cloud Services
-
-**Determination: Cloud services are not used by this system; this subsection is not applicable.**
-
-The system uses no cloud provider and no cloud-hosted services. Across the entire tree there is no cloud SDK or CLI (no AWS, GCP, or Azure client), no cloud configuration or credentials, and no Infrastructure-as-Code that would provision cloud resources (Section 3.6.4); the application has zero third-party dependencies and integrates with no external service (Sections 3.3 and 3.4). It executes locally as `python app.py` and performs no network I/O at runtime (Section 6.1.2). The only external network endpoints referenced anywhere are the public GitHub HTTPS remotes used at build time to fetch the Git submodules (Section 3.6.3) — a source-hosting interaction, not a cloud runtime service.
-
-Consequently, the cloud-services concerns the prompt enumerates have no applicable content and are dispositioned below.
-
-**Table 8.3-1 — Cloud-Services Concerns: Disposition**
-
-| Concern | Disposition | Basis |
-| --- | --- | --- |
-| Cloud provider selection & justification | None — no provider selected or used | No cloud SDK/CLI/config in the tree (Section 3.4) |
-| Core services required (with versions) | None — no managed compute, storage, or data services | Local execution only (Section 6.1.2) |
-| High-availability design | Not applicable — single local process, no hosted service | No redundancy/failover (Section 6.1.3.3) |
-| Cost optimization strategy | Not applicable — recurring cloud cost is $0 | No provisioned resources (Table 8.2-2) |
-| Security & compliance considerations | Not applicable — no cloud attack surface | No network runtime; OS-only trust boundary (Section 5.4.3) |
-
-Because the system provisions no cloud resources, the recurring cloud cost is $0 and no cloud security or compliance controls apply.
-
-## 8.4 Containerization
-
-**Determination: Containerization is not used by this system; this subsection is not applicable.**
-
-The system is not containerized. There is no `Dockerfile`, `docker-compose.yml`, OCI image manifest, or any other container definition anywhere in the tree, and no base image, image registry, or build tooling is referenced (Section 3.6.4). The program runs directly on a host interpreter via `python app.py`; the only build-like artifact it produces is CPython's `__pycache__/service.cpython-312.pyc` bytecode cache, written implicitly on first import (Section 3.6.2). This is consistent with Section 1.3.2, which records containerization as explicitly out of scope.
-
-The containerization concerns the prompt enumerates therefore have no applicable content and are dispositioned below.
-
-**Table 8.4-1 — Containerization Concerns: Disposition**
-
-| Concern | Disposition | Basis |
-| --- | --- | --- |
-| Container platform selection | None — no container platform used | No `Dockerfile`/compose in the tree (Section 3.6.4) |
-| Base image strategy | Not applicable — no image is built | Runs directly on host CPython (Section 6.1.2) |
-| Image versioning approach | Not applicable — no image to version | No registry or tag scheme present |
-| Build optimization techniques | Not applicable — no container build step | Only artifact is `__pycache__` bytecode (Section 3.6.2) |
-| Security scanning requirements | Not applicable — no image or dependency layers to scan | Zero third-party dependencies (Section 3.3) |
-
-If containerization were ever introduced, its minimal basis would be a single-stage image over a Python base plus the two source files; no such artifact exists in the repository today, and none is required for the local execution model.
-
-## 8.5 Orchestration
-
-**Determination: Orchestration is not required by this system; this subsection is not applicable.**
-
-The system requires no orchestration. Its runtime topology is a single operating-system process started by `python app.py` that runs to completion and exits (Section 6.1.2). There is nothing to schedule, replicate, coordinate, or scale: no Kubernetes, Helm, Nomad, ECS, or Docker Swarm manifests exist anywhere in the tree, and — because the system is not containerized (Section 8.4) and exposes no service (Section 8.3) — there is no workload for an orchestrator to manage. The functions are pure, stateless, and deterministic, so the only "scaling" the code even permits is manually launching additional independent, share-nothing process runs, which is neither implemented nor orchestrated (Section 6.1.3.2).
-
-The orchestration concerns the prompt enumerates therefore have no applicable content and are dispositioned below.
-
-**Table 8.5-1 — Orchestration Concerns: Disposition**
-
-| Concern | Disposition | Basis |
-| --- | --- | --- |
-| Orchestration platform selection | None — no orchestrator used | No Kubernetes/scheduler manifests (Section 3.6.4) |
-| Cluster architecture | Not applicable — single process, single host | One OS process is the entire runtime (Section 6.1.2) |
-| Service deployment strategy | Not applicable — no service is deployed | Batch CLI, run to completion (Section 8.1) |
-| Auto-scaling configuration | None — no metrics, thresholds, or scaler | No monitoring or scaler (Sections 6.1.3.2, 6.5) |
-| Resource allocation policies | None — relies on host OS defaults | No quotas/limits/reservations in the tree |
-
-In place of orchestration, operation is a direct, manual invocation of the program on a single host; scaling, if ever needed, is limited to independent re-invocations rather than any managed, elastic topology.
-
-## 8.6 CI/CD Pipeline
-
-**There is no automated CI/CD pipeline in this system.** There is no `.github/workflows` directory and no other CI configuration (GitLab CI, CircleCI, Jenkins, etc.) anywhere in the tree (Section 3.6.4), so no pipeline runs on commit, and there is no automated gate that would catch defects prior to integration (which is why the `NestedChild` defect was integrated undetected). What the repository does have is a **minimal, manual build-and-distribution flow** expressed through the CPython interpreter and native Git submodules; this subsection documents that flow in the build-pipeline and deployment-pipeline terms the prompt requests.
-
-### 8.6.1 Build Pipeline
-
-The "build" is deliberately minimal: as a standard-library-only Python program, the code requires no compilation or bundling step before execution — the only build-like output is the bytecode CPython writes to `__pycache__` at import time (Section 3.6.2). The build-pipeline concerns are dispositioned below.
-
-**Table 8.6-1 — Build Pipeline Concerns**
-
-| Build Concern | Status / Mechanism | Basis |
-| --- | --- | --- |
-| Source-control triggers | None automated; manual Git commits only | No CI configuration (Section 3.6.4) |
-| Build environment requirements | A CPython 3.6+ interpreter (3.12 observed); nothing else | `__pycache__/service.cpython-312.pyc` (Section 3.1) |
-| Dependency management | None — zero third-party dependencies to resolve | Only import is local `service` (Section 3.3) |
-| Artifact generation & storage | No distributable artifact; `__pycache__` bytecode only, kept locally | Section 3.6.2 |
-| Quality gates | None — no tests, linters, or type checkers | No test/lint config (Section 3.6.1) |
-
-- **Source-control triggers.** No commit, tag, or pull-request event triggers any automation; the effective "trigger" to (re)build is a developer choosing to run the interpreter.
-- **Build environment.** The build/run environment is simply a host with a CPython 3.6+ interpreter. There is no build container, virtual environment, or toolchain to provision (Section 8.2.1).
-- **Dependency management.** There are no manifests or lockfiles and nothing to install; the program depends only on the Python standard library and its co-located `service` module (Section 3.3).
-- **Artifact generation and storage.** No wheel, sdist, or archive is produced and nothing is published to a registry; the sole build-like artifact is the local `__pycache__/service.cpython-312.pyc` bytecode cache generated implicitly on first import (Section 3.6.2).
-- **Quality gates.** No automated quality gates exist — there are no unit tests, linters, formatters, type checkers, or coverage thresholds (Section 3.6.1). The de-facto gate is manual verification of the program's deterministic output (Section 8.6.2).
-
-### 8.6.2 Deployment Pipeline
-
-Because the system is a locally executed batch program with no hosted service (Section 8.1), "deployment" is the act of obtaining the source recursively and running it; there is no blue-green, canary, or rolling strategy because there is no running service instance to shift traffic between. The deployment-pipeline concerns are dispositioned below.
-
-**Table 8.6-2 — Deployment Pipeline Concerns**
-
-| Deployment Concern | Status / Mechanism | Basis |
-| --- | --- | --- |
-| Deployment strategy | Manual: recursive checkout, then `python app.py`; no blue-green/canary/rolling | No service to deploy (Section 8.1) |
-| Environment promotion workflow | Git branches + pinned submodule commits; no dev/staging/prod tiers | `.gitmodules` (Section 3.6.3) |
-| Rollback procedures | `git checkout` / `git revert`; reset the pinned submodule pointer | Stateless runtime (Section 5.4.5) |
-| Post-deployment validation | Run and verify the stdout report plus a zero exit code | Section 6.5.2 |
-| Release management process | Git commits and pinned submodule pointers; no tags or changelog | Six scaffolding commits (Section 6.5.5.5) |
-
-- **Deployment strategy.** Obtain the full tree with `git clone --recursive` (or `git submodule update --init --recursive`), which requires network access to the public GitHub remotes, then execute `python app.py` (Section 3.6.3).
-- **Environment promotion workflow.** There are no tiered environments; promotion is expressed only through Git — committing a change to a branch and advancing the parent repository's pinned submodule commit (Diagram 8.6-2).
-- **Rollback procedures.** Rollback is a source-control operation — check out or revert to a prior commit, or reset a submodule pointer to a previous pinned commit. Because the runtime is stateless, no data migration or state rollback is involved (Section 5.4.5).
-- **Post-deployment validation.** Validation is running the program and confirming both the completion line and a zero exit status: a successful run prints `Total: 100`, then `10`/`20`/`30`/`40`, then `Application completed`, and exits `0` (Section 6.5.2). The one known failing case is `ChildRepo/NestedChild`, which fails at import with a circular-import `ImportError` and exits `1` (Section 6.1.3.3).
-- **Release management process.** Releases are informal: the parent repository has six scaffolding-oriented commits, and there is no version tagging, changelog, or issue tracker in the repository (Section 6.5.5.5); a "release" is simply the current pinned set of submodule commits.
-
-**Diagram 8.6-1 — Deployment Workflow (Obtain, Run, Validate)**
-
-```mermaid
-flowchart TD
-    Start(["Operator obtains source"])
-    Start --> Clone["git clone --recursive<br/>or git submodule update --init --recursive"]
-    Clone -->|"HTTPS fetch from GitHub remotes"| Fetch["Populate nested submodule tree<br/>ChildRepo + NestedChild"]
-    Fetch --> Checkout["Working tree checked out at pinned commits"]
-    Checkout --> Run["python app.py"]
-    Run --> Compile["CPython compiles service to __pycache__ bytecode on import"]
-    Compile --> Exec["main(): sum [10,20,30,40] --> stdout"]
-    Exec --> Validate{"exit code == 0 AND stdout matches expected report?"}
-    Validate -->|"Yes (root / ChildRepo)"| Done(["Run accepted: Total: 100 / 10 / 20 / 30 / 40 / Application completed"])
-    Validate -->|"No (NestedChild: circular-import ImportError, exit 1)"| Fix["Manual source-level fix: restore a real service.py"]
-    Fix --> Run
+```text
+ImportError: cannot import name 'calculate_total' from 'service' (consider renaming '<path>/service.py' if it has the same name as a library you intended to import)
 ```
 
-The workflow diagram shows the single build-time network interaction (the HTTPS submodule fetch), the implicit bytecode compilation, the deterministic execution, and the manual validate/fix loop that substitutes for automated deployment gates.
-
-**Diagram 8.6-2 — Environment Promotion Flow (Git-Based)**
-
-```mermaid
-flowchart LR
-    subgraph Local["Developer workstation -- the only environment"]
-        direction TB
-        Edit["Edit app.py / service.py"]
-        Verify["Run + verify stdout and exit 0"]
-        Commit["git commit to branch"]
-        Edit --> Verify
-        Verify --> Commit
-    end
-    subgraph Vcs["Version control -- the promotion mechanism"]
-        direction TB
-        Branch["Branch commit (e.g. 2007_01)"]
-        Pin["Advance pinned submodule commit in parent"]
-        Branch --> Pin
-    end
-    Commit --> Branch
-    Pin -->|"consumers: git pull + git submodule update --init --recursive"| Consume["Fresh checkout reproduces identical deterministic output"]
-    subgraph Absent["Tiered environments -- NONE present"]
-        direction TB
-        NA1["No dev tier"]
-        NA2["No staging tier"]
-        NA3["No production tier / release gate"]
-    end
-```
-
-The promotion diagram makes explicit that there are no dev/staging/prod tiers; "promotion" is a Git operation — commit to a branch and advance the pinned submodule pointer — after which any consumer reproduces the identical deterministic result on a recursive checkout.
-
-## 8.7 Infrastructure Monitoring
-
-**There is no infrastructure monitoring in this system.** Because there is no provisioned infrastructure to observe (Section 8.1) and no long-running or networked service (Section 6.1.2), none of the monitoring capabilities the prompt enumerates is implemented: there is no metrics agent or exporter, no log aggregation, no cost-monitoring integration, no security monitoring, and no compliance-audit tooling anywhere in the tree. This is consistent with Section 6.5 (Monitoring and Observability), which determines that a detailed monitoring architecture is not applicable, and with Section 5.4.1 (monitoring, observability, logging, and tracing all absent).
-
-In place of a monitoring stack, operation is verified by **direct console observation** of the three signals a single short-lived process exposes — the standard-output stream, the standard-error stream, and the integer process exit code — as detailed in Section 6.5.2 and depicted in that section's Monitoring Architecture diagram (Diagram 6.5-1). The infrastructure-monitoring concerns are dispositioned below.
-
-**Table 8.7-1 — Infrastructure-Monitoring Concerns: Disposition**
-
-| Concern | Disposition | Basis |
-| --- | --- | --- |
-| Resource monitoring approach | None — negligible usage; external `time`/OS tooling if ever needed | No agent or metrics (Section 6.5.3.1) |
-| Performance metrics collection | None instrumented — intrinsic O(n) with n = 4 only | No timers/counters in code (Section 6.5.4.2) |
-| Cost monitoring & optimization | Not applicable — $0 recurring infrastructure cost | No provisioned resources (Table 8.2-2) |
-| Security monitoring | None — no network attack surface; OS-only trust boundary | No auth/secrets/network (Section 5.4.3) |
-| Compliance auditing | None — audit trail is Git commit history only | No compliance obligations (Section 8.2.1) |
-
-- **Resource monitoring.** No CPU, memory, disk, or network monitoring is configured; resource usage is negligible, and cost is dominated by interpreter startup rather than the computation (Section 5.4.4). If a timing or resource figure is ever needed, an operator can wrap the invocation with external tooling (for example, the shell `time` builtin) — an action outside the application (Section 6.5.4.2).
-- **Performance metrics collection.** No performance metrics are emitted or retained; there are no timers, histograms, or counters in the code (Section 6.5.3.1). The intrinsic profile is O(n) time / O(1) space with a fixed n = 4, but it is not measured at runtime (Section 6.5.4.2).
-- **Cost monitoring and optimization.** Not applicable — there is no hosted infrastructure whose spend could be tracked or optimized; recurring infrastructure cost is $0 (Table 8.2-2).
-- **Security monitoring.** No intrusion detection, audit logging, or security telemetry exists, and none is warranted: the program opens no network sockets, exposes no API, and reads no secrets, so the only trust boundary is the host OS permission of whoever runs `python app.py` (Section 5.4.3).
-- **Compliance auditing.** No compliance-audit process or tooling exists; the repository handles no regulated data and documents no compliance obligations (Section 8.2.1). The only audit trail available is the Git commit history and the pinned submodule pointers (Section 6.5.5.5).
-
-These console-observation practices require no additional dependencies and are sufficient for a deterministic, fixed-input batch program at this scope.
-
-## 8.8 References
-
-Repository files and folders examined as evidence for this section:
-
-- `app.py` - Root entry-point/orchestrator; established the local execution model (the single local import at `app.py:1`, the in-process call, and stdout output at `app.py:8, 11, 13`), the fixed workflow input `[10, 20, 30, 40]`, and the absence of any network, server, or deployment code — the basis for the "not applicable" determination and the local-host infrastructure model.
-- `service.py` - Pure computation module (`calculate_total`, `calculate_average`); confirmed zero external runtime dependencies (no imports) and stateless functions, supporting the resource-sizing and disaster-recovery discussions.
-- `README.md` - One-line title heading at each level; confirmed the absence of any operational, deployment, or infrastructure documentation.
-- `.gitmodules` - Declared the two build-time submodule remotes (`600K_ChildRepo.git`, `600K_Nested_ChildRepo.git`) as credential-free GitHub HTTPS URLs; established the source-composition/distribution mechanism and the only external network endpoints referenced anywhere (the External Dependencies table).
-- `.blitzyignore` - Excludes `*.csv`; established that the `large.csv` data files are off-limits, are never read by any code, and impose no CPU/memory/runtime concern (only a checkout disk-footprint note).
-- `__pycache__/service.cpython-312.pyc` - CPython 3.12 bytecode cache; cited as the observed toolchain (Python 3.12) and as the only build-like artifact produced (Sections 8.6.1 and 3.6.2).
-- `ChildRepo/` - Git submodule replicating the two-module application; the second level of the build-time composition tree.
-- `ChildRepo/NestedChild/` - Nested submodule whose `service.py` is a byte-for-byte copy of `app.py`, producing a circular-import `ImportError`; cited as the standing source-level maintenance item and the one post-deployment validation failure case.
-- Repository-wide verification (across the whole tree, excluding `.git` and `*.csv`) - Confirmed the absence of any `Dockerfile`/compose, Kubernetes/Helm manifest, IaC (Terraform/CloudFormation/Pulumi), CI/CD configuration, cloud SDK/config, monitoring agent, dependency manifest/lockfile, virtual environment, or `.env` file; and measured the tracked source footprint (1,937 bytes total) and the six-commit history used for resource sizing and release-management statements.
-
-Technical Specification sections cross-referenced:
-
-- `1.3 Scope` - Packaging, tests, CI/CD, and containerization recorded as explicitly out of scope; geographic/market coverage "Not applicable"; CSV files excluded by policy.
-- `3.1 Programming Languages` - CPython 3.12 observed toolchain and Python 3.6+ minimum runtime.
-- `3.3 Open Source Dependencies` - Zero third-party dependencies (dependency-management disposition).
-- `3.4 Third-Party Services` - No external services (cloud-services disposition).
-- `3.6 Development and Deployment` - No build system, containerization, CI/CD, or infrastructure-as-code; nested Git-submodule composition (`git clone --recursive` / `git submodule update --init --recursive`); `__pycache__` bytecode as the only build-like artifact.
-- `5.4 Cross-Cutting Concerns` - No monitoring/logging/authentication/SLAs; disaster recovery as stateless runtime plus Git source recoverability (5.4.5); OS-only trust boundary (5.4.3); intrinsic performance profile (5.4.4).
-- `6.1 Core Services Architecture` - Single-process modular-monolith topology (6.1.2); no scaling, failover, or orchestration; manual share-nothing replication only (6.1.3.2, 6.1.3.3).
-- `6.5 Monitoring and Observability` - No monitoring architecture; console-observation practices over stdout/stderr/exit code (6.5.2) and the Monitoring Architecture diagram (Diagram 6.5-1) referenced by Section 8.7.
-
-No external (web) sources were required; every statement in this section is grounded in the repository or in the cross-referenced specification sections above.
-
-# 9. Appendices
-
-## 9.1 Additional Technical Information
-
-Sections 1 through 8 of this specification already document the system's behavior, technology stack, architecture, security posture, and the one standing defect in exhaustive detail. This appendix consolidates a small set of supplementary, independently verifiable reference facts — file-level size and line metrics, and the exact Git object identifiers — that are relied upon implicitly elsewhere in the document but are not gathered together in any single place. Every value below was measured directly against the repository at its checkout root and is consistent with the technology and composition model described in Sections 3.1, 3.6, and 5.1. As throughout the document, the `*.csv` artifacts excluded by the repository's `.blitzyignore` files are omitted, and — because no dependency manifest, build, test, container, CI/CD, or infrastructure tooling exists anywhere in the tree — there is no such tooling to document here.
-
-### 9.1.1 Consolidated Source-Artifact Inventory
-
-The entire source of the system is **6 Python files** (three copies of `app.py` and three of `service.py`) totaling **92 lines and 1,566 bytes**. The full tracked, non-CSV footprint across all three repository levels — adding the three single-line `README.md` files, the two `.gitmodules` descriptors, and the three `.blitzyignore` files — is **1,846 bytes (under 2 KB)**. The only build-like artifact present is a CPython 3.12 bytecode cache, `__pycache__/service.cpython-312.pyc`, which exists at each of the three levels as an interpreter import-time optimization rather than hand-written source (consistent with Sections 3.1.1 and 3.6.2).
-
-The per-file Python source inventory is:
-
-| File | Level | Lines | Bytes |
-| --- | --- | --- | --- |
-| `app.py` | Root (`600K_ParentRepo`) | 16 | 273 |
-| `service.py` | Root (`600K_ParentRepo`) | 14 | 237 |
-| `app.py` | `ChildRepo` | 16 | 273 |
-| `service.py` | `ChildRepo` | 14 | 237 |
-| `app.py` | `ChildRepo/NestedChild` | 16 | 273 |
-| `service.py` | `ChildRepo/NestedChild` | 16 | 273 |
-
-The inventory itself is the fingerprint of the `NestedChild` defect documented in Sections 1.2.2, 2.4.4, and 5.4.2: at the two functioning levels `service.py` is 14 lines / 237 bytes, whereas at `ChildRepo/NestedChild` the `service.py` is 16 lines / 273 bytes — byte-for-byte identical to `app.py`. That size/line match is exactly why the nested `service.py` defines no `calculate_total` and the level fails with a circular-import `ImportError`.
-
-The remaining tracked, non-source artifacts (each a fixed, tiny file) are:
-
-| Artifact | Root (bytes) | ChildRepo (bytes) | NestedChild (bytes) |
-| --- | --- | --- | --- |
-| `README.md` (single title line) | 8 | 16 | 23 |
-| `.gitmodules` | 102 | 113 | — (none) |
-| `.blitzyignore` (pattern `*.csv`) | 6 | 6 | 6 |
-
-The `README.md` files contain only a title heading (`# app.py`, `# 600K_ChildRepo`, `# 600K_Nested_ChildRepo` respectively) with no trailing newline; the `NestedChild` level carries no `.gitmodules` because it is the deepest level of the submodule chain and declares no further child.
-
-### 9.1.2 Git Commit and Submodule-Pin Reference
-
-The document body records that the parent repository has six scaffolding-oriented commits (Sections 1.2.1 and 6.5.5.5) and that the submodules are "referenced at pinned commits" (Sections 3.6.3 and 5.1.4), but it does not enumerate the underlying Git object identifiers. They are consolidated here for reference. All identifiers were read from the repository's own Git metadata; the submodule remotes are the credential-free public HTTPS URLs already declared in `.gitmodules` and cited in Sections 3.6.3 and 5.1.4 (identified below by repository name only).
-
-Parent repository commit history (newest first):
-
-| Short SHA | Commit message |
-| --- | --- |
-| `c77daf2` | Add child submodule |
-| `a79d4a4` | Add files via upload |
-| `160cb3b` | Create .blitzyignore |
-| `3b04370` | Create service.py |
-| `ffa4b03` | Create app.py |
-| `13bfbe4` | Initial commit |
-
-Submodule pinned commits (the gitlink recorded in each superproject):
-
-| Submodule path | Declared in (`.gitmodules` → remote) | Pinned commit SHA |
-| --- | --- | --- |
-| `ChildRepo` | root → `600K_ChildRepo.git` | `a1c629449c281ae95d86c1672c3890541d683654` |
-| `ChildRepo/NestedChild` | `ChildRepo` → `600K_Nested_ChildRepo.git` | `915ff60a2ef846af380b0b2288b0ab09676ae63c` |
-
-These commit and submodule-pin identifiers are the concrete anchors behind the reproducible-checkout procedure documented in Section 3.6.3 (`git clone --recursive` or `git submodule update --init --recursive`) and the "determinism plus version control" resilience model in Section 5.4.5. Because there is no submodule content verification (Sections 2.4.4 and 6.4.5), the pinned `NestedChild` commit above is precisely the point at which the defective `service.py` copy entered the composed tree.
+Both forms are raised because `NestedChild/app.py` executes `from service import calculate_total`, which loads `NestedChild/service.py`, whose own first statement is the identical `from service import calculate_total` — re-entering the partially initialized `service` module before any name is bound. This is the concrete, reproducible manifestation of the fail-fast error posture documented in Section 5.4.2 (no `try`/`except` exists anywhere in the tree, so the interpreter's default traceback-to-stderr behavior governs).
 
 ## 9.2 Glossary
 
-The following terms are used throughout this specification. Definitions are scoped to how each term applies to this repository — a minimal, standard-library-only Python list-summation demonstration composed as a three-level Git-submodule chain — and are consistent with the usage established in Sections 1 through 8.
+The following terms are used throughout this specification. Definitions are scoped to how each term applies to this repository — a minimal, standard-library-only Python list-summation demonstration composed as a three-level Git-submodule chain — and are consistent with the usage established in Sections 1 through 8. Source-line references are to the current working tree on branch `2007_01`.
 
 | Term | Definition (as used in this document) |
 | --- | --- |
-| Accumulator | The running-total variable in `calculate_total`, initialized to integer `0` and incremented by each element of the input list before being returned (`service.py:2-7`). |
-| Attack surface | The set of points at which an external actor could interact with the system. For this program it is effectively empty: no network interface, no external input, and stdout-only output (Section 6.4.1.2). |
+| Accumulator | The running-total variable in `calculate_total`, initialized to integer `0` and incremented by each element of the input list before being returned (`service.py:35-41`). |
+| Attack surface | The set of points at which an external actor could interact with the system. For this program it is effectively empty: no network interface, no external input, and stdout-only output (Section 6.4.1). |
 | Batch program (run-to-completion) | A program that performs a fixed task once and then exits, as opposed to a long-running or networked service; `python app.py` runs `main()` a single time and terminates. |
 | Bytecode cache | The compiled Python bytecode the interpreter writes on first import to accelerate later imports — here `__pycache__/service.cpython-312.pyc`; an optimization artifact, not source. |
 | Bytecode magic number | The four-byte marker at the start of a `.pyc` file that identifies the CPython version which produced it; the observed value `cb0d0d0a` denotes CPython 3.12 (Section 3.1.2). |
 | Circular import | An import cycle in which a module is imported before its names are bound, raising `ImportError`. The `NestedChild` `service.py` triggers this by importing `calculate_total` from `service` (itself) rather than defining it. |
-| CPython | The reference C implementation of the Python interpreter; the toolchain that compiled the committed bytecode (version 3.12) and runs the program. |
+| CPython | The reference C implementation of the Python interpreter; the toolchain that compiled the committed bytecode (version 3.12) and runs the program (verified on 3.12.3; documented on 3.13.7). |
 | De-facto acceptance criteria | In the absence of formal tests or SLAs, the observed correct behavior treated as the correctness bar: the exact stdout report plus a zero exit code (Section 1.2.3). |
 | Deterministic | Producing identical output for identical input on every execution, with no randomness, concurrency, or external state; a property of the entire workflow. |
 | Entry point | The location where execution begins — `main()` in `app.py`, invoked under the `__main__` guard for direct execution (feature F-003). |
 | Exit code (exit status) | The integer a process returns to the invoking shell: `0` on success, non-zero on failure (e.g., `1` for the `NestedChild` `ImportError`). |
 | Fail-fast | The de-facto error posture in which an unhandled exception immediately halts the process with a stderr traceback and non-zero exit code; no `try`/`except` exists anywhere (Section 5.4.2). |
-| f-string | A Python 3.6+ formatted string literal such as `f"Total: {total}"` (`app.py:8`); the highest version-sensitive language feature used, setting the 3.6 minimum. |
+| f-string | A Python 3.6+ formatted string literal such as `f"Total: {total}"` (`app.py:36`); the highest version-sensitive language feature used, setting the 3.6 minimum (Section 3.1.2). |
 | Git submodule | A Git mechanism for embedding one repository inside another at a specific pinned commit, declared in a `.gitmodules` file; the composition mechanism for this repository (feature F-004). |
 | Gitlink (submodule pin) | The exact commit SHA a parent repository records for a submodule, fixing which content is checked out; the enumerated pins appear in Section 9.1.2. |
 | ImportError | The Python exception raised when a name cannot be imported; the concrete, reproducible failure of `ChildRepo/NestedChild/app.py`. |
 | Least privilege | The practice of running with no more authority than required; the process runs solely with the privileges of the invoking OS user (Section 6.4.5). |
 | Modular monolith | A single-process application internally separated into modules — here an orchestrator (`app.py`) plus a computation module (`service.py`) — but deployed and run as one unit (Section 5.1.1). |
-| Orchestrator (orchestration layer) | The `app.py`/`main()` layer that constructs the input list, requests the total from the service, and writes the report to stdout; owns all I/O. |
+| Orchestrator (orchestration layer) | The `app.py` / `main()` layer that constructs the input list, requests the total from the service, and writes the report to stdout; it owns all I/O. |
 | Pure function | A function whose output depends only on its inputs, with no side effects or shared mutable state; both `calculate_total` and `calculate_average` are pure (Section 5.1.1). |
-| Reduction (fold) | Collapsing an iterable to a single value by repeated combination; `calculate_total` reduces the list to its sum. |
-| Referential transparency | The property that a function call may be replaced by its resulting value without changing program behavior; follows from the purity of `service.py`. |
+| Reduction | Collapsing an iterable to a single value by repeated combination; `calculate_total` reduces the list to its sum. |
 | Scaffold / reference example | A minimal codebase that illustrates a pattern (here, entry-point/service separation and nested submodule composition) rather than delivering a production product (Section 1.1). |
+| Sentinel (completion line) | The fixed final output line `Application completed` that `main()` prints to signal successful completion of the workflow (requirement F-003-RQ-003). |
 | Separation of concerns | The design principle of splitting orchestration/I-O (`app.py`) from computation (`service.py`); the single organizing decision of the codebase. |
 | Standard library only | Reliance exclusively on modules and builtins shipped with Python, with zero third-party dependencies; the only import anywhere is `from service import calculate_total`. |
 | stdout / stderr | The process's standard output and standard error streams; `print()` writes the report to stdout, and uncaught tracebacks go to stderr — the only output channels. |
 | Superproject | The parent repository that contains a submodule; the root `600K_ParentRepo` is the superproject of `ChildRepo`, which is in turn the superproject of `NestedChild`. |
 | Trust boundary | A line across which trust or privilege changes; the only one present is the host-OS permission of whoever may execute `python app.py` (Section 5.4.3). |
 | TypeError | The Python exception that `calculate_total` would raise if given a non-numeric element; unreachable via the hard-coded numeric workflow but noted as a constraint (Sections 2.4.1 and 5.4.2). |
-| Unexercised (dead) code | Code that is defined but never reached by any execution path; `calculate_average` is defined in `service.py` yet invoked by no entry point (Sections 1.2.2 and 6.5.4.3). |
-| `__main__` guard | The `if __name__ == "__main__":` idiom that runs `main()` only on direct execution, so importing the module has no side effects (`app.py:15-16`). |
+| Unexercised (dead) code | Code that is defined but never reached by any execution path; `calculate_average` is defined in `service.py` yet invoked by no entry point (Sections 1.2.2 and 6.5.4). |
+| `__main__` guard | The `if __name__ == "__main__":` idiom that runs `main()` only on direct execution, so importing the module has no side effects (`app.py:45-46`). |
 | Walrus operator | Python 3.8+ assignment-expression syntax (`:=`); explicitly **not** used in the codebase, which helps keep the language floor at 3.6 (Section 3.1.2). |
 
 ## 9.3 Acronyms
 
-The acronyms and initialisms used across this specification are expanded below, grouped by domain for readability. Many appear in the document in the context of capabilities that this minimal, standard-library-only Python program deliberately does not implement (documented as "not applicable" or "absent" in Sections 3, 5, 6, 7, and 8); they are listed here for completeness so the record is self-contained.
+The acronyms and initialisms used across this specification are expanded below, grouped by domain for readability. Many appear in the document in the context of capabilities that this minimal, standard-library-only Python program deliberately does **not** implement (documented as "not applicable" or "absent" in Sections 3, 5, 6, 7, and 8); they are retained here for completeness so the record is self-contained.
 
 **General, Development, and Documentation**
 
 | Acronym | Expanded Form |
 | --- | --- |
+| ADR | Architecture Decision Record |
 | API | Application Programming Interface |
 | CI/CD | Continuous Integration / Continuous Delivery (and Deployment) |
 | CLI | Command-Line Interface |
@@ -3739,6 +3707,8 @@ The acronyms and initialisms used across this specification are expanded below, 
 | IDE | Integrated Development Environment |
 | KB | Kilobyte |
 | MB | Megabyte |
+| MD5 | Message-Digest Algorithm 5 (file fingerprints) |
+| RQ | Requirement (component of requirement IDs, e.g., F-003-RQ-001) |
 | SDK | Software Development Kit |
 | SHA | Secure Hash Algorithm (Git commit and submodule-pin identifiers) |
 | VCS | Version Control System |
@@ -3748,10 +3718,15 @@ The acronyms and initialisms used across this specification are expanded below, 
 | Acronym | Expanded Form |
 | --- | --- |
 | CPU | Central Processing Unit |
+| DAO | Data Access Object |
+| DDL | Data Definition Language |
+| DSN | Data Source Name |
 | HTTP | HyperText Transfer Protocol |
 | HTTPS | HyperText Transfer Protocol Secure |
 | I/O | Input/Output |
+| IPC | Inter-Process Communication |
 | JSON | JavaScript Object Notation |
+| ORM | Object-Relational Mapping |
 | OS | Operating System |
 | REST | Representational State Transfer |
 | RPC | Remote Procedure Call |
@@ -3773,7 +3748,7 @@ The acronyms and initialisms used across this specification are expanded below, 
 | OAuth | Open Authorization |
 | PCI-DSS | Payment Card Industry Data Security Standard |
 | PDP | Policy Decision Point |
-| PEP | Policy Enforcement Point |
+| PEP | Policy Enforcement Point (security); Python Enhancement Proposal (e.g., PEP 517/518) |
 | PII | Personally Identifiable Information |
 | RBAC | Role-Based Access Control |
 | SOC 2 | System and Organization Controls 2 |
@@ -3784,8 +3759,8 @@ The acronyms and initialisms used across this specification are expanded below, 
 | Acronym | Expanded Form |
 | --- | --- |
 | APM | Application Performance Monitoring |
+| AWS | Amazon Web Services |
 | CSV | Comma-Separated Values (files excluded from use via `.blitzyignore`) |
-| DR | Disaster Recovery |
 | IaC | Infrastructure as Code |
 | KPI | Key Performance Indicator |
 | SLA | Service-Level Agreement |
@@ -3800,34 +3775,36 @@ This appendix was assembled entirely from direct repository inspection and cross
 
 **Repository files examined**
 
-- `app.py` — Root entry point; established the `main()` workflow, the `from service import calculate_total` import, the `f-string`/`__main__`-guard features, and the 16-line / 273-byte metrics used in Section 9.1.1.
-- `service.py` — Root computation module; established the pure `calculate_total` / `calculate_average` functions and the 14-line / 237-byte metrics used in Section 9.1.1.
-- `README.md` — Root one-line title (`# app.py`, 8 bytes); a non-source artifact in the inventory.
+- `app.py` — Root entry point; established the `main()` workflow, the `from service import calculate_total` import, the f-string / `__main__`-guard features, and the 46-line / 1,463-byte metrics used in Section 9.1.1.
+- `service.py` — Root computation module; established the pure `calculate_total` / `calculate_average` functions and the 78-line / 2,851-byte metrics used in Section 9.1.1.
+- `README.md` — Root comprehensive README (278 lines / 11,172 bytes); a non-source artifact in the inventory.
 - `.gitmodules` — Root submodule descriptor (102 bytes) declaring `ChildRepo`; source of the composition/remote reference in Section 9.1.2.
 - `.blitzyignore` — Root ignore file (6 bytes, pattern `*.csv`); basis for the CSV-exclusion note.
 - `ChildRepo/app.py`, `ChildRepo/service.py`, `ChildRepo/README.md`, `ChildRepo/.gitmodules`, `ChildRepo/.blitzyignore` — Second-level artifacts; confirmed the functioning mirror of the root program and supplied the `ChildRepo` size/line figures and the `NestedChild` submodule declaration.
-- `ChildRepo/NestedChild/app.py`, `ChildRepo/NestedChild/service.py`, `ChildRepo/NestedChild/README.md`, `ChildRepo/NestedChild/.blitzyignore` — Deepest-level artifacts; established the defect fingerprint (a 16-line / 273-byte `service.py` byte-identical to `app.py`) referenced in Section 9.1.1.
-- `__pycache__/service.cpython-312.pyc` (present at all three levels) — CPython 3.12 bytecode cache; evidence for the interpreter/toolchain note and the "only build-like artifact" statement in Section 9.1.1.
+- `ChildRepo/NestedChild/app.py`, `ChildRepo/NestedChild/service.py`, `ChildRepo/NestedChild/README.md`, `ChildRepo/NestedChild/.blitzyignore` — Deepest-level artifacts; established the defect fingerprint (a 16-line / 273-byte `service.py` byte-identical to `app.py`, MD5 `a7f6989f…`) referenced in Sections 9.1.1 and 9.1.3.
+- `__pycache__/*.cpython-312.pyc` (present at all three levels; additionally `app.cpython-312.pyc` at the root) — CPython 3.12 bytecode caches; evidence for the interpreter/toolchain note and the "only build-like artifact" statement in Section 9.1.1.
 
 **Repository folders examined**
 
-- `ChildRepo/` — Git submodule mirroring the root two-file program at pinned commit `a1c62944…`.
-- `ChildRepo/NestedChild/` — Nested Git submodule at pinned commit `915ff60a…`; the level whose defective `service.py` fails with a circular-import `ImportError`.
+- `ChildRepo/` — Git submodule mirroring the root two-file program, pinned at commit `63b3f43…`.
+- `ChildRepo/NestedChild/` — Nested Git submodule pinned at commit `d57c9dd…`; the level whose defective `service.py` fails with a circular-import `ImportError`.
+- `.git/modules/ChildRepo/` and `.git/modules/ChildRepo/modules/NestedChild/` — Submodule Git metadata directories referenced by the `.git` gitlink pointers; used to read the recorded submodule pins.
 
 **Repository metadata and runtime verification**
 
-- Git commit log and `git submodule status --recursive` — Source of the parent six-commit short SHAs and the two submodule pin SHAs enumerated in Section 9.1.2.
-- Direct byte/line measurement (`wc`) across the 14 tracked non-CSV files — Source of the per-file inventory and the 1,566-byte source / 1,846-byte total-footprint figures in Section 9.1.1.
-- Runtime execution under CPython 3.12.3 — Confirmed the deterministic root/`ChildRepo` behavior (exit 0) and the `NestedChild` `ImportError` (exit 1) referenced by several glossary entries.
+- `git log`, `git rev-list --count HEAD`, `git rev-parse --abbrev-ref HEAD` — Source of the 18 parent commit short SHAs, the branch name `2007_01`, and HEAD `9ba0477` enumerated in Section 9.1.2.
+- `git ls-tree HEAD` and `git submodule status --recursive` — Source of the two submodule pin SHAs (`63b3f43…`, `d57c9dd…`) in Section 9.1.2.
+- Direct byte/line/MD5 measurement (`wc`, `md5sum`) across the tracked non-CSV files — Source of the per-file inventory and the 282-line / 9,409-byte source figures in Section 9.1.1.
+- Runtime execution and toolchain inspection under CPython 3.12.3 (`python3 --version`, `git --version` → 2.43.0, `.pyc` magic bytes → `cb0d0d0a`) — Confirmed the deterministic root/`ChildRepo` behavior (exit 0), the `NestedChild` `ImportError` (exit 1), and the verbatim runtime signatures in Section 9.1.3.
 
 **Cross-referenced Technical Specification sections**
 
-- `1.1 Executive Summary`, `1.2 System Overview`, `1.3 Scope` — Project characterization (scaffold/demonstration), the documented commit messages, versions, submodule URLs, and the de-facto acceptance criteria.
-- `2.4 Implementation Considerations` — Feature-level constraints (F-001–F-004), the unverified-submodule maintenance note, and the `TypeError`/duplication findings.
-- `3.1 Programming Languages`, `3.6 Development and Deployment` — Python 3.6+ floor vs. CPython 3.12 toolchain, bytecode magic, and the nested-submodule checkout procedure.
-- `5.1 High-Level Architecture`, `5.4 Cross-Cutting Concerns` — Modular-monolith framing, pure-function/orchestrator terminology, fail-fast error handling, and the determinism-plus-version-control resilience model.
+- `1.1 Executive Summary`, `1.2 System Overview`, `1.3 Scope` — Project characterization (scaffold/demonstration), the 282-line codebase-size figure, the 18-commit history, submodule URLs and pins, the de-facto acceptance criteria, and the CSV-exclusion policy.
+- `2.4 Implementation Considerations` — Feature-level constraints (F-001–F-004), the unverified-submodule maintenance note, and the `TypeError` / duplication findings.
+- `3.1 Programming Languages`, `3.6 Development & Deployment` — Python 3.6+ floor vs. the CPython 3.12 toolchain (3.12.3 observed), bytecode magic, Git 2.43.0, and the nested-submodule checkout procedure.
+- `5.1 High-Level Architecture`, `5.4 Cross-Cutting Concerns` — Modular-monolith framing, pure-function / orchestrator terminology, fail-fast error handling, and the determinism-plus-version-control resilience model.
 - `6.4 Security Architecture`, `6.5 Monitoring and Observability` — Attack-surface, trust-boundary, least-privilege, compliance, and observability terminology carried into the glossary and acronym list.
-- `8.1 Infrastructure Applicability Assessment` — Local-execution model, absence of cloud/container/orchestration tiers, and the consolidated-footprint context.
+- `8.1 Infrastructure Applicability Assessment` — Local-execution model and the absence of cloud/container/orchestration tiers underpinning the consolidated-footprint context.
 
 **External sources**
 

@@ -3,8 +3,8 @@
 A minimal, standard-library-only Python demonstration that sums a fixed list of
 numbers and prints the results. Its direct-execution entry point is `app.py`
 [Source: app.py:L17], which delegates the summation to the local `service`
-module [Source: app.py:L15]. This repository sits at the **top of a two-level Git
-submodule tree** — `600K_ParentRepo` → `ChildRepo` → `NestedChild`
+module [Source: app.py:L15]. This repository sits at the **top of a three-tier Git
+submodule tree** (three repository tiers connected by two nested submodule edges) — `600K_ParentRepo` → `ChildRepo` → `NestedChild`
 [Source: .gitmodules, ChildRepo/.gitmodules].
 
 ## Overview
@@ -35,9 +35,11 @@ for details.
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [Setup and Installation](#setup-and-installation)
+- [Project Structure](#project-structure)
 - [Repository and Submodule Composition](#repository-and-submodule-composition)
 - [API Documentation](#api-documentation)
 - [Deployment and How to Run](#deployment-and-how-to-run)
+- [Usage Examples](#usage-examples)
 - [Inline Code Explanations](#inline-code-explanations)
 - [Known Issues and Notes](#known-issues-and-notes)
 
@@ -45,7 +47,7 @@ for details.
 
 | Requirement | Version | Notes |
 |-------------|---------|-------|
-| Python | 3.6 or newer | Requires Python 3.6+ because the source uses f-strings [Source: app.py:L36]; only the standard library is used. Verified by executing `python3 app.py` on **Python 3.13.7** in this environment, which produced the expected output (see [Deployment and How to Run](#deployment-and-how-to-run)). |
+| Python | 3.6 or newer | Requires Python 3.6+ because the source uses f-strings [Source: app.py:L36]; only the standard library is used. Verified by executing `python app.py` on **CPython 3.13.13**, which produced the expected output (see [Deployment and How to Run](#deployment-and-how-to-run)). |
 | Git | Any recent version | Required to clone this repository **and its submodules** [Source: .gitmodules, ChildRepo/.gitmodules]. |
 
 There are **no third-party runtime dependencies** and no dependency manifest —
@@ -82,6 +84,33 @@ the `ChildRepo` submodule and its nested `NestedChild` submodule are populated
 > declared in `.gitmodules`; never embed access tokens or credentials in a clone
 > URL that you share.
 
+## Project Structure
+
+The parent repository is intentionally small — two Python source files plus this
+README at its root — with the broader system composed through nested Git
+submodules. The on-disk layout at the repository root is:
+
+```text
+600K_ParentRepo/
+├── README.md      # this document
+├── app.py         # entry point; defines main()  [Source: app.py:L17]
+├── service.py     # calculate_total / calculate_average  [Source: service.py:L18, service.py:L44]
+└── ChildRepo/     # Git submodule → embeds NestedChild  [Source: .gitmodules, ChildRepo/.gitmodules]
+```
+
+In this layout, `app.py` is the runnable entry point that defines `main()` and
+imports `calculate_total` from the local `service` module
+[Source: app.py:L15, app.py:L17]; `service.py` provides the `calculate_total` and
+`calculate_average` helpers [Source: service.py:L18, service.py:L44]; and
+`ChildRepo/` is the first-level Git submodule that itself embeds the `NestedChild`
+submodule, forming the `600K_ParentRepo` → `ChildRepo` → `NestedChild` tree
+[Source: .gitmodules, ChildRepo/.gitmodules].
+
+> **Note:** The detailed submodule graph — including the `NestedChild` leaf and
+> the `graph TD` diagram — is provided in the adjacent
+> [Repository and Submodule Composition](#repository-and-submodule-composition)
+> section below, which this section complements rather than duplicates.
+
 ## Repository and Submodule Composition
 
 This repository declares a single submodule in `.gitmodules` [Source: .gitmodules]:
@@ -92,7 +121,7 @@ This repository declares a single submodule in `.gitmodules` [Source: .gitmodule
 
 `ChildRepo` is itself a Git repository that declares a further `NestedChild`
 submodule (`https://github.com/lakshya-blitzy/600K_Nested_ChildRepo.git`)
-[Source: ChildRepo/.gitmodules], producing a two-level tree. Each repository is independent, with its own history
+[Source: ChildRepo/.gitmodules], producing a three-tier tree (two nested submodule edges). Each repository is independent, with its own history
 and README:
 
 - **This repository** (`600K_ParentRepo`) — you are here.
@@ -210,8 +239,8 @@ a matter of invoking the interpreter on the entry point from the repository root
 python app.py
 ```
 
-Expected standard output — verified by executing `python3 app.py` on
-**Python 3.13.7** (exit code 0), produced by `main()` [Source: app.py:L17]:
+Expected standard output — verified by executing `python app.py` on
+**CPython 3.13.13** (exit code 0), produced by `main()` [Source: app.py:L17]:
 
 ```text
 Total: 100
@@ -231,6 +260,71 @@ flowchart LR
     P --> L[Print each number]
     L --> D[Print Application completed]
 ```
+
+## Usage Examples
+
+This section explicitly collects the runnable examples for the project. Every
+example below reflects **actual observed behavior** — the parent application runs
+successfully and exits with status code 0. (For the full reference of each
+function, see [API Documentation](#api-documentation); for the run/deployment
+narrative and control-flow diagram, see
+[Deployment and How to Run](#deployment-and-how-to-run).)
+
+### Running the application
+
+Run the entry point with the Python interpreter from the repository root:
+
+```bash
+python app.py
+```
+
+Verified standard output — produced by `main()` and reproduced by executing
+`python app.py` on **CPython 3.13.13** (exit code 0) [Source: app.py:L17]:
+
+```text
+Total: 100
+10
+20
+30
+40
+Application completed
+```
+
+### Using the library functions
+
+The computation helpers in `service.py` can also be imported and reused directly
+in your own code:
+
+```python
+from service import calculate_total, calculate_average
+
+calculate_total([10, 20, 30, 40])    # -> 100    [Source: service.py:L18]
+calculate_total([])                  # -> 0      [Source: service.py:L18]
+
+calculate_average([10, 20, 30, 40])  # -> 25.0   [Source: service.py:L44]
+calculate_average([])                # -> 0      [Source: service.py:L44]
+```
+
+`calculate_total` sums a numeric iterable, returning `0` for an empty input
+[Source: service.py:L18], and `calculate_average` returns the arithmetic mean,
+returning `0` for empty/falsey input to guard against division by zero
+[Source: service.py:L44]. As noted in the API reference, `calculate_average` is
+**defined but never invoked** by `main()`; it is shown here for completeness and
+full API coverage [Source: service.py:L44].
+
+### Invoking `main()` programmatically
+
+The entry point itself can be driven from another module by importing `main`:
+
+```python
+from app import main
+
+main()  # prints: Total: 100 / 10 / 20 / 30 / 40 / Application completed  [Source: app.py:L17]
+```
+
+Because `app.py` guards its entry point with `if __name__ == "__main__":`,
+importing `app` produces no side effects until `main()` is called explicitly
+[Source: app.py:L45-L46].
 
 ## Inline Code Explanations
 
@@ -261,14 +355,14 @@ flowchart LR
   docstrings and comments has since made the two files differ textually, but
   their non-documentation statements and control flow remain equivalent. Because
   of that original duplication, `service.py` defines `main()`
-  [Source: ChildRepo/NestedChild/service.py:L47] and imports `calculate_total`
-  from `service` [Source: ChildRepo/NestedChild/service.py:L45] rather than
+  [Source: ChildRepo/NestedChild/service.py:L64] and imports `calculate_total`
+  from `service` [Source: ChildRepo/NestedChild/service.py:L62] rather than
   defining `calculate_total` / `calculate_average`. As a result, running
-  `ChildRepo/NestedChild/app.py` [Source: ChildRepo/NestedChild/app.py:L48]
+  `ChildRepo/NestedChild/app.py` [Source: ChildRepo/NestedChild/app.py:L54]
   raises a circular `ImportError` at runtime and exits with a non-zero status
-  (exit code 1) — verified by executing `python3 app.py` in that directory on
-  Python 3.13.7 (empty standard output). This behavior is preserved as-is. The
-  in-depth documentation of this defect — including the canonical error message —
+  (exit code 1) — verified here by executing `python app.py` in that directory on
+  CPython 3.13.13 (empty standard output). This behavior is preserved as-is. The
+  in-depth documentation of this defect — including the interpreter-specific error messages —
   now lives in the `NestedChild` submodule's own **completed** README at
   [ChildRepo/NestedChild/README.md](ChildRepo/NestedChild/README.md).
 
