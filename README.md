@@ -1,1 +1,159 @@
-# app.py
+# Total & Listing Service (Flask)
+
+A minimal Python 3 [Flask](https://flask.palletsprojects.com/) application that
+exposes, over HTTP, the total-and-listing computation that was originally printed
+to standard output by a small console script. A single endpoint computes the sum
+of a fixed list of numbers and returns the total followed by each number, exactly
+reproducing the original program's output. The app is built with the
+**application-factory** pattern (`create_app()`), keeps the pure computation logic
+in a separate module (`service.py`), and ships with a WSGI entry point for
+deployment.
+
+## Requirements
+
+- **Python 3.9+** (developed and verified on Python 3.12)
+- **Flask 3.1.3** (see [`requirements.txt`](requirements.txt))
+
+## Installation
+
+Create and activate a virtual environment, then install the dependencies:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+> **Note — creating the virtual environment.** `python3 -m venv .venv` relies on
+> the standard-library `ensurepip` module to seed `pip` into the new environment.
+> This works out of the box on most Python installations, but some minimal or
+> distribution-packaged builds ship `ensurepip` **without** bundled `pip` wheels.
+> On those systems the command above exits non-zero and leaves a `.venv/` that
+> has no `pip` and no `activate` script. If that happens, create the environment
+> without pip and bootstrap pip explicitly, then continue with the
+> `source .venv/bin/activate` and `pip install -r requirements.txt` steps above:
+>
+> ```bash
+> python3 -m venv --without-pip .venv
+> python3 -m pip --python "$PWD/.venv/bin/python" install --upgrade pip
+> ```
+
+## Running (development)
+
+The application exposes an application factory, `create_app()`, in
+[`app.py`](app.py). You can start the built-in Flask development server in either
+of two ways.
+
+**Option A — factory via the Flask CLI:**
+
+```bash
+flask --app app run
+```
+
+**Option B — run the script directly:**
+
+```bash
+python3 app.py
+```
+
+Either option starts the development server at:
+
+```
+http://127.0.0.1:5000/
+```
+
+> The development server is intended for local use only. For production, use a
+> WSGI server (see below).
+
+## Running (production / WSGI)
+
+[`wsgi.py`](wsgi.py) exposes a ready-to-serve application object,
+`app = create_app()`, for any WSGI server. For example, using
+[gunicorn](https://gunicorn.org/):
+
+```bash
+gunicorn wsgi:app
+```
+
+Other WSGI servers such as [waitress](https://docs.pylonsproject.org/projects/waitress/)
+work equally well (e.g. `waitress-serve --call wsgi:create_app`). These servers are
+mentioned only as examples and are **not** included in `requirements.txt`; install
+your chosen server separately.
+
+> **Note — startup-log version banners.** Some WSGI servers print their own
+> version in their **startup logs** (for example, gunicorn emits a
+> `Starting gunicorn <version>` banner). That is server output written to your
+> operational logs — it is **not** part of any HTTP response; the application's
+> responses always carry a generic, versionless `Server` header (see
+> [Endpoint](#endpoint)). Treat operational logs as access-controlled, and use
+> your chosen server's logging configuration if you need to suppress these
+> informational startup banners in production.
+
+## Configuration
+
+[`config.py`](config.py) provides a `Config` class that the application factory
+loads via:
+
+```python
+app.config.from_object("config.Config")
+```
+
+`Config` reads its values from the environment:
+
+- `FLASK_DEBUG` — enables Flask's debug mode. Set it to one of `1`, `true`,
+  `yes`, or `on` (case-insensitive; surrounding whitespace is ignored) to turn
+  debug mode on. When the variable is unset, empty, or set to any other value,
+  debug mode stays **off** (the default).
+- `SECRET_KEY` — the secret key Flask uses to sign the session cookie and other
+  security-sensitive tokens. When it is unset, the configuration falls back to
+  the non-secret placeholder `"dev"`, which is intended for **local development
+  only**. In production you **must** set `SECRET_KEY` to a strong, unpredictable
+  (randomly generated) value.
+
+## Endpoint
+
+| Method | Path | Status | Content-Type |
+| ------ | ---- | ------ | ------------ |
+| `GET`  | `/`  | `200 OK` | `text/plain; charset=utf-8` |
+
+`GET /` computes `calculate_total([10, 20, 30, 40])` and returns the result as
+plain text, byte-for-byte identical to the original console output. The response
+body is:
+
+```
+Total: 100
+10
+20
+30
+40
+Application completed
+```
+
+Notes on the response:
+
+- The body ends with a trailing newline — the exact bytes are
+  `Total: 100\n10\n20\n30\n40\nApplication completed\n`.
+- The input list is fixed at `[10, 20, 30, 40]`, so the output is deterministic.
+- The numbers are listed in input order.
+- Every response includes the security headers `X-Content-Type-Options: nosniff`
+  and `X-Frame-Options: DENY`. They harden the endpoint without changing the
+  status code, `Content-Type`, or body bytes shown above.
+- The built-in development server reports a generic, versionless `Server` header
+  (it discloses neither the Werkzeug nor the Python version) on both run modes.
+  Production WSGI servers set their own `Server` header.
+
+## Testing
+
+Parity tests live in the [`tests/`](tests) directory:
+
+- `tests/test_service.py` — verifies the computation functions in `service.py`
+  (`calculate_total` and `calculate_average`).
+- `tests/test_app.py` — uses the Flask test client to assert that `GET /` returns
+  the exact response body shown above.
+
+Install [pytest](https://docs.pytest.org/) and run the suite from the project root:
+
+```bash
+pip install pytest
+pytest
+```
